@@ -3,7 +3,7 @@
 Inline critical-path css and load the existing stylesheets asynchronously.
 Existing link tags will also be wrapped in <noscript> so the users with javscript disabled will see the site rendered normally.
 
-[![build status](https://secure.travis-ci.org/bezoerb/inline-critical.png)](http://travis-ci.org/bezoerb/inline-critical)
+[![build status](https://secure.travis-ci.org/bezoerb/inline-critical.svg)](http://travis-ci.org/bezoerb/inline-critical)
 
 ## Installation
 
