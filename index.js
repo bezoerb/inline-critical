@@ -41,10 +41,13 @@ module.exports = function(html, styles, minify) {
     '(function(d,u){' +
     'for (var i in u) {' +
     'var l=d.createElement(\'link\');' +
+    'var r=d.getElementsByTagName(\'script\')[0];' +
     'l.type=\'text/css\';' +
     'l.rel=\'stylesheet\';' +
+    'l.media=\'only x\';' +
     'l.href=u[i];' +
-    ' d.getElementsByTagName(\'head\')[0].appendChild(l);' +
+    'r.parentNode.insertBefore(l,r);' +
+    'setTimeout( function(){l.media=\'all\';});' +
     '}' +
     '}(document,[\'' + hrefs.join('\',\'') + '\']));\n' +
     '</script>\n');
