@@ -25,7 +25,7 @@ describe('inline-critical', function() {
     });
 
 
-    it('should inline css', function(done) {
+    it('should inline and minify css', function(done) {
         var html = fs.readFileSync('test/fixtures/index.html', 'utf8');
         var css = fs.readFileSync('test/fixtures/critical.css', 'utf8');
 
