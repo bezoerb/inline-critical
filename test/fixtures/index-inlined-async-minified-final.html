@@ -91,7 +91,7 @@
 <script src="scripts/main.js"></script>
 <!-- endbuild -->
 <script>
-    (function(d,u){for (var i in u) {var l=d.createElement('link');var r=d.getElementsByTagName('script')[0];l.type='text/css';l.rel='stylesheet';l.media='only x';l.href=u[i];r.parentNode.insertBefore(l,r);setTimeout( function(){l.media='all';});}}(document,['styles/main.css','bower_components/bootstrap/dist/css/bootstrap.css']));
+    (function(d,u){for (var i in u) {var l=d.createElement('link');var r=d.getElementsByTagName('script')[0];l.type='text/css';l.rel='stylesheet';l.media='only x';l.href=u[i];r.parentNode.insertBefore(l,r);(function(l){setTimeout( function(){l.media='all';});})(l)}}(document,['styles/main.css','bower_components/bootstrap/dist/css/bootstrap.css']));
 </script>
 </body>
 </html>

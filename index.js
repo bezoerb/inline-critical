@@ -47,7 +47,7 @@ module.exports = function(html, styles, minify) {
     'l.media=\'only x\';' +
     'l.href=u[i];' +
     'r.parentNode.insertBefore(l,r);' +
-    'setTimeout( function(){l.media=\'all\';});' +
+    '(function(l){setTimeout( function(){l.media=\'all\';});})(l)' +
     '}' +
     '}(document,[\'' + hrefs.join('\',\'') + '\']));\n' +
     '</script>\n');
