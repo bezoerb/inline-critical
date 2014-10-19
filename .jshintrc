@@ -1,3 +1,8 @@
 {
-  "laxcomma": true
+  "laxcomma": true,
+  "globals": {
+    "it": false,
+    "describe": false
+  },
+  "node": true
 }
