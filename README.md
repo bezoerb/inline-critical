@@ -22,3 +22,16 @@ var critical = fs.readFileSync('test/fixtures/critical.css', 'utf8');
 
 var inlined = inline(html, critical);
 ```
+
+## `inline(html, styles, options?)
+
+- `html` is the HTML you want to use to inline your critical styles, or any other styles
+- `styles` are the styles you're looking to inline
+- `options` is an optional configuration object
+  - `minify` will minify the styles before inlining
+  - `extract` will remove the inlined styles from any stylesheets referenced in the HTML
+  - `basePath` will be used when extracting styles to find the files references by `href` attributes
+
+## License
+
+MIT
