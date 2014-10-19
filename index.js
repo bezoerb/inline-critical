@@ -9,17 +9,22 @@
  * All rights reserved.
  */
 'use strict';
+
+var fs = require('fs');
+var path = require('path');
+var cave = require('cave');
 var cheerio = require('cheerio');
 var CleanCSS = require('clean-css');
 
-module.exports = function(html, styles, minify) {
+module.exports = function(html, styles, options) {
 
   var $ = cheerio.load(String(html));
   var links = $('link[rel="stylesheet"]');
   var noscript = $('<noscript>\n</noscript>');
+  var o = options || {};
 
   // minify if minify option is set
-  if (minify) {
+  if (o.minify) {
     styles = new CleanCSS().minify(styles);
   }
 
@@ -35,6 +40,21 @@ module.exports = function(html, styles, minify) {
     noscript.append('\n');
     return el.attr('href');
   }).toArray();
+
+  // extract styles from stylesheets if extract option is set
+  if (o.extract) {
+    if (!o.basePath) {
+      throw new Error('Option `basePath` is missing and required when using `extract`!');
+    }
+    hrefs.forEach(function(href) {
+      var file = path.resolve(o.basePath, href);
+      if (!fs.existsSync(file)) {
+        return;
+      }
+      var diff = cave(file, { css: styles });
+      fs.writeFileSync(file, diff);
+    });
+  }
 
   // build js block to load blocking stylesheets
   $('body').append('<script>\n' +

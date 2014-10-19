@@ -19,6 +19,7 @@
     "url": "https://github.com/bezoerb/inline-critical/issues"
   },
   "dependencies": {
+    "cave": "^2.0.0",
     "cheerio": "^0.17.0",
     "clean-css": "^2.2.12"
   },
