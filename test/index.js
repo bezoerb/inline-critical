@@ -1,6 +1,7 @@
 'use strict';
 
 var expect = require('chai').expect;
+var reaver = require('reaver');
 var fs = require('fs');
 var inlineCritical = require('..');
 
@@ -46,12 +47,11 @@ describe('inline-critical', function() {
   it('should inline and extract css', function(done) {
     var html = read('test/fixtures/cartoon.html');
     var css = read('test/fixtures/critical.css');
-
-    write('test/fixtures/cartoon.css', read('test/fixtures/cartoon-src.css'));
+    var expected = read('test/fixtures/cartoon-expected.css');
 
     inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
 
-    expect(read('test/fixtures/cartoon.css')).to.be.equal(read('test/fixtures/cartoon-expected.css'));
+    expect(read(reaver.rev('test/fixtures/cartoon.css', expected))).to.be.equal(expected);
 
     done();
   });

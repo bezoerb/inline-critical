@@ -13,6 +13,7 @@
 var fs = require('fs');
 var path = require('path');
 var cave = require('cave');
+var reaver = require('reaver');
 var cheerio = require('cheerio');
 var CleanCSS = require('clean-css');
 
@@ -33,12 +34,8 @@ module.exports = function(html, styles, options) {
   // insert noscript block right after stylesheets
   links.eq(0).first().after(noscript);
 
-  // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
   var hrefs = links.map(function(idx, el) {
-    el = $(el);
-    noscript.append(el);
-    noscript.append('\n');
-    return el.attr('href');
+    return $(this).attr('href');
   }).toArray();
 
   // extract styles from stylesheets if extract option is set
@@ -46,15 +43,24 @@ module.exports = function(html, styles, options) {
     if (!o.basePath) {
       throw new Error('Option `basePath` is missing and required when using `extract`!');
     }
-    hrefs.forEach(function(href) {
+    hrefs = hrefs.map(function(href) {
       var file = path.resolve(o.basePath, href);
       if (!fs.existsSync(file)) {
         return;
       }
       var diff = cave(file, { css: styles });
-      fs.writeFileSync(file, diff);
+      fs.writeFileSync(reaver.rev(file, diff), diff);
+      return reaver.rev(href, diff);
     });
   }
+
+  // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
+  links.each(function (idx) {
+    var el = $(this);
+    el.attr('href', hrefs[idx]);
+    noscript.append(el);
+    noscript.append('\n');
+  });
 
   // build js block to load blocking stylesheets
   $('body').append('<script>\n' +
