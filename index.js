@@ -9,17 +9,23 @@
  * All rights reserved.
  */
 'use strict';
+
+var fs = require('fs');
+var path = require('path');
+var cave = require('cave');
+var reaver = require('reaver');
 var cheerio = require('cheerio');
 var CleanCSS = require('clean-css');
 
-module.exports = function(html, styles, minify) {
+module.exports = function(html, styles, options) {
 
   var $ = cheerio.load(String(html));
   var links = $('link[rel="stylesheet"]');
   var noscript = $('<noscript>\n</noscript>');
+  var o = options || {};
 
   // minify if minify option is set
-  if (minify) {
+  if (o.minify) {
     styles = new CleanCSS().minify(styles);
   }
 
@@ -28,13 +34,33 @@ module.exports = function(html, styles, minify) {
   // insert noscript block right after stylesheets
   links.eq(0).first().after(noscript);
 
-  // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
   var hrefs = links.map(function(idx, el) {
-    el = $(el);
+    return $(this).attr('href');
+  }).toArray();
+
+  // extract styles from stylesheets if extract option is set
+  if (o.extract) {
+    if (!o.basePath) {
+      throw new Error('Option `basePath` is missing and required when using `extract`!');
+    }
+    hrefs = hrefs.map(function(href) {
+      var file = path.resolve(o.basePath, href);
+      if (!fs.existsSync(file)) {
+        return;
+      }
+      var diff = cave(file, { css: styles });
+      fs.writeFileSync(reaver.rev(file, diff), diff);
+      return reaver.rev(href, diff);
+    });
+  }
+
+  // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
+  links.each(function (idx) {
+    var el = $(this);
+    el.attr('href', hrefs[idx]);
     noscript.append(el);
     noscript.append('\n');
-    return el.attr('href');
-  }).toArray();
+  });
 
   // build js block to load blocking stylesheets
   $('body').append('<script>\n' +
