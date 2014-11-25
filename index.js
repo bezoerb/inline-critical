@@ -16,6 +16,14 @@ var cave = require('cave');
 var reaver = require('reaver');
 var cheerio = require('cheerio');
 var CleanCSS = require('clean-css');
+var slash = require('slash');
+
+/**
+ * Fixup slashes in file paths for windows
+ */
+function normalizePath(str) {
+  return process.platform === 'win32' ? slash(str) : str;
+}
 
 module.exports = function(html, styles, options) {
 
@@ -50,7 +58,7 @@ module.exports = function(html, styles, options) {
       }
       var diff = cave(file, { css: styles });
       fs.writeFileSync(reaver.rev(file, diff), diff);
-      return reaver.rev(href, diff);
+      return reaver.rev(normalizePath(href), diff);
     });
   }
 
