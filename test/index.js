@@ -48,10 +48,12 @@ describe('inline-critical', function() {
     var html = read('test/fixtures/cartoon.html');
     var css = read('test/fixtures/critical.css');
     var expected = read('test/fixtures/cartoon-expected.css');
+    var expectedHtml = read('test/fixtures/cartoon-expected.html');
 
-    inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
+    var out = inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
 
-    expect(read(reaver.rev('test/fixtures/cartoon.css', expected))).to.be.equal(expected);
+    expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
 
     done();
   });
