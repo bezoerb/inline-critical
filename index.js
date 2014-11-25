@@ -58,7 +58,7 @@ module.exports = function(html, styles, options) {
       }
       var diff = cave(file, { css: styles });
       fs.writeFileSync(reaver.rev(file, diff), diff);
-      return reaver.rev(normalizePath(href), diff);
+      return normalizePath(reaver.rev(href, diff));
     });
   }
 
