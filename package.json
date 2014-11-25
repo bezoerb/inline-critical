@@ -11,7 +11,8 @@
     "url": "https://github.com/bezoerb/inline-critical"
   },
   "keywords": [
-    "css critical-path"
+    "css",
+    "critical-path"
   ],
   "author": "Ben Zörb <ben@sommerlaune.com>",
   "license": "MIT",
