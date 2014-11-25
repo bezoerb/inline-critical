@@ -22,6 +22,7 @@
     "cave": "^2.0.0",
     "cheerio": "^0.17.0",
     "clean-css": "^2.2.12",
+    "normalize-newline": "^1.0.1",
     "reaver": "^1.2.0",
     "slash": "^1.0.0"
   },

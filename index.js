@@ -17,6 +17,7 @@ var reaver = require('reaver');
 var cheerio = require('cheerio');
 var CleanCSS = require('clean-css');
 var slash = require('slash');
+var normalizeNewline = require('normalize-newline');
 
 /**
  * Fixup slashes in file paths for windows
@@ -56,7 +57,7 @@ module.exports = function(html, styles, options) {
       if (!fs.existsSync(file)) {
         return;
       }
-      var diff = cave(file, { css: styles });
+      var diff = normalizeNewline(cave(file, { css: styles }));
       fs.writeFileSync(reaver.rev(file, diff), diff);
       return normalizePath(reaver.rev(href, diff));
     });
