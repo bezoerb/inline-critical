@@ -22,7 +22,7 @@ describe('inline-critical', function() {
     var html = read('test/fixtures/index.html');
     var css = read('test/fixtures/critical.css');
 
-    var expected = read('test/fixtures/index-inlined-async-final.html');
+    var expected = read('test/expected/index-inlined-async-final.html');
     var out = inlineCritical(html, css);
 
     expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
@@ -35,7 +35,7 @@ describe('inline-critical', function() {
     var html = read('test/fixtures/index.html');
     var css = read('test/fixtures/critical.css');
 
-    var expected = read('test/fixtures/index-inlined-async-minified-final.html');
+    var expected = read('test/expected/index-inlined-async-minified-final.html');
     var out = inlineCritical(html, css, { minify: true });
 
     expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
@@ -47,8 +47,8 @@ describe('inline-critical', function() {
   it('should inline and extract css', function(done) {
     var html = read('test/fixtures/cartoon.html');
     var css = read('test/fixtures/critical.css');
-    var expected = read('test/fixtures/cartoon-expected.css');
-    var expectedHtml = read('test/fixtures/cartoon-expected.html');
+    var expected = read('test/expected/cartoon-expected.css');
+    var expectedHtml = read('test/expected/cartoon-expected.html');
 
     var out = inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
 
