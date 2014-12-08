@@ -25,7 +25,8 @@
     "clean-css": "^2.2.12",
     "normalize-newline": "^1.0.1",
     "reaver": "^1.2.0",
-    "slash": "^1.0.0"
+    "slash": "^1.0.0",
+    "uglify-js": "^2.4.15"
   },
   "devDependencies": {
     "chai": "~1.8.1",
