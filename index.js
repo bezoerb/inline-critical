@@ -72,7 +72,7 @@ module.exports = function(html, styles, options) {
   });
 
   // build js block to load blocking stylesheets
-  $('body').append('<script>\n' +
+  $(noscript).before('<script>\n' +
     '(function(d,u){' +
     'for (var i in u) {' +
     'var l=d.createElement(\'link\');' +
