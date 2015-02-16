@@ -16,6 +16,8 @@ var UglifyJS = require("uglify-js");
 var cave = require('cave');
 var reaver = require('reaver');
 var cheerio = require('cheerio');
+var render = require('dom-serializer');
+var parse = require('cheerio/lib/parse');
 var CleanCSS = require('clean-css');
 var slash = require('slash');
 var normalizeNewline = require('normalize-newline');
@@ -53,7 +55,7 @@ module.exports = function(html, styles, options) {
 
   // minify if minify option is set
   if (o.minify) {
-    styles = new CleanCSS().minify(styles);
+    styles = new CleanCSS().minify(styles).styles;
   }
 
   // insert inline styles right before first <link rel="stylesheet" />
@@ -89,7 +91,7 @@ module.exports = function(html, styles, options) {
     noscript.append('\n');
   });
 
-  // build js block to load blocking stylesheets and insert it right before 
+  // build js block to load blocking stylesheets and insert it right before
   $(noscript).before('<script>\n' +
     '(function(u){' +
     loadCSS +
@@ -97,5 +99,9 @@ module.exports = function(html, styles, options) {
     '}([\'' + hrefs.join('\',\'') + '\']));\n' +
     '</script>\n');
 
-  return new Buffer($.html());
+
+  var dom = parse($.html());
+  var markup = render(dom);
+
+  return new Buffer(markup);
 };

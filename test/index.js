@@ -57,4 +57,12 @@ describe('inline-critical', function() {
 
     done();
   });
+
+  it('should not strip of svg closing tags', function(done) {
+    var html = read('test/fixtures/entities.html');
+    var out = inlineCritical(html, '');
+
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
+    done();
+  });
 });
