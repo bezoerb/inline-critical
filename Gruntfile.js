@@ -27,7 +27,8 @@ module.exports = function (grunt) {
       all: ['test/**/*.js'],
       options: {
         reporter: 'spec',
-        ui: 'bdd'
+        ui: 'bdd',
+        timeout: 10000
       }
     },
     watch: {
