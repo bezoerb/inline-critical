@@ -74,8 +74,8 @@ module.exports = function(html, styles, options) {
     }
     hrefs = hrefs.map(function(href) {
       var file = path.resolve(o.basePath, href);
-      if (!fs.existsSync(file)) {
-        return;
+      if (!fs.existsSync(file) ) {
+        return href;
       }
       var diff = normalizeNewline(cave(file, { css: styles }));
       fs.writeFileSync(reaver.rev(file, diff), diff);

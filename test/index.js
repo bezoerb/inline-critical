@@ -65,4 +65,38 @@ describe('inline-critical', function() {
     expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
     done();
   });
+
+  it('should not keep external urls', function(done) {
+
+    function strip2(string) {
+      return string.replace(/\s+/gm,'');
+    }
+
+    var html = read('test/fixtures/external.html');
+    var expected = read('test/expected/external-expected.html');
+    var css = read('test/fixtures/critical.css');
+    var out = inlineCritical(html, css);
+
+    write('test/expected/external-expected2.html',out);
+
+    expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
+    done();
+  });
+
+  it('should not keep external urls on extract', function(done) {
+
+    function strip2(string) {
+      return string.replace(/\s+/gm,'');
+    }
+
+    var html = read('test/fixtures/external.html');
+    var expected = read('test/expected/external-extract-expected.html');
+    var css = read('test/fixtures/critical.css');
+    var out = inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
+
+    write('test/expected/external-expected2.html',out);
+
+    expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
+    done();
+  });
 });
