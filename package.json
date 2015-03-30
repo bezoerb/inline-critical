@@ -20,14 +20,14 @@
     "url": "https://github.com/bezoerb/inline-critical/issues"
   },
   "dependencies": {
-    "cave": "^2.0.0",
-    "cheerio": "^0.19.0",
-    "clean-css": "^3.0.10",
-    "dom-serializer": "^0.1.0",
-    "normalize-newline": "^1.0.1",
-    "reaver": "^1.2.0",
-    "slash": "^1.0.0",
-    "uglify-js": "^2.4.15"
+    "cave": "2.0.0",
+    "cheerio": "0.19.0",
+    "clean-css": "3.1.8",
+    "dom-serializer": "0.1.0",
+    "normalize-newline": "1.0.1",
+    "reaver": "1.2.0",
+    "slash": "1.0.0",
+    "uglify-js": "2.4.15"
   },
   "devDependencies": {
     "chai": "^2.0.0",
