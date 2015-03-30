@@ -77,8 +77,6 @@ describe('inline-critical', function() {
     var css = read('test/fixtures/critical.css');
     var out = inlineCritical(html, css);
 
-    write('test/expected/external-expected2.html',out);
-
     expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
     done();
   });
@@ -93,8 +91,6 @@ describe('inline-critical', function() {
     var expected = read('test/expected/external-extract-expected.html');
     var css = read('test/fixtures/critical.css');
     var out = inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
-
-    write('test/expected/external-expected2.html',out);
 
     expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
     done();
