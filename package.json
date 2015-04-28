@@ -22,12 +22,13 @@
   "dependencies": {
     "cave": "2.0.0",
     "cheerio": "0.19.0",
-    "clean-css": "3.1.8",
+    "clean-css": "^3.2.5",
     "dom-serializer": "0.1.0",
-    "normalize-newline": "1.0.1",
+    "lodash": "^3.7.0",
+    "normalize-newline": "^1.0.2",
     "reaver": "1.2.0",
     "slash": "1.0.0",
-    "uglify-js": "2.4.15"
+    "uglify-js": "^2.4.20"
   },
   "devDependencies": {
     "chai": "^2.0.0",
