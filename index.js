@@ -10,6 +10,7 @@
  */
 'use strict';
 
+var _ = require('lodash');
 var fs = require('fs');
 var path = require('path');
 var UglifyJS = require("uglify-js");
@@ -101,7 +102,22 @@ module.exports = function(html, styles, options) {
 
 
   var dom = parse($.html());
-  var markup = render(dom);
+  var markup = render(cleanupDom(dom));
 
   return new Buffer(markup);
 };
+
+// prevent closing tags in svg caused by a single newline element added by htmlparser
+function cleanupDom(dom,svg) {
+  if (svg && _.size(dom.children) === 1) {
+    dom.children = _.reject( dom.children, function(child) {
+      return !child.name && (child.data || '').replace(/[\s\r\n]+/,'') === '';
+    });
+  } else {
+    dom.children = _.map(dom.children, function(child){
+      return cleanupDom(child, svg || child.name === 'svg');
+    });
+  }
+
+  return dom;
+}
