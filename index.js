@@ -102,22 +102,7 @@ module.exports = function(html, styles, options) {
 
 
   var dom = parse($.html());
-  var markup = render(cleanupDom(dom));
+  var markup = render(dom);
 
   return new Buffer(markup);
 };
-
-// prevent closing tags in svg caused by a single newline element added by htmlparser
-function cleanupDom(dom,svg) {
-  if (svg && _.size(dom.children) === 1) {
-    dom.children = _.reject( dom.children, function(child) {
-      return !child.name && (child.data || '').replace(/[\s\r\n]+/,'') === '';
-    });
-  } else {
-    dom.children = _.map(dom.children, function(child){
-      return cleanupDom(child, svg || child.name === 'svg');
-    });
-  }
-
-  return dom;
-}
