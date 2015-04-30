@@ -95,4 +95,12 @@ describe('inline-critical', function() {
     expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
     done();
   });
+
+  it.skip('should keep self closing svg elements', function(done) {
+    var html = read('test/fixtures/entities2.html');
+    var out = inlineCritical(html, '');
+
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
+    done();
+  });
 });
