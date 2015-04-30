@@ -49,7 +49,10 @@ function read (file) {
 
 module.exports = function(html, styles, options) {
 
-  var $ = cheerio.load(String(html));
+  var $ = cheerio.load(String(html), {
+    decodeEntities: false
+  });
+
   var links = $('link[rel="stylesheet"]');
   var noscript = $('<noscript>\n</noscript>');
   var o = options || {};
