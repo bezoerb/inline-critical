@@ -57,6 +57,19 @@ module.exports = function(html, styles, options) {
   var noscript = $('<noscript>\n</noscript>');
   var o = options || {};
 
+  if (_.isString(o.ignore)) {
+    o.ignore = [o.ignore];
+  }
+
+  if (o.ignore) {
+    links = links.filter(function() {
+      var href = $(this).attr('href');
+      return _.findIndex(o.ignore, function(arg) {
+          return _.isRegExp(arg) && arg.test(href) || arg === href;
+        }) === -1;
+    });
+  }
+
   // minify if minify option is set
   if (o.minify) {
     styles = new CleanCSS().minify(styles).styles;
@@ -70,6 +83,8 @@ module.exports = function(html, styles, options) {
   var hrefs = links.map(function(idx, el) {
     return $(this).attr('href');
   }).toArray();
+
+
 
   // extract styles from stylesheets if extract option is set
   if (o.extract) {

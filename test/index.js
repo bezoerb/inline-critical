@@ -103,4 +103,32 @@ describe('inline-critical', function() {
     expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
     done();
   });
+
+  it('should respect ignore option with string', function(done) {
+    function strip2(string) {
+      return string.replace(/\s+/gm,'');
+    }
+
+    var html = read('test/fixtures/external.html');
+    var expected = read('test/expected/external-ignore-expected.html');
+    var css = read('test/fixtures/critical.css');
+    var out = inlineCritical(html, css, {ignore: ['bower_components/bootstrap/dist/css/bootstrap.css']});
+
+    expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
+    done();
+  });
+  it('should respect ignore option with RegExp', function(done) {
+    function strip2(string) {
+      return string.replace(/\s+/gm,'');
+    }
+
+    var html = read('test/fixtures/external.html');
+    var expected = read('test/expected/external-ignore-expected.html');
+    var css = read('test/fixtures/critical.css');
+    var out = inlineCritical(html, css, {ignore: [/bootstrap/]});
+
+    expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
+    done();
+  });
+
 });
