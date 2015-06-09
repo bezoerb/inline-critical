@@ -34,6 +34,7 @@ var critical = fs.readFileSync('test/fixtures/critical.css', 'utf8');
 var inlined = inline(html, critical, {
   ignore: [/bootstrap/]
 });
+```
 
 ## inline(html, styles, options?)
 
