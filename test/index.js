@@ -131,4 +131,16 @@ describe('inline-critical', function() {
     done();
   });
 
+  it('should ignore stylesheets wrapped in noscript', function(done) {
+    var html = read('test/fixtures/index-noscript.html');
+    var css = read('test/fixtures/critical.css');
+
+    var expected = read('test/expected/index-noscript-inlined-minified-final.html');
+    var out = inlineCritical(html, css, { minify: true });
+
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
+
+    done();
+  });
+
 });

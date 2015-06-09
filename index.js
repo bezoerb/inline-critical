@@ -53,7 +53,9 @@ module.exports = function(html, styles, options) {
     decodeEntities: false
   });
 
-  var links = $('link[rel="stylesheet"]');
+  var links = $('link[rel="stylesheet"]').filter(function(){
+    return !$(this).parents('noscript').length;
+  });
   var noscript = $('<noscript>\n</noscript>');
   var o = options || {};
 
