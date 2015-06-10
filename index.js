@@ -23,7 +23,7 @@ var CleanCSS = require('clean-css');
 var slash = require('slash');
 var normalizeNewline = require('normalize-newline');
 // get loadCSS
-var loadCSS = read(path.join(__dirname,'vendor','loadCSS.js'));
+var loadCSS = read(path.join(__dirname, 'vendor', 'loadCSS.js'));
 loadCSS = UglifyJS.minify(loadCSS, {fromString: true}).code;
 
 /**
@@ -40,20 +40,18 @@ function normalizePath(str) {
  * @param {string} file
  * @returns {string}
  */
-function read (file) {
+function read(file) {
   return fs.readFileSync(file, 'utf8');
 }
 
 
-
-
-module.exports = function(html, styles, options) {
+module.exports = function (html, styles, options) {
 
   var $ = cheerio.load(String(html), {
     decodeEntities: false
   });
 
-  var links = $('link[rel="stylesheet"]').filter(function(){
+  var links = $('link[rel="stylesheet"]').filter(function () {
     return !$(this).parents('noscript').length;
   });
   var noscript = $('<noscript>\n</noscript>');
@@ -64,9 +62,9 @@ module.exports = function(html, styles, options) {
   }
 
   if (o.ignore) {
-    links = links.filter(function() {
+    links = links.filter(function () {
       var href = $(this).attr('href');
-      return _.findIndex(o.ignore, function(arg) {
+      return _.findIndex(o.ignore, function (arg) {
           return _.isRegExp(arg) && arg.test(href) || arg === href;
         }) === -1;
     });
@@ -82,10 +80,9 @@ module.exports = function(html, styles, options) {
   // insert noscript block right after stylesheets
   links.eq(0).first().after(noscript);
 
-  var hrefs = links.map(function(idx, el) {
+  var hrefs = links.map(function (idx, el) {
     return $(this).attr('href');
   }).toArray();
-
 
 
   // extract styles from stylesheets if extract option is set
@@ -93,12 +90,12 @@ module.exports = function(html, styles, options) {
     if (!o.basePath) {
       throw new Error('Option `basePath` is missing and required when using `extract`!');
     }
-    hrefs = hrefs.map(function(href) {
-      var file = path.resolve(o.basePath, href);
-      if (!fs.existsSync(file) ) {
+    hrefs = hrefs.map(function (href) {
+      var file = path.resolve(path.join(o.basePath, href));
+      if (!fs.existsSync(file)) {
         return href;
       }
-      var diff = normalizeNewline(cave(file, { css: styles }));
+      var diff = normalizeNewline(cave(file, {css: styles}));
       fs.writeFileSync(reaver.rev(file, diff), diff);
       return normalizePath(reaver.rev(href, diff));
     });

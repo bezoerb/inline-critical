@@ -30,6 +30,18 @@ describe('inline-critical', function() {
     done();
   });
 
+  it('should inline absolute css', function(done) {
+    var html = read('test/fixtures/index-absolute.html');
+    var css = read('test/fixtures/critical.css');
+
+    var expected = read('test/expected/index-inlined-absolute.html');
+    var out = inlineCritical(html, css);
+
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
+
+    done();
+  });
+
 
   it('should inline and minify css', function(done) {
     var html = read('test/fixtures/index.html');
@@ -49,6 +61,20 @@ describe('inline-critical', function() {
     var css = read('test/fixtures/critical.css');
     var expected = read('test/expected/cartoon-expected.css');
     var expectedHtml = read('test/expected/cartoon-expected.html');
+
+    var out = inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
+
+    expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
+
+    done();
+  });
+
+  it('should inline and extract css correctly with absolute paths', function(done) {
+    var html = read('test/fixtures/cartoon-absolute.html');
+    var css = read('test/fixtures/critical.css');
+    var expected = read('test/expected/cartoon-expected.css');
+    var expectedHtml = read('test/expected/cartoon-absolute-expected.html');
 
     var out = inlineCritical(html, css, { extract: true, basePath: 'test/fixtures' });
 
