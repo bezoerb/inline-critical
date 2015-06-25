@@ -47,6 +47,14 @@ function read(file) {
 
 module.exports = function (html, styles, options) {
 
+  if (!html) {
+    throw new Error('HTML missing!')
+  }
+
+  if (!styles) {
+    throw new Error('Styles missing!')
+  }
+
   var $ = cheerio.load(String(html), {
     decodeEntities: false
   });
