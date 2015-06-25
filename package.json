@@ -6,6 +6,11 @@
   "scripts": {
     "test": "node_modules/.bin/grunt ci"
   },
+  "files": [
+    "index.js",
+    "cli.js"
+  ],
+  "bin": "cli.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/bezoerb/inline-critical"
