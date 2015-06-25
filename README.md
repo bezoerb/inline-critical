@@ -36,6 +36,27 @@ var inlined = inline(html, critical, {
 });
 ```
 
+## CLI
+
+inline-critical works well with standard input. 
+You can either pass in the html 
+```bash
+cat index.html | inline-critical critical.css
+```
+or just flip things around
+```bash
+cat critical.css | inline-critical index.html
+```
+or pass in the fileas as an option
+```bash
+inline-critical critical.css index.html
+```
+without having to worry about the correct order
+```bash
+inline-critical index.html critical.css
+```
+Run `inline-critical --help` to see the list of options.
+
 ## inline(html, styles, options?)
 
 - `html` is the HTML you want to use to inline your critical styles, or any other styles
