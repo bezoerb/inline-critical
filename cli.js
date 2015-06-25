@@ -114,6 +114,10 @@ function run(data) {
     }
   });
 
+  if (!opts.html || !opts.css) {
+    cli.showHelp();
+  }
+
   try {
     var out = inlineCritical(opts.html, opts.css, opts);
     console.log(out.toString());
