@@ -20,7 +20,7 @@ module.exports = function (grunt) {
         'test/**/*.js'
       ],
       options: {
-        jshintrc: '.jshintrc'
+        jshintrc: true
       }
     },
     mochacli: {

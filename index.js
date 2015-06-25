@@ -23,8 +23,9 @@ var CleanCSS = require('clean-css');
 var slash = require('slash');
 var normalizeNewline = require('normalize-newline');
 // get loadCSS
-var loadCSS = read(path.join(__dirname, 'vendor', 'loadCSS.js'));
+var loadCSS = read(path.join(__dirname, 'node_modules', 'fg-loadcss', 'loadCSS.js'));
 loadCSS = UglifyJS.minify(loadCSS, {fromString: true}).code;
+
 
 /**
  * Fixup slashes in file paths for windows
@@ -46,14 +47,6 @@ function read(file) {
 
 
 module.exports = function (html, styles, options) {
-
-  if (!html) {
-    throw new Error('HTML missing!')
-  }
-
-  if (!styles) {
-    throw new Error('Styles missing!')
-  }
 
   var $ = cheerio.load(String(html), {
     decodeEntities: false

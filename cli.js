@@ -117,7 +117,6 @@ function run(data) {
   try {
     var out = inlineCritical(opts.html, opts.css, opts);
     console.log(out.toString());
-    process.exit();
   } catch (err) {
     error(err);
   }
@@ -125,11 +124,11 @@ function run(data) {
 
 // get stdin
 stdin(run);
-  setTimeout(function () {
-    if (ok) {
-      return;
-    }
-    run();
-  }, 100);
+setTimeout(function () {
+  if (ok) {
+    return;
+  }
+  run();
+}, 100);
 
 

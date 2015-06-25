@@ -1,4 +1,6 @@
 {
+  "mocha": true,
+  "expr": true,
   "laxcomma": true,
   "node": true
 }
