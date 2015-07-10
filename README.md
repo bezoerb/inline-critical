@@ -66,6 +66,7 @@ Run `inline-critical --help` to see the list of options.
   - `extract` will remove the inlined styles from any stylesheets referenced in the HTML
   - `basePath` will be used when extracting styles to find the files references by `href` attributes
   - `ignore` ignore matching stylesheets when inlining.
+  - `selector` defines the element used by loadCSS as a reference for inlining.
 
 ## License
 

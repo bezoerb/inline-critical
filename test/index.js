@@ -159,11 +159,36 @@ describe('Module: inline-critical', function() {
     done();
   });
 
+  it('should respect selector option', function(done) {
+    var html = read('test/fixtures/index.html');
+    var css = read('test/fixtures/critical.css');
+
+    var expected = read('test/expected/index-before.html');
+    var out = inlineCritical(html, css, { minify: true, selector: 'title' });
+
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
+
+    done();
+  });
+
   it('should ignore stylesheets wrapped in noscript', function(done) {
     var html = read('test/fixtures/index-noscript.html');
     var css = read('test/fixtures/critical.css');
 
     var expected = read('test/expected/index-noscript-inlined-minified-final.html');
+    var out = inlineCritical(html, css, { minify: true });
+
+    expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
+
+    done();
+  });
+
+
+  it('should skip loadcss if it\'s already present and used for all existing link tags', function(done) {
+    var html = read('test/fixtures/loadcss.html');
+    var css = read('test/fixtures/critical.css');
+
+    var expected = read('test/expected/index-loadcss.html');
     var out = inlineCritical(html, css, { minify: true });
 
     expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
@@ -310,6 +335,7 @@ describe('CLI', function () {
         '-i','ignore-me',
         '-i','/regexp/',
         '-b', 'basePath',
+        '-s', 'selector',
         '-m',
         '-e'
       ];
@@ -324,6 +350,7 @@ describe('CLI', function () {
         process.stderr.write = this.stderr;
         expect(this.mockOpts.css).to.equal(read('test/fixtures/critical.css'));
         expect(this.mockOpts.html).to.equal(read('test/fixtures/index.html'));
+        expect(this.mockOpts.selector).to.equal('selector');
         expect(this.mockOpts.ignore).to.be.instanceof(Array);
         expect(this.mockOpts.ignore[0]).to.be.a('string');
         expect(this.mockOpts.ignore[1]).to.instanceof(RegExp);
@@ -342,6 +369,7 @@ describe('CLI', function () {
         '--ignore','ignore-me',
         '--ignore','/regexp/',
         '--base', 'basePath',
+        '--selector', 'selector',
         '--minify',
         '--extract'
       ];
@@ -356,6 +384,7 @@ describe('CLI', function () {
         process.stderr.write = this.stderr;
         expect(this.mockOpts.css).to.equal(read('test/fixtures/critical.css'));
         expect(this.mockOpts.html).to.equal(read('test/fixtures/index.html'));
+        expect(this.mockOpts.selector).to.equal('selector');
         expect(this.mockOpts.ignore).to.be.instanceof(Array);
         expect(this.mockOpts.ignore[0]).to.be.a('string');
         expect(this.mockOpts.ignore[1]).to.instanceof(RegExp);

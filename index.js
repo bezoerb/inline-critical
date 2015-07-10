@@ -55,8 +55,10 @@ module.exports = function (html, styles, options) {
   var links = $('link[rel="stylesheet"]').filter(function () {
     return !$(this).parents('noscript').length;
   });
-  var noscript = $('<noscript>\n</noscript>');
+
   var o = options || {};
+  var target = o.selector || links.get(0) || $('script').get(0);
+  var $target = $(target);
 
   if (_.isString(o.ignore)) {
     o.ignore = [o.ignore];
@@ -76,47 +78,54 @@ module.exports = function (html, styles, options) {
     styles = new CleanCSS().minify(styles).styles;
   }
 
+
+
   // insert inline styles right before first <link rel="stylesheet" />
-  links.eq(0).before('<style type="text/css">\n' + styles + '\n</style>\n');
-  // insert noscript block right after stylesheets
-  links.eq(0).first().after(noscript);
+  $target.before('<style type="text/css">\n' + styles + '\n</style>\n');
 
-  var hrefs = links.map(function (idx, el) {
-    return $(this).attr('href');
-  }).toArray();
+  if (links.length) {
+    var noscript = $('<noscript>\n</noscript>');
+
+    // insert noscript block right after stylesheets
+    $target.after(noscript);
+
+    var hrefs = links.map(function (idx, el) {
+      return $(this).attr('href');
+    }).toArray();
 
 
-  // extract styles from stylesheets if extract option is set
-  if (o.extract) {
-    if (!o.basePath) {
-      throw new Error('Option `basePath` is missing and required when using `extract`!');
-    }
-    hrefs = hrefs.map(function (href) {
-      var file = path.resolve(path.join(o.basePath, href));
-      if (!fs.existsSync(file)) {
-        return href;
+    // extract styles from stylesheets if extract option is set
+    if (o.extract) {
+      if (!o.basePath) {
+        throw new Error('Option `basePath` is missing and required when using `extract`!');
       }
-      var diff = normalizeNewline(cave(file, {css: styles}));
-      fs.writeFileSync(reaver.rev(file, diff), diff);
-      return normalizePath(reaver.rev(href, diff));
+      hrefs = hrefs.map(function (href) {
+        var file = path.resolve(path.join(o.basePath, href));
+        if (!fs.existsSync(file)) {
+          return href;
+        }
+        var diff = normalizeNewline(cave(file, {css: styles}));
+        fs.writeFileSync(reaver.rev(file, diff), diff);
+        return normalizePath(reaver.rev(href, diff));
+      });
+    }
+
+    // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
+    links.each(function (idx) {
+      var el = $(this);
+      el.attr('href', hrefs[idx]);
+      noscript.append(el);
+      noscript.append('\n');
     });
+
+    // build js block to load blocking stylesheets and insert it right before
+    noscript.before('<script>\n' +
+      '(function(u){' +
+      loadCSS +
+      'for(var i in u){loadCSS(u[i]);}' +
+      '}([\'' + hrefs.join('\',\'') + '\']));\n' +
+      '</script>\n');
   }
-
-  // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
-  links.each(function (idx) {
-    var el = $(this);
-    el.attr('href', hrefs[idx]);
-    noscript.append(el);
-    noscript.append('\n');
-  });
-
-  // build js block to load blocking stylesheets and insert it right before
-  $(noscript).before('<script>\n' +
-    '(function(u){' +
-    loadCSS +
-    'for(var i in u){loadCSS(u[i]);}' +
-    '}([\'' + hrefs.join('\',\'') + '\']));\n' +
-    '</script>\n');
 
 
   var dom = parse($.html());
