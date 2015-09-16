@@ -27,12 +27,12 @@
   "dependencies": {
     "cave": "2.0.0",
     "cheerio": "0.19.0",
-    "clean-css": "3.2.10",
+    "clean-css": "3.4.3",
     "css": "^2.2.1",
     "dom-serializer": "0.1.0",
     "fg-loadcss": "^0.1.8",
-    "get-stdin": "^4.0.1",
-    "indent-string": "^1.2.1",
+    "get-stdin": "^5.0.0",
+    "indent-string": "^2.1.0",
     "lodash": "^3.7.0",
     "meow": "^3.3.0",
     "normalize-newline": "^1.0.2",
@@ -41,7 +41,7 @@
     "uglify-js": "^2.4.20"
   },
   "devDependencies": {
-    "chai": "^2.0.0",
+    "chai": "^3.2.0",
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9",
     "grunt-complexity": "^0.3.0",

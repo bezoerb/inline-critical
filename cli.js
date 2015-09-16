@@ -129,7 +129,7 @@ function run(data) {
 }
 
 // get stdin
-stdin(run);
+stdin().then(run);
 setTimeout(function () {
   if (ok) {
     return;
