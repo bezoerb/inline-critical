@@ -119,11 +119,11 @@ module.exports = function (html, styles, options) {
     });
 
     // build js block to load blocking stylesheets and insert it right before
-    noscript.before('<script>\n' +
-      '(function(u){' +
+    noscript.before('<script id="loadcss">\n' +
+      '(function(u,s){' +
       loadCSS +
-      'for(var i in u){loadCSS(u[i]);}' +
-      '}([\'' + hrefs.join('\',\'') + '\']));\n' +
+      'for(var i in u){loadCSS(u[i],s);}' +
+      '}([\'' + hrefs.join('\',\'') + '\'],document.getElementById("loadcss")));\n' +
       '</script>\n');
   }
 
