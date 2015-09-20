@@ -23,7 +23,7 @@ var CleanCSS = require('clean-css');
 var slash = require('slash');
 var normalizeNewline = require('normalize-newline');
 // get loadCSS
-var loadCSS = read(path.join(__dirname, 'node_modules', 'fg-loadcss', 'loadCSS.js'));
+var loadCSS = read(path.join(__dirname, 'lib', 'loadCSS.js'));
 loadCSS = UglifyJS.minify(loadCSS, {fromString: true}).code;
 
 
