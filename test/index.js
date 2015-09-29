@@ -124,10 +124,9 @@ describe('Module: inline-critical', function() {
     done();
   });
 
-  it.skip('should keep self closing svg elements', function(done) {
+  it('should keep self closing svg elements', function(done) {
     var html = read('test/fixtures/entities2.html');
     var out = inlineCritical(html, '');
-
     expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
     done();
   });
