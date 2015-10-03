@@ -37,7 +37,7 @@
     "get-stdin": "5.0.0",
     "indent-string": "2.1.0",
     "lodash": "3.10.1",
-    "meow": "3.3.0",
+    "meow": "3.4.1",
     "normalize-newline": "1.0.2",
     "reaver": "1.2.0",
     "slash": "1.0.0",
