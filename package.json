@@ -50,7 +50,7 @@
     "grunt-complexity": "0.3.0",
     "grunt-contrib-jshint": "0.11.3",
     "grunt-contrib-watch": "0.6.1",
-    "grunt-mocha-cli": "1.14.0",
+    "grunt-mocha-cli": "2.0.0",
     "mockery": "1.4.0",
     "read-package-json": "2.0.1"
   }
