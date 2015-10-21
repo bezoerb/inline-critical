@@ -44,7 +44,7 @@
     "uglify-js": "2.5.0"
   },
   "devDependencies": {
-    "chai": "3.3.0",
+    "chai": "3.4.0",
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13",
     "grunt-complexity": "0.3.0",
