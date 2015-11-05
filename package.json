@@ -52,6 +52,6 @@
     "grunt-contrib-watch": "0.6.1",
     "grunt-mocha-cli": "2.0.0",
     "mockery": "1.4.0",
-    "read-package-json": "2.0.1"
+    "read-package-json": "2.0.2"
   }
 }
