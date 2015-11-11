@@ -34,7 +34,7 @@
     "css": "2.2.1",
     "dom-serializer": "0.1.0",
     "fg-loadcss": "0.1.8",
-    "get-stdin": "5.0.0",
+    "get-stdin": "5.0.1",
     "indent-string": "2.1.0",
     "lodash": "3.10.1",
     "meow": "3.5.0",
