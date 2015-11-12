@@ -41,7 +41,7 @@
     "normalize-newline": "1.0.2",
     "reaver": "2.0.0",
     "slash": "1.0.0",
-    "uglify-js": "2.5.0"
+    "uglify-js": "2.6.0"
   },
   "devDependencies": {
     "chai": "3.4.1",
