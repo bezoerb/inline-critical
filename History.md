@@ -1,4 +1,11 @@
 
+1.0.0 / 2015-11-13
+==================
+
+  * switched from jshint to xo
+  * Bump deps
+  * Bump loadCSS
+
 0.3.1 / 2015-07-10
 ==================
 
