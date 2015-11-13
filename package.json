@@ -30,18 +30,19 @@
   "dependencies": {
     "cave": "2.0.0",
     "cheerio": "0.19.0",
-    "clean-css": "3.4.7",
+    "clean-css": "3.4.8",
     "css": "2.2.1",
     "dom-serializer": "0.1.0",
-    "fg-loadcss": "0.1.8",
-    "get-stdin": "5.0.0",
+    "fg-loadcss": "0.2.4",
+    "get-stdin": "5.0.1",
     "indent-string": "2.1.0",
     "lodash": "3.10.1",
     "meow": "3.5.0",
     "normalize-newline": "1.0.2",
     "reaver": "2.0.0",
+    "resolve": "1.1.6",
     "slash": "1.0.0",
-    "uglify-js": "2.5.0"
+    "uglify-js": "2.6.0"
   },
   "devDependencies": {
     "chai": "3.4.1",
