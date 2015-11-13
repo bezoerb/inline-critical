@@ -4,12 +4,11 @@
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/grunt ci"
+    "test": "xo && mocha test/index.js"
   },
   "files": [
     "index.js",
-    "cli.js",
-    "lib/loadCSS.js"
+    "cli.js"
   ],
   "bin": "cli.js",
   "repository": {
@@ -46,13 +45,19 @@
   },
   "devDependencies": {
     "chai": "3.4.1",
-    "grunt": "0.4.5",
-    "grunt-cli": "0.1.13",
-    "grunt-complexity": "0.3.0",
-    "grunt-contrib-jshint": "0.11.3",
-    "grunt-contrib-watch": "0.6.1",
-    "grunt-mocha-cli": "2.0.0",
+    "mocha": "2.3.3",
     "mockery": "1.4.0",
-    "read-package-json": "2.0.2"
+    "read-package-json": "2.0.2",
+    "xo": "0.11.0"
+  },
+  "xo": {
+    "space": 4,
+    "envs": [
+      "node",
+      "mocha"
+    ],
+    "ignores": [
+      "test/*.js"
+    ]
   }
 }
