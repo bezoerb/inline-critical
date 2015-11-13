@@ -4,7 +4,8 @@
 
   * switched from jshint to xo
   * Bump deps
-  * Bump loadCSS
+  * Use loadCSS from node_modules
+  * Bump loadCSS 
 
 0.3.1 / 2015-07-10
 ==================
