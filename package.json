@@ -47,7 +47,7 @@
     "chai": "3.4.1",
     "mocha": "2.3.4",
     "mockery": "1.4.0",
-    "read-package-json": "2.0.2",
+    "read-package-json": "2.0.3",
     "xo": "0.12.1"
   },
   "xo": {
