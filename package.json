@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "mocha": "2.3.4",
+    "mocha": "2.4.5",
     "mockery": "1.4.0",
     "read-package-json": "2.0.3",
     "xo": "0.12.1"
