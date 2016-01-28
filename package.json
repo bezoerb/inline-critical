@@ -44,7 +44,7 @@
     "uglify-js": "2.6.1"
   },
   "devDependencies": {
-    "chai": "3.4.1",
+    "chai": "3.5.0",
     "mocha": "2.3.4",
     "mockery": "1.4.0",
     "read-package-json": "2.0.2",
