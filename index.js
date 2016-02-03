@@ -113,11 +113,13 @@ module.exports = function (html, styles, options) {
         });
 
         // build js block to load blocking stylesheets and insert it right before
+        // exposes async stylesheets as global asyncss array which could be used with onloadCSS
         noscript.before('<script id="loadcss">\n' +
-            '(function(u,s){' +
-            loadCSS +
-            'for(var i in u){loadCSS(u[i],s);}' +
-            '}([\'' + hrefs.join('\',\'') + '\'],document.getElementById("loadcss")));\n' +
+            loadCSS + '\n' +
+            '(function(w,u,s){' +
+            'w.asyncss=[];' +
+            'for(var i in u){w.asyncss.push(w.loadCSS(u[i],s));}' +
+            '}("undefined"!=typeof global?global:this,[\'' + hrefs.join('\',\'') + '\'],document.getElementById("loadcss")));\n' +
             '</script>\n');
     }
 
