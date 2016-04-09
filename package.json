@@ -48,7 +48,7 @@
     "mocha": "2.4.5",
     "mockery": "1.4.1",
     "read-package-json": "2.0.3",
-    "xo": "0.13.0"
+    "xo": "0.14.0"
   },
   "xo": {
     "space": 4,
