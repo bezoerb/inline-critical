@@ -35,7 +35,7 @@
     "fg-loadcss": "0.2.4",
     "get-stdin": "5.0.1",
     "indent-string": "2.1.0",
-    "lodash": "4.7.0",
+    "lodash": "4.10.0",
     "meow": "3.7.0",
     "normalize-newline": "2.0.0",
     "reaver": "2.0.0",
