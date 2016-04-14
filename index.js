@@ -9,7 +9,6 @@
  * All rights reserved.
  */
 'use strict';
-
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
@@ -24,14 +23,22 @@ var slash = require('slash');
 var normalizeNewline = require('normalize-newline');
 var resolve = require('resolve');
 
-var loadCssMain = resolve.sync('fg-loadcss');
-var loadCssBase = path.dirname(loadCssMain);
+/**
+ * Get loadcss + cssrelpreload script
+ *
+ * @returns {string}
+ */
+function getScript() {
+    var loadCssMain = resolve.sync('fg-loadcss');
+    var loadCssBase = path.dirname(loadCssMain);
 
-var loadCSS = read(loadCssMain) + read(path.join(loadCssBase, 'cssrelpreload.js'));
-loadCSS = UglifyJS.minify(loadCSS, {fromString: true}).code;
+    var loadCSS = read(loadCssMain) + read(path.join(loadCssBase, 'cssrelpreload.js'));
+    return UglifyJS.minify(loadCSS, {fromString: true}).code;
+}
 
 /**
  * Fixup slashes in file paths for windows
+ *
  * @param {string} str
  * @return {string}
  */
@@ -46,16 +53,6 @@ function normalizePath(str) {
  */
 function read(file) {
     return fs.readFileSync(file, 'utf8');
-}
-
-function filter($, options, reject) {
-    return function (index, element) {
-        var href = $(element).attr('href');
-        var i = _.findIndex(options.ignore, function (arg) {
-            return _.isRegExp(arg) && arg.test(href) || arg === href;
-        });
-        return reject ? i === -1 : i !== -1;
-    };
 }
 
 module.exports = function (html, styles, options) {
@@ -77,8 +74,14 @@ module.exports = function (html, styles, options) {
 
     var ignored = $();
     if (o.ignore) {
-        ignored = links.filter(filter($, o));
-        links = links.filter(filter($, o, true));
+        var tmp = _.partition(links, function (link) {
+            var href = $(link).attr('href');
+            return _.findIndex(options.ignore, function (arg) {
+                return _.isRegExp(arg) && arg.test(href) || arg === href;
+            }) === -1;
+        });
+        links = $(_.first(tmp));
+        ignored = $(_.last(tmp));
     }
 
     // minify if minify option is set
@@ -127,9 +130,8 @@ module.exports = function (html, styles, options) {
             noscript.before('<link rel="preload" href="' + hrefs[idx] + '" as="style" onload="this.rel=\'stylesheet\'">\n');
         });
 
-        // build js block to load blocking stylesheets and insert it right before
-        // exposes async stylesheets as global asyncss array which could be used with onloadCSS
-        noscript.after('\n<script id="loadcss">\n' + loadCSS + '\n</script>\n');
+        // append loadcss
+        noscript.after('\n<script id="loadcss">\n' + getScript() + '\n</script>\n');
     }
 
     var dom = parse($.html());

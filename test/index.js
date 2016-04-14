@@ -161,7 +161,6 @@ describe('Module: inline-critical', function () {
         var out = inlineCritical(html, css, {minify: true, selector: 'title'});
 
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
-
         done();
     });
 
@@ -173,7 +172,6 @@ describe('Module: inline-critical', function () {
         var out = inlineCritical(html, css, {minify: true});
 
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
-
         done();
     });
 
@@ -185,7 +183,6 @@ describe('Module: inline-critical', function () {
         var out = inlineCritical(html, css, {minify: true});
 
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
-
         done();
     });
 });
