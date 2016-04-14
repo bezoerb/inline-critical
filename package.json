@@ -4,7 +4,7 @@
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
-    "test": "xo && mocha test/index.js"
+    "test": "xo && mocha test/index.js --timeout 5000"
   },
   "files": [
     "index.js",
