@@ -300,14 +300,15 @@ ul{
   float: right !important;
 }
 </style>
-<script id="loadcss">
-  !function(e){"use strict";var n=function(n,t,o){var l,r=e.document,i=r.createElement("link");if(t)l=t;else{var a=(r.body||r.getElementsByTagName("head")[0]).childNodes;l=a[a.length-1]}var d=r.styleSheets;i.rel="stylesheet",i.href=n,i.media="only x",l.parentNode.insertBefore(i,t?l:l.nextSibling);var f=function(e){for(var n=i.href,t=d.length;t--;)if(d[t].href===n)return e();setTimeout(function(){f(e)})};return i.onloadcssdefined=f,f(function(){i.media=o||"all"}),i};"undefined"!=typeof module?module.exports=n:e.loadCSS=n}("undefined"!=typeof global?global:this);
-  (function(w,u,s){w.asyncss=[];for(var i in u){w.asyncss.push(w.loadCSS(u[i],s));}}("undefined"!=typeof global?global:this,['css/cartoon.18d89c7f.css','bower_components/bootstrap/dist/css/bootstrap.d561412a.css'],document.getElementById("loadcss")));
-</script>
+<link rel="preload" href="css/cartoon.18d89c7f.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="bower_components/bootstrap/dist/css/bootstrap.d561412a.css" as="style" onload="this.rel='stylesheet'">
 <noscript>
-<link rel="stylesheet" href="css/cartoon.18d89c7f.css">
-<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.d561412a.css">
+    <link rel="stylesheet" href="css/cartoon.18d89c7f.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.d561412a.css">
 </noscript>
+<script id="loadcss">
+    !function(e){"use strict";var t=function(t,n,r){function o(e){return i.body?e():void setTimeout(function(){o(e)})}function a(){d.addEventListener&&d.removeEventListener("load",a),d.media=r||"all"}var l,i=e.document,d=i.createElement("link");if(n)l=n;else{var s=(i.body||i.getElementsByTagName("head")[0]).childNodes;l=s[s.length-1]}var u=i.styleSheets;d.rel="stylesheet",d.href=t,d.media="only x",o(function(){l.parentNode.insertBefore(d,n?l:l.nextSibling)});var f=function(e){for(var t=d.href,n=u.length;n--;)if(u[n].href===t)return e();setTimeout(function(){f(e)})};return d.addEventListener&&d.addEventListener("load",a),d.onloadcssdefined=f,f(a),d};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this),function(e){if(e.loadCSS){var t=loadCSS.relpreload={};if(t.support=function(){try{return e.document.createElement("link").relList.supports("preload")}catch(t){return!1}},t.poly=function(){for(var t=e.document.getElementsByTagName("link"),n=0;n<t.length;n++){var r=t[n];"preload"===r.rel&&"style"===r.getAttribute("as")&&(e.loadCSS(r.href,r),r.rel=null)}},!t.support()){t.poly();var n=e.setInterval(t.poly,300);e.addEventListener&&e.addEventListener("load",function(){e.clearInterval(n)}),e.attachEvent&&e.attachEvent("onload",function(){e.clearInterval(n)})}}}(this);
+</script>
 
         <!-- endbuild -->
 
