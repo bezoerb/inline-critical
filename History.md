@@ -1,4 +1,10 @@
 
+n.n.n / 2016-04-14
+==================
+
+  * Update to loadcss v1.2.0 + cssrelpreload
+  * Bump dependencies
+
 1.0.0 / 2015-11-13
 ==================
 
