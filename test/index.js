@@ -24,7 +24,7 @@ describe('Module: inline-critical', function () {
         var css = read('test/fixtures/critical.css');
 
         var expected = read('test/expected/index-inlined-async-final.html');
-        var out = inlineCritical(html, css);
+        var out = inlineCritical(html, css, {minify: false});
 
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
 
@@ -36,7 +36,7 @@ describe('Module: inline-critical', function () {
         var css = read('test/fixtures/critical.css');
 
         var expected = read('test/expected/index-inlined-absolute.html');
-        var out = inlineCritical(html, css);
+        var out = inlineCritical(html, css, {minify: false});
 
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
 
@@ -61,7 +61,7 @@ describe('Module: inline-critical', function () {
         var expected = read('test/expected/cartoon-expected.css');
         var expectedHtml = read('test/expected/cartoon-expected.html');
 
-        var out = inlineCritical(html, css, {extract: true, basePath: 'test/fixtures'});
+        var out = inlineCritical(html, css, {minify: false, extract: true, basePath: 'test/fixtures'});
 
         expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
@@ -75,7 +75,7 @@ describe('Module: inline-critical', function () {
         var expected = read('test/expected/cartoon-expected.css');
         var expectedHtml = read('test/expected/cartoon-absolute-expected.html');
 
-        var out = inlineCritical(html, css, {extract: true, basePath: 'test/fixtures'});
+        var out = inlineCritical(html, css, {minify: false, extract: true, basePath: 'test/fixtures'});
 
         expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
@@ -85,7 +85,7 @@ describe('Module: inline-critical', function () {
 
     it('should not strip of svg closing tags', function (done) {
         var html = read('test/fixtures/entities.html');
-        var out = inlineCritical(html, '');
+        var out = inlineCritical(html, '', {minify: false});
 
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
         done();
@@ -99,7 +99,7 @@ describe('Module: inline-critical', function () {
         var html = read('test/fixtures/external.html');
         var expected = read('test/expected/external-expected.html');
         var css = read('test/fixtures/critical.css');
-        var out = inlineCritical(html, css);
+        var out = inlineCritical(html, css, {minify: false});
 
         expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
         done();
@@ -113,7 +113,7 @@ describe('Module: inline-critical', function () {
         var html = read('test/fixtures/external.html');
         var expected = read('test/expected/external-extract-expected.html');
         var css = read('test/fixtures/critical.css');
-        var out = inlineCritical(html, css, {extract: true, basePath: 'test/fixtures'});
+        var out = inlineCritical(html, css, {minify: false, extract: true, basePath: 'test/fixtures'});
 
         expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
         done();
@@ -121,7 +121,7 @@ describe('Module: inline-critical', function () {
 
     it('should keep self closing svg elements', function (done) {
         var html = read('test/fixtures/entities2.html');
-        var out = inlineCritical(html, '');
+        var out = inlineCritical(html, '', {minify: false});
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(html));
         done();
     });
@@ -134,7 +134,7 @@ describe('Module: inline-critical', function () {
         var html = read('test/fixtures/external.html');
         var expected = read('test/expected/external-ignore-expected.html');
         var css = read('test/fixtures/critical.css');
-        var out = inlineCritical(html, css, {ignore: ['bower_components/bootstrap/dist/css/bootstrap.css']});
+        var out = inlineCritical(html, css, {minify: false, ignore: ['bower_components/bootstrap/dist/css/bootstrap.css']});
 
         expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
         done();
@@ -147,7 +147,7 @@ describe('Module: inline-critical', function () {
         var html = read('test/fixtures/external.html');
         var expected = read('test/expected/external-ignore-expected.html');
         var css = read('test/fixtures/critical.css');
-        var out = inlineCritical(html, css, {ignore: [/bootstrap/]});
+        var out = inlineCritical(html, css, {minify: false, ignore: [/bootstrap/]});
 
         expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
         done();
@@ -211,7 +211,8 @@ describe('CLI', function () {
             var cp = execFile('node', [
                 this.bin,
                 'test/fixtures/index.html',
-                'test/fixtures/critical.css'
+                'test/fixtures/critical.css',
+                '--no-minify'
             ]);
 
             cp.stdout.on('data', function (data) {
@@ -226,7 +227,8 @@ describe('CLI', function () {
                 this.bin,
                 '--html',
                 'test/fixtures/index.html',
-                'test/fixtures/critical.css'
+                'test/fixtures/critical.css',
+                '--no-minify'
             ]);
 
             cp.stdout.on('data', function (data) {
@@ -241,7 +243,8 @@ describe('CLI', function () {
                 this.bin,
                 '--css',
                 'test/fixtures/critical.css',
-                'test/fixtures/index.html'
+                'test/fixtures/index.html',
+                '--no-minify'
             ]);
 
             cp.stdout.on('data', function (data) {
@@ -252,7 +255,7 @@ describe('CLI', function () {
 
         // pipes don't work on windows
         skipWin('should work well with the critical CSS file piped to inline-critical and html file as input', function (done) {
-            var cp = exec('cat test/fixtures/critical.css | node ' + this.bin + ' test/fixtures/index.html');
+            var cp = exec('cat test/fixtures/critical.css | node ' + this.bin + ' test/fixtures/index.html --no-minify');
             var expected = read('test/expected/index-inlined-async-final.html');
 
             cp.stdout.on('data', function (data) {
@@ -262,7 +265,7 @@ describe('CLI', function () {
         });
 
         skipWin('should work well with the html file piped to inline-critical and critical CSS file as input', function (done) {
-            var cp = exec('cat test/fixtures/index.html | node ' + this.bin + ' test/fixtures/critical.css');
+            var cp = exec('cat test/fixtures/index.html | node ' + this.bin + ' test/fixtures/critical.css --no-minify');
             var expected = read('test/expected/index-inlined-async-final.html');
 
             cp.stdout.on('data', function (data) {

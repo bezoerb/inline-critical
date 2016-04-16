@@ -17,7 +17,7 @@ var help = [
     '   -c, --css       Path to CSS file',
     '   -h, --html      Path to HTML file',
     '   -i, --ignore    Skip matching stylesheets',
-    '   -m, --minify    Minify the styles before inlining',
+    '   -m, --minify    Minify the styles before inlining (default)',
     '   -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML',
     '   -b, --base      Is used when extracting styles to find the files references by `href` attributes',
     '   -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining'

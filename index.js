@@ -83,7 +83,7 @@ module.exports = function (html, styles, options) {
     var links = allLinks.filter('[rel="stylesheet"]');
 
     var o = _.assign({
-        minify: false
+        minify: true
     }, options || {});
 
     var target = o.selector || allLinks.get(0) || $('script').get(0);
