@@ -22,6 +22,7 @@ var CleanCSS = require('clean-css');
 var slash = require('slash');
 var normalizeNewline = require('normalize-newline');
 var resolve = require('resolve');
+var detectIndent = require('detect-indent');
 
 /**
  * Get loadcss + cssrelpreload script
@@ -55,33 +56,52 @@ function read(file) {
     return fs.readFileSync(file, 'utf8');
 }
 
+/**
+ * Get the indentation of the link tags
+ * @param html
+ * @param $el
+ */
+function getIndent(html, $el) {
+    var regName = new RegExp(_.get($el, 'name'));
+    var regHref = new RegExp(_.get($el, 'attribs.href'));
+    var regRel = new RegExp(_.get($el, 'attribs.rel'));
+    var lines = _.filter(html.split(/[\r\n]+/), function (line) {
+        return regName.test(line) && regHref.test(line) && regRel.test(line);
+    });
+    return detectIndent(lines.join('\n')).indent;
+}
+
 module.exports = function (html, styles, options) {
     var $ = cheerio.load(String(html), {
         decodeEntities: false
     });
 
-    var links = $('link[rel="stylesheet"]').filter(function () {
+    var allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function () {
         return !$(this).parents('noscript').length;
     });
 
-    var o = options || {};
-    var target = o.selector || $('link[rel="preload"]').get(0) || links.get(0) || $('script').get(0);
+    var links = allLinks.filter('[rel="stylesheet"]');
+
+    var o = _.assign({
+        minify: false
+    }, options || {});
+
+    var target = o.selector || allLinks.get(0) || $('script').get(0);
+    var indent = detectIndent(html).indent;
+    var targetIndent = getIndent(html, target);
     var $target = $(target);
 
     if (_.isString(o.ignore)) {
         o.ignore = [o.ignore];
     }
 
-    var ignored = $();
     if (o.ignore) {
-        var tmp = _.partition(links, function (link) {
+        links = _.filter(links, function (link) {
             var href = $(link).attr('href');
             return _.findIndex(options.ignore, function (arg) {
                 return _.isRegExp(arg) && arg.test(href) || arg === href;
             }) === -1;
         });
-        links = $(_.first(tmp));
-        ignored = $(_.last(tmp));
     }
 
     // minify if minify option is set
@@ -90,48 +110,46 @@ module.exports = function (html, styles, options) {
     }
 
     // insert inline styles right before first <link rel="stylesheet" />
-    $target.before('<style type="text/css">\n' + styles + '\n</style>\n');
+    $target.before([
+        '<style type="text/css">',
+        indent + styles,
+        '</style>', ''
+    ].join('\n' + targetIndent));
 
     if (links.length) {
-        var noscript = $('<noscript>\n</noscript>');
-
-        // insert noscript block right after stylesheets
-        $target.after(noscript);
-
-        var hrefs = links.map(function (idx, el) {
-            return $(el).attr('href');
-        }).toArray();
-
-        // extract styles from stylesheets if extract option is set
-        if (o.extract) {
-            if (!o.basePath) {
+        // modify links and ad clones to noscript block
+        $(links).each(function (idx, el) {
+            if (o.extract && !o.basePath) {
                 throw new Error('Option `basePath` is missing and required when using `extract`!');
             }
-            hrefs = hrefs.map(function (href) {
+
+            var $el = $(el);
+
+            if (o.extract) {
+                var href = $el.attr('href');
                 var file = path.resolve(path.join(o.basePath, href));
-                if (!fs.existsSync(file)) {
-                    return href;
+                if (fs.existsSync(file)) {
+                    var diff = normalizeNewline(cave(file, {css: styles}));
+                    fs.writeFileSync(reaver.rev(file, diff), diff);
+                    $el.attr('href', normalizePath(reaver.rev(href, diff)));
                 }
-                var diff = normalizeNewline(cave(file, {css: styles}));
-                fs.writeFileSync(reaver.rev(file, diff), diff);
-                return normalizePath(reaver.rev(href, diff));
-            });
-        }
+            }
 
-        // add ignored elements right above the processed ones
-        noscript.before(ignored);
+            // add each fallback right behind the current style to keep source order when ignoring stylesheets
+            $el.after('\n' + getIndent(html, el) + '<noscript>' + render(this) + '</noscript>');
 
-        // wrap links to stylesheets in noscript block so that they will evaluated when js is turned off
-        links.each(function (idx) {
-            var el = $(this);
-            el.attr('href', hrefs[idx]);
-            noscript.append(el);
-            noscript.append('\n');
-            noscript.before('<link rel="preload" href="' + hrefs[idx] + '" as="style" onload="this.rel=\'stylesheet\'">\n');
+            // add preload atttibutes to actual link element
+            $el.attr('rel', 'preload');
+            $el.attr('as', 'style');
+            $el.attr('onload', 'this.rel=\'stylesheet\'');
         });
 
-        // append loadcss
-        noscript.after('\n<script id="loadcss">\n' + getScript() + '\n</script>\n');
+        // add loadcss + cssrelpreload polyfill
+        var scriptAnchor = $('link[rel="stylesheet"], noscript').filter(function () {
+            return !$(this).parents('noscript').length;
+        }).last().get(0);
+
+        $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
     }
 
     var dom = parse($.html());
