@@ -31,6 +31,7 @@
     "cheerio": "0.20.0",
     "clean-css": "3.4.12",
     "css": "2.2.1",
+    "detect-indent": "^4.0.0",
     "dom-serializer": "0.1.0",
     "fg-loadcss": "1.2.0",
     "get-stdin": "5.0.1",
