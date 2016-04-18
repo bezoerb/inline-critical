@@ -115,9 +115,9 @@ module.exports = function (html, styles, options) {
     // insert inline styles right before first <link rel="stylesheet" />
     $target.before([
         '<style type="text/css">',
-        indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent),
+        indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g,''),
         '</style>', ''
-    ].join('\n' + targetIndent));
+    ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g,'$1$2')));
 
     if (links.length) {
         // modify links and ad clones to noscript block
