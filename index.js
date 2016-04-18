@@ -62,9 +62,9 @@ function read(file) {
  * @param $el
  */
 function getIndent(html, $el) {
-    var regName = new RegExp(_.get($el, 'name'));
-    var regHref = new RegExp(_.get($el, 'attribs.href'));
-    var regRel = new RegExp(_.get($el, 'attribs.rel'));
+    var regName = new RegExp(_.escapeRegExp(_.get($el, 'name')));
+    var regHref = new RegExp(_.escapeRegExp(_.get($el, 'attribs.href')));
+    var regRel = new RegExp(_.escapeRegExp(_.get($el, 'attribs.rel')));
     var lines = _.filter(html.split(/[\r\n]+/), function (line) {
         return regName.test(line) && regHref.test(line) && regRel.test(line);
     });
