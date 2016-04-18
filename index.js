@@ -72,7 +72,9 @@ function getIndent(html, $el) {
 }
 
 module.exports = function (html, styles, options) {
-    html = String(html);
+    if (!_.isString(html)) {
+        html = String(html);
+    }
     var $ = cheerio.load(html, {
         decodeEntities: false
     });
@@ -113,7 +115,7 @@ module.exports = function (html, styles, options) {
     // insert inline styles right before first <link rel="stylesheet" />
     $target.before([
         '<style type="text/css">',
-        indent + styles.replace(/(\r\n|\r|\n)/g,'$1' + targetIndent + indent),
+        indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent),
         '</style>', ''
     ].join('\n' + targetIndent));
 
