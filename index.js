@@ -127,6 +127,7 @@ module.exports = function (html, styles, options) {
             }
 
             var $el = $(el);
+            var elIndent = getIndent(html, el);
 
             if (o.extract) {
                 var href = $el.attr('href');
@@ -139,7 +140,7 @@ module.exports = function (html, styles, options) {
             }
 
             // add each fallback right behind the current style to keep source order when ignoring stylesheets
-            $el.after('\n' + getIndent(html, el) + '<noscript>' + render(this) + '</noscript>');
+            $el.after('\n' + elIndent + '<noscript>' + render(this) + '</noscript>');
 
             // add preload atttibutes to actual link element
             $el.attr('rel', 'preload');
