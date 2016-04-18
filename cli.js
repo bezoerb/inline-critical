@@ -121,7 +121,7 @@ function run(data) {
 
     try {
         var out = inlineCritical(opts.html, opts.css, opts);
-        console.log(out.toString());
+        process.stdout.write(out.toString(), process.exit);
     } catch (err) {
         error(err);
     }

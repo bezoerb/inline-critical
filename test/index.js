@@ -7,6 +7,7 @@ var exec = require('child_process').exec;
 var execFile = require('child_process').execFile;
 var readJson = require('read-package-json');
 var mockery = require('mockery');
+var concat = require('concat-stream');
 var inlineCritical = require('..');
 var skipWin = process.platform === 'win32' ? it.skip : it;
 
@@ -197,6 +198,12 @@ describe('CLI', function () {
         }.bind(this));
     });
 
+
+    function handleError(err) {
+        expect(err).to.equal(null);
+        process.exit(1);
+    }
+
     describe('acceptance', function () {
         // empty stdout on appveyor? runs correct on manual test with Windows 7
         skipWin('should return the version', function (done) {
@@ -215,8 +222,15 @@ describe('CLI', function () {
                 '--no-minify'
             ]);
 
-            cp.stdout.on('data', function (data) {
+            var cnt = 0;
+            cp.stdout.pipe(concat(function(data){
+                cnt++;
                 expect(strip(data.toString('utf-8'))).to.be.equal(strip(expected));
+            }));
+
+            cp.stdout.on('error', handleError);
+            cp.on('close', function(){
+                expect(cnt).to.equal(1);
                 done();
             });
         });
@@ -231,10 +245,18 @@ describe('CLI', function () {
                 '--no-minify'
             ]);
 
-            cp.stdout.on('data', function (data) {
+            var cnt = 0;
+            cp.stdout.pipe(concat(function(data){
+                cnt++;
                 expect(strip(data.toString('utf-8'))).to.be.equal(strip(expected));
+            }));
+
+            cp.stdout.on('error', handleError);
+            cp.on('close', function(){
+                expect(cnt).to.equal(1);
                 done();
             });
+
         });
 
         it('should work well with the critical CSS passed as option & html file passed as input', function (done) {
@@ -247,8 +269,15 @@ describe('CLI', function () {
                 '--no-minify'
             ]);
 
-            cp.stdout.on('data', function (data) {
+            var cnt = 0;
+            cp.stdout.pipe(concat(function(data){
+                cnt++;
                 expect(strip(data.toString('utf-8'))).to.be.equal(strip(expected));
+            }));
+
+            cp.stdout.on('error', handleError);
+            cp.on('close', function(){
+                expect(cnt).to.equal(1);
                 done();
             });
         });
@@ -258,8 +287,15 @@ describe('CLI', function () {
             var cp = exec('cat test/fixtures/critical.css | node ' + this.bin + ' test/fixtures/index.html --no-minify');
             var expected = read('test/expected/index-inlined-async-final.html');
 
-            cp.stdout.on('data', function (data) {
+            var cnt = 0;
+            cp.stdout.pipe(concat(function(data){
+                cnt++;
                 expect(strip(data.toString('utf-8'))).to.be.equal(strip(expected));
+            }));
+
+            cp.stdout.on('error', handleError);
+            cp.on('close', function(){
+                expect(cnt).to.equal(1);
                 done();
             });
         });
@@ -268,8 +304,15 @@ describe('CLI', function () {
             var cp = exec('cat test/fixtures/index.html | node ' + this.bin + ' test/fixtures/critical.css --no-minify');
             var expected = read('test/expected/index-inlined-async-final.html');
 
-            cp.stdout.on('data', function (data) {
+            var cnt = 0;
+            cp.stdout.pipe(concat(function(data){
+                cnt++;
                 expect(strip(data.toString('utf-8'))).to.be.equal(strip(expected));
+            }));
+
+            cp.stdout.on('error', handleError);
+            cp.on('close', function(){
+                expect(cnt).to.equal(1);
                 done();
             });
         });
