@@ -49,7 +49,7 @@
     "concat-stream": "^1.5.1",
     "mocha": "2.4.5",
     "mockery": "1.6.2",
-    "read-package-json": "2.0.3",
+    "read-package-json": "2.0.4",
     "xo": "0.14.0"
   },
   "xo": {
