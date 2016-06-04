@@ -29,7 +29,7 @@
   "dependencies": {
     "cave": "2.0.0",
     "cheerio": "0.20.0",
-    "clean-css": "3.4.16",
+    "clean-css": "3.4.17",
     "css": "2.2.1",
     "detect-indent": "^4.0.0",
     "dom-serializer": "0.1.0",
