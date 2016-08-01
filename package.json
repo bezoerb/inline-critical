@@ -47,7 +47,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "concat-stream": "^1.5.1",
-    "mocha": "2.5.3",
+    "mocha": "3.0.0",
     "mockery": "1.7.0",
     "read-package-json": "2.0.4",
     "xo": "0.15.1"
