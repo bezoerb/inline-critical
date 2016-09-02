@@ -1,6 +1,6 @@
 {
   "name": "inline-critical",
-  "version": "2.1.5",
+  "version": "2.2.0",
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
@@ -28,8 +28,6 @@
   },
   "dependencies": {
     "cave": "2.0.0",
-    "cheerio": "0.22.0",
-    "clean-css": "3.4.19",
     "cheerio": "^0.22.0",
     "clean-css": "3.4.19",
     "css": "2.2.1",
