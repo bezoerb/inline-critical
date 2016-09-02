@@ -1,5 +1,12 @@
 
-n.n.n / 2016-04-14
+2.1.0 / 2016-09-03
+==================
+
+  * add appveyor
+  * Minimum node.js version is 4.0 now due to upstream changes.
+  * Fixed tests after bump
+
+2.0.0 / 2016-04-14
 ==================
 
   * Update to loadcss v1.2.0 + cssrelpreload
@@ -11,7 +18,7 @@ n.n.n / 2016-04-14
   * switched from jshint to xo
   * Bump deps
   * Use loadCSS from node_modules
-  * Bump loadCSS 
+  * Bump loadCSS
 
 0.3.1 / 2015-07-10
 ==================
@@ -26,7 +33,7 @@ n.n.n / 2016-04-14
 
 0.2.2 / 2015-06-10
 ==================
-  
+
   * Fix #9
 
 0.2.1 / 2015-06-09
