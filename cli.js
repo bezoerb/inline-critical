@@ -8,8 +8,8 @@ var stdin = require('get-stdin');
 var css = require('css');
 var _ = require('lodash');
 var inlineCritical = require('./');
-var ok;
 
+var ok;
 var help = [
     'Usage: inline-critical <input> [<option>]',
     '',
@@ -77,9 +77,9 @@ cli.flags = _.reduce(cli.flags, function (res, val, key) {
 }, {});
 
 function error(err) {
-    process.stderr.write(indentString(err.message || err, '   Error: '));
+    process.stderr.write(indentString('Error: ' + (err.message || err), 4));
     process.stderr.write(os.EOL);
-    process.stderr.write(indentString(help.join(os.EOL), '   '));
+    process.stderr.write(indentString(help.join(os.EOL), 4));
     process.exit(1);
 }
 

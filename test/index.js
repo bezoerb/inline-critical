@@ -9,6 +9,7 @@ var readJson = require('read-package-json');
 var mockery = require('mockery');
 var concat = require('concat-stream');
 var inlineCritical = require('..');
+
 var skipWin = process.platform === 'win32' ? it.skip : it;
 
 function strip(string) {
