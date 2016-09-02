@@ -31,7 +31,7 @@
     "cheerio": "0.22.0",
     "clean-css": "3.4.19",
     "cheerio": "^0.22.0",
-    "clean-css": "^3.4.19",
+    "clean-css": "3.4.19",
     "css": "2.2.1",
     "detect-indent": "4.0.0",
     "dom-serializer": "0.1.0",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "concat-stream": "^1.5.1",
+    "concat-stream": "1.5.1",
     "mocha": "3.0.2",
     "mockery": "1.7.0",
     "read-package-json": "2.0.4",
@@ -63,5 +63,8 @@
     "ignores": [
       "test/*.js"
     ]
+  },
+  "engines": {
+    "node": ">=4.0"
   }
 }
