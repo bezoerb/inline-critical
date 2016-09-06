@@ -38,7 +38,7 @@
     "indent-string": "3.0.0",
     "lodash": "4.15.0",
     "meow": "3.7.0",
-    "normalize-newline": "2.0.0",
+    "normalize-newline": "2.1.0",
     "reaver": "2.0.0",
     "resolve": "1.1.7",
     "slash": "1.0.0",
