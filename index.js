@@ -119,7 +119,7 @@ module.exports = function (html, styles, options) {
         '</style>', ''
     ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2'));
 
-    if (links.length) {
+    if (links.length > 0) {
         // modify links and ad clones to noscript block
         $(links).each(function (idx, el) {
             if (o.extract && !o.basePath) {
