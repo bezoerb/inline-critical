@@ -1,10 +1,54 @@
 
-2.1.0 / 2016-09-03
+v2.3.0 / 2017-02-10
+===================
+
+  * Added some badges
+  * Update travis
+  * bump dependencies
+
+2.2.0 / 2016-09-03
 ==================
 
   * add appveyor
   * Minimum node.js version is 4.0 now due to upstream changes.
-  * Fixed tests after bump
+  * Bump dependencies
+
+v2.1.5 / 2016-04-18
+===================
+
+* fixed indent when using extract
+
+v2.1.4 / 2016-04-18
+===================
+
+* minor regex fix
+
+v2.1.3 / 2016-04-18
+===================
+
+* style tweaks
+* trim empty lines in non-minified css
+
+v2.1.2 / 2016-04-18
+===================
+
+* republished with stable node version cause of missing files
+
+v2.1.1 / 2016-04-18
+===================
+
+* correct process.exit on cli
+* handle buffer
+* added minify default
+* minor fixes
+
+v2.1.0 / 2016-04-17
+===================
+
+* bump dependencies
+* minify defaults to true
+* gitignore tweaks
+* keep format & source order
 
 2.0.0 / 2016-04-14
 ==================
