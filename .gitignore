@@ -7,3 +7,6 @@ test/fixtures/css/main.158f2990.css
 test/fixtures/bower_components/bootstrap/dist/css/bootstrap.0151e5ef.css
 test/fixtures/css/cartoon.64faf7bc.css
 
+.nyc_output
+coverage
+

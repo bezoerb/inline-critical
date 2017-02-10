@@ -4,7 +4,9 @@
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
-    "test": "xo && mocha test/index.js --timeout 5000"
+    "test": "xo && nyc mocha test/index.js --timeout 5000",
+    "prepublish": "nsp check",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "files": [
     "index.js",
@@ -47,8 +49,11 @@
   "devDependencies": {
     "chai": "3.5.0",
     "concat-stream": "1.6.0",
+    "coveralls": "2.11.16",
     "mocha": "3.2.0",
     "mockery": "2.0.0",
+    "nsp": "2.6.2",
+    "nyc": "10.1.2",
     "read-package-json": "2.0.4",
     "xo": "0.17.1"
   },
@@ -63,6 +68,6 @@
     ]
   },
   "engines": {
-    "node": ">=4.0"
+    "node": ">= 4"
   }
 }
