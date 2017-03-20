@@ -31,7 +31,7 @@
   "dependencies": {
     "cave": "2.0.0",
     "cheerio": "0.22.0",
-    "clean-css": "4.0.8",
+    "clean-css": "4.0.9",
     "css": "2.2.1",
     "detect-indent": "5.0.0",
     "dom-serializer": "0.1.0",
@@ -49,13 +49,13 @@
   "devDependencies": {
     "chai": "3.5.0",
     "concat-stream": "1.6.0",
-    "coveralls": "2.11.16",
+    "coveralls": "2.12.0",
     "mocha": "3.2.0",
     "mockery": "2.0.0",
-    "nsp": "2.6.2",
+    "nsp": "2.6.3",
     "nyc": "10.1.2",
-    "read-package-json": "2.0.4",
-    "xo": "0.17.1"
+    "read-package-json": "2.0.5",
+    "xo": "0.18.0"
   },
   "xo": {
     "space": 4,

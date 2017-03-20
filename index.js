@@ -9,20 +9,20 @@
  * All rights reserved.
  */
 'use strict';
-var fs = require('fs');
-var path = require('path');
-var _ = require('lodash');
-var UglifyJS = require('uglify-js');
-var cave = require('cave');
-var reaver = require('reaver');
-var cheerio = require('cheerio');
-var render = require('dom-serializer');
-var parse = require('cheerio/lib/parse');
-var CleanCSS = require('clean-css');
-var slash = require('slash');
-var normalizeNewline = require('normalize-newline');
-var resolve = require('resolve');
-var detectIndent = require('detect-indent');
+const fs = require('fs');
+const path = require('path');
+const _ = require('lodash');
+const UglifyJS = require('uglify-js');
+const cave = require('cave');
+const reaver = require('reaver');
+const cheerio = require('cheerio');
+const render = require('dom-serializer');
+const parse = require('cheerio/lib/parse');
+const CleanCSS = require('clean-css');
+const slash = require('slash');
+const normalizeNewline = require('normalize-newline');
+const resolve = require('resolve');
+const detectIndent = require('detect-indent');
 
 /**
  * Get loadcss + cssrelpreload script
@@ -30,10 +30,10 @@ var detectIndent = require('detect-indent');
  * @returns {string}
  */
 function getScript() {
-    var loadCssMain = resolve.sync('fg-loadcss');
-    var loadCssBase = path.dirname(loadCssMain);
+    const loadCssMain = resolve.sync('fg-loadcss');
+    const loadCssBase = path.dirname(loadCssMain);
 
-    var loadCSS = read(loadCssMain) + read(path.join(loadCssBase, 'cssrelpreload.js'));
+    const loadCSS = read(loadCssMain) + read(path.join(loadCssBase, 'cssrelpreload.js'));
     return UglifyJS.minify(loadCSS, {fromString: true}).code;
 }
 
@@ -62,10 +62,10 @@ function read(file) {
  * @param $el
  */
 function getIndent(html, $el) {
-    var regName = new RegExp(_.escapeRegExp(_.get($el, 'name')));
-    var regHref = new RegExp(_.escapeRegExp(_.get($el, 'attribs.href')));
-    var regRel = new RegExp(_.escapeRegExp(_.get($el, 'attribs.rel')));
-    var lines = _.filter(html.split(/[\r\n]+/), function (line) {
+    const regName = new RegExp(_.escapeRegExp(_.get($el, 'name')));
+    const regHref = new RegExp(_.escapeRegExp(_.get($el, 'attribs.href')));
+    const regRel = new RegExp(_.escapeRegExp(_.get($el, 'attribs.rel')));
+    const lines = _.filter(html.split(/[\r\n]+/), line => {
         return regName.test(line) && regHref.test(line) && regRel.test(line);
     });
     return detectIndent(lines.join('\n')).indent;
@@ -75,44 +75,44 @@ module.exports = function (html, styles, options) {
     if (!_.isString(html)) {
         html = String(html);
     }
-    var $ = cheerio.load(html, {
+    const $ = cheerio.load(html, {
         decodeEntities: false
     });
 
-    var allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function () {
+    const allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function () {
         return !$(this).parents('noscript').length;
     });
 
-    var links = allLinks.filter('[rel="stylesheet"]');
+    let links = allLinks.filter('[rel="stylesheet"]');
 
-    var o = _.assign({
+    const o = _.assign({
         minify: true
     }, options || {});
 
-    var target = o.selector || allLinks.get(0) || $('script').get(0);
-    var indent = detectIndent(html).indent;
-    var targetIndent = getIndent(html, target);
-    var $target = $(target);
+    const target = o.selector || allLinks.get(0) || $('script').get(0);
+    const indent = detectIndent(html).indent;
+    const targetIndent = getIndent(html, target);
+    const $target = $(target);
 
     if (_.isString(o.ignore)) {
         o.ignore = [o.ignore];
     }
 
     if (o.ignore) {
-        links = _.filter(links, function (link) {
-            var href = $(link).attr('href');
-            return _.findIndex(options.ignore, function (arg) {
+        links = _.filter(links, link => {
+            const href = $(link).attr('href');
+            return _.findIndex(options.ignore, arg => {
                 return (_.isRegExp(arg) && arg.test(href)) || arg === href;
             }) === -1;
         });
     }
 
-    // minify if minify option is set
+    // Minify if minify option is set
     if (o.minify) {
         styles = new CleanCSS().minify(styles).styles;
     }
 
-    // insert inline styles right before first <link rel="stylesheet" />
+    // Insert inline styles right before first <link rel="stylesheet" />
     $target.before([
         '<style type="text/css">',
         indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
@@ -120,44 +120,44 @@ module.exports = function (html, styles, options) {
     ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2'));
 
     if (links.length > 0) {
-        // modify links and ad clones to noscript block
+        // Modify links and ad clones to noscript block
         $(links).each(function (idx, el) {
             if (o.extract && !o.basePath) {
                 throw new Error('Option `basePath` is missing and required when using `extract`!');
             }
 
-            var $el = $(el);
-            var elIndent = getIndent(html, el);
+            const $el = $(el);
+            const elIndent = getIndent(html, el);
 
             if (o.extract) {
-                var href = $el.attr('href');
-                var file = path.resolve(path.join(o.basePath, href));
+                const href = $el.attr('href');
+                const file = path.resolve(path.join(o.basePath, href));
                 if (fs.existsSync(file)) {
-                    var diff = normalizeNewline(cave(file, {css: styles}));
+                    const diff = normalizeNewline(cave(file, {css: styles}));
                     fs.writeFileSync(reaver.rev(file, diff), diff);
                     $el.attr('href', normalizePath(reaver.rev(href, diff)));
                 }
             }
 
-            // add each fallback right behind the current style to keep source order when ignoring stylesheets
+            // Add each fallback right behind the current style to keep source order when ignoring stylesheets
             $el.after('\n' + elIndent + '<noscript>' + render(this) + '</noscript>');
 
-            // add preload atttibutes to actual link element
+            // Add preload atttibutes to actual link element
             $el.attr('rel', 'preload');
             $el.attr('as', 'style');
             $el.attr('onload', 'this.rel=\'stylesheet\'');
         });
 
-        // add loadcss + cssrelpreload polyfill
-        var scriptAnchor = $('link[rel="stylesheet"], noscript').filter(function () {
+        // Add loadcss + cssrelpreload polyfill
+        const scriptAnchor = $('link[rel="stylesheet"], noscript').filter(function () {
             return !$(this).parents('noscript').length;
         }).last().get(0);
 
         $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
     }
 
-    var dom = parse($.html());
-    var markup = render(dom);
+    const dom = parse($.html());
+    const markup = render(dom);
 
-    return new Buffer(markup);
+    return Buffer.from(markup);
 };
