@@ -34,7 +34,7 @@ function getScript() {
     const loadCssBase = path.dirname(loadCssMain);
 
     const loadCSS = read(loadCssMain) + read(path.join(loadCssBase, 'cssrelpreload.js'));
-    return UglifyJS.minify(loadCSS, {fromString: true}).code;
+    return UglifyJS.minify(loadCSS).code;
 }
 
 /**
