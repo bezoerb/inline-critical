@@ -37,7 +37,7 @@ function getScript(defer) {
             item.setAttribute('media', 'all');
         });
     };
-    const deferString = `document.addEventListener('DOMContentLoaded', ${deferFunction.toString()});`;
+    const deferString = `window.requestAnimationFrame(${deferFunction.toString()});`;
     const loadCSS = read(loadCssMain) +
         read(path.join(loadCssBase, 'cssrelpreload.js')) +
         (defer ? deferString : '');
