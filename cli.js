@@ -20,7 +20,8 @@ const help = [
     '   -m, --minify    Minify the styles before inlining (default)',
     '   -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML',
     '   -b, --base      Is used when extracting styles to find the files references by `href` attributes',
-    '   -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining'
+    '   -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining',
+    '   -d, --defer     Defer loading styles until DOMContentLoaded event',
 ];
 
 const cli = meow({
@@ -33,7 +34,8 @@ const cli = meow({
         m: 'minify',
         b: 'base',
         e: 'extract',
-        s: 'selector'
+        s: 'selector',
+        d: 'defer'
     }
 });
 

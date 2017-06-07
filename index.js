@@ -29,11 +29,18 @@ const detectIndent = require('detect-indent');
  *
  * @returns {string}
  */
-function getScript() {
+function getScript(defer) {
     const loadCssMain = resolve.sync('fg-loadcss');
     const loadCssBase = path.dirname(loadCssMain);
-
-    const loadCSS = read(loadCssMain) + read(path.join(loadCssBase, 'cssrelpreload.js'));
+    const deferFunction = function() {
+        document.querySelectorAll('link[media="only x"]').forEach(function(item) {
+            item.setAttribute('media', 'all');
+        });
+    };
+    const deferString = `document.addEventListener('DOMContentLoaded', ${deferFunction.toString()});`;
+    const loadCSS = read(loadCssMain) +
+        read(path.join(loadCssBase, 'cssrelpreload.js')) +
+        (defer ? deferString : '');
     return UglifyJS.minify(loadCSS).code;
 }
 
@@ -146,6 +153,10 @@ module.exports = function (html, styles, options) {
             $el.attr('rel', 'preload');
             $el.attr('as', 'style');
             $el.attr('onload', 'this.rel=\'stylesheet\'');
+            if (o.defer) {
+                // temporarily set media to something inapplicable to ensure it won't fetch until specified.
+                $el.attr('media', 'only x');
+            }
         });
 
         // Add loadcss + cssrelpreload polyfill
@@ -153,7 +164,7 @@ module.exports = function (html, styles, options) {
             return !$(this).parents('noscript').length;
         }).last().get(0);
 
-        $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
+        $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript(o.defer) + '</script>');
     }
 
     const dom = parse($.html());
