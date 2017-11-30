@@ -1058,9 +1058,9 @@ fast-levenshtein@~2.0.4:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.5.tgz#bd33145744519ab1c36c3ee9f31f08e9079b67f2"
 
-fg-loadcss@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/fg-loadcss/-/fg-loadcss-2.0.0.tgz#cdf78ab1d2ca4e7d7ad927ff8d36dbbaf8cf1765"
+fg-loadcss@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fg-loadcss/-/fg-loadcss-2.0.1.tgz#71c00e470a57f7739d0736124dfc8791995e8af1"
 
 figures@^1.3.5:
   version "1.7.0"
