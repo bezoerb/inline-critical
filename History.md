@@ -1,4 +1,9 @@
 
+v3.0.0 / 2017-11-29
+===================
+
+  * Upgrade loadCSS dep to 2.0.0 and update code and make it work with this version (#229)
+
 v2.4.2 / 2017-07-03
 ==================
 
