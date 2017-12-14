@@ -6,9 +6,9 @@ clone_depth: 10
 
 environment:
   matrix:
-    - nodejs_version: "4"
+    - nodejs_version: "8"
     - nodejs_version: "6"
-    - nodejs_version: "7"
+    - nodejs_version: "4"
 
 install:
   - ps: Install-Product node $env:nodejs_version
@@ -21,4 +21,4 @@ test_script:
   - npm test
 
 cache:
-  - node_modules -> package.json
+  - 'node_modules -> appveyor.yml,package.json,package-lock.json'
