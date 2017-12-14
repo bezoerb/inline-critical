@@ -145,7 +145,7 @@ module.exports = function (html, styles, options) {
             // Add preload atttibutes to actual link element
             $el.attr('rel', 'preload');
             $el.attr('as', 'style');
-            $el.attr('onload', 'this.rel=\'stylesheet\'');
+            $el.attr('onload', 'this.onload=null;this.rel=\'stylesheet\'');
         });
 
         // Add loadcss + cssrelpreload polyfill
