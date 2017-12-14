@@ -2185,9 +2185,9 @@ npm-run-path@^2.0.0:
   dependencies:
     path-key "^2.0.0"
 
-nsp@v2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/nsp/-/nsp-2.8.0.tgz#351a9a626ce3335ff261db17dcfec6d6bb7b254b"
+nsp@^2.8.0:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/nsp/-/nsp-2.8.1.tgz#436e3f13869e0610d3a38f59d55f9b353cc32817"
   dependencies:
     chalk "^1.1.1"
     cli-table "^0.3.1"
