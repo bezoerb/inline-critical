@@ -1,7 +1,7 @@
 # inline-critical
 
 Inline critical-path css and load the existing stylesheets asynchronously.
-Existing link tags will also be wrapped in ```<noscript>``` so the users with javscript disabled will see the site rendered normally.
+Existing link tags will also be wrapped in ```<noscript>``` so the users with javascript disabled will see the site rendered normally.
 
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Build Status][appveyor-image]][appveyor-url] [![Dependency Status][depstat-image]][depstat-url] [![Download][dlcounter-image]][dlcounter-url] [![Coverage Status][coveralls-image]][coveralls-url]
 
@@ -47,7 +47,7 @@ or just flip things around
 ```bash
 cat critical.css | inline-critical index.html
 ```
-or pass in the fileas as an option
+or pass in the file as an option
 ```bash
 inline-critical critical.css index.html
 ```
