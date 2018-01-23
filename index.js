@@ -94,6 +94,9 @@ module.exports = function (html, styles, options) {
     const targetIndent = getIndent(html, target);
     const $target = $(target);
 
+    // Add custom style attribute
+    const customStyleAttr = !!o.customStyleAttribute ? `${o.customStyleAttribute.name}="${o.customStyleAttribute.value}"` : '';
+
     if (_.isString(o.ignore)) {
         o.ignore = [o.ignore];
     }
@@ -114,7 +117,7 @@ module.exports = function (html, styles, options) {
 
     // Insert inline styles right before first <link rel="stylesheet" />
     $target.before([
-        '<style type="text/css">',
+        '<style ${customStyleAttr} type="text/css">',
         indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
         '</style>', ''
     ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2'));
