@@ -67,7 +67,9 @@ Run `inline-critical --help` to see the list of options.
   - `basePath` will be used when extracting styles to find the files references by `href` attributes
   - `ignore` ignore matching stylesheets when inlining.
   - `selector` defines the element used by loadCSS as a reference for inlining.
-  - `customStyleAttr` defines a custom attribute for the embedded style tag in the HTML
+  - `customStyleAttribute` defines a custom attribute for the embedded style tag in the HTML
+    - `name` defines the attribute name
+    - `value` defines the attribute value
 
 ## License
 
