@@ -36,7 +36,7 @@ const cli = meow(help, {
             alias: 'h'
         },
         ignore: {
-            type: 'boolean',
+            type: 'string',
             alias: 'i'
         },
         minify: {
