@@ -7,33 +7,54 @@ const indentString = require('indent-string');
 const stdin = require('get-stdin');
 const css = require('css');
 const _ = require('lodash');
-const inlineCritical = require('./');
+const inlineCritical = require('.');
 
 let ok;
-const help = [
-    'Usage: inline-critical <input> [<option>]',
-    '',
-    'Options:',
-    '   -c, --css       Path to CSS file',
-    '   -h, --html      Path to HTML file',
-    '   -i, --ignore    Skip matching stylesheets',
-    '   -m, --minify    Minify the styles before inlining (default)',
-    '   -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML',
-    '   -b, --base      Is used when extracting styles to find the files references by `href` attributes',
-    '   -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining'
-];
+const help = `
+Usage: inline-critical <input> [<option>]
 
-const cli = meow({
-    help
-}, {
-    alias: {
-        c: 'css',
-        h: 'html',
-        i: 'ignore',
-        m: 'minify',
-        b: 'base',
-        e: 'extract',
-        s: 'selector'
+Options:
+    -c, --css       Path to CSS file
+    -h, --html      Path to HTML file
+    -i, --ignore    Skip matching stylesheets
+    -m, --minify    Minify the styles before inlining (default)
+    -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML
+    -b, --base      Is used when extracting styles to find the files references by href attributes
+    -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining
+`;
+
+const cli = meow(help, {
+    autoHelp: true,
+    autoVersion: true,
+    flags: {
+        css: {
+            type: 'string',
+            alias: 'c'
+        },
+        html: {
+            type: 'string',
+            alias: 'h'
+        },
+        ignore: {
+            type: 'boolean',
+            alias: 'i'
+        },
+        minify: {
+            type: 'boolean',
+            alias: 'm'
+        },
+        extract: {
+            type: 'boolean',
+            alias: 'e'
+        },
+        base: {
+            type: 'string',
+            alias: 'b'
+        },
+        selector: {
+            type: 'string',
+            alias: 's'
+        }
     }
 });
 
@@ -79,7 +100,7 @@ cli.flags = _.reduce(cli.flags, (res, val, key) => {
 function error(err) {
     process.stderr.write(indentString('Error: ' + (err.message || err), 4));
     process.stderr.write(os.EOL);
-    process.stderr.write(indentString(help.join(os.EOL), 4));
+    process.stderr.write(indentString(help, 4));
     process.exit(1);
 }
 

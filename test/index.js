@@ -340,7 +340,7 @@ describe('CLI', function () {
                 useCleanCache: true
             });
 
-            mockery.registerMock('./', function (html, styles, options) {
+            mockery.registerMock('.', function (html, styles, options) {
                 this.mockOpts = options;
                 this.mockOpts.html = html;
                 this.mockOpts.css = styles;
