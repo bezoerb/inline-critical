@@ -90,7 +90,7 @@ module.exports = function (html, styles, options) {
     }, options || {});
 
     const target = o.selector || allLinks.get(0) || $('script').get(0);
-    const indent = detectIndent(html).indent;
+    const {indent} = detectIndent(html);
     const targetIndent = getIndent(html, target);
     const $target = $(target);
 
@@ -109,7 +109,7 @@ module.exports = function (html, styles, options) {
 
     // Minify if minify option is set
     if (o.minify) {
-        styles = new CleanCSS().minify(styles).styles;
+        styles = new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
     }
 
     // Insert inline styles right before first <link rel="stylesheet" />
