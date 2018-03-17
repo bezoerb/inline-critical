@@ -89,7 +89,7 @@ module.exports = function (html, styles, options) {
         minify: true
     }, options || {});
 
-    const target = o.selector || allLinks.get(0) || $('script').get(0);
+    const target = o.selector || allLinks.get(0) || $('head script').get(0);
     const {indent} = detectIndent(html);
     const targetIndent = getIndent(html, target);
     const $target = $(target);
@@ -112,12 +112,21 @@ module.exports = function (html, styles, options) {
         styles = new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
     }
 
-    // Insert inline styles right before first <link rel="stylesheet" />
-    $target.before([
-        '<style type="text/css">',
-        indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
-        '</style>', ''
-    ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2'));
+    if (styles) {
+        const elements = [
+            '<style type="text/css">',
+            indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
+            '</style>', ''
+        ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2');
+
+        if ($target.length > 0) {
+            // Insert inline styles right before first <link rel="stylesheet" /> or other target
+            $target.before(elements);
+        } else {
+            // Just append to the head
+            $('head').append(elements);
+        }
+    }
 
     if (links.length > 0) {
         // Modify links and ad clones to noscript block

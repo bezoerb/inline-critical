@@ -33,6 +33,18 @@ describe('Module: inline-critical', function () {
         done();
     });
 
+    it('should inline in head if no stylesheets are there', function (done) {
+        var html = read('test/fixtures/index-nostyle.html');
+        var css = read('test/fixtures/critical.css');
+
+        var expected = read('test/expected/index-nostyle.html');
+        var out = inlineCritical(html, css, {minify: true});
+
+        expect(strip(out.toString('utf-8'))).to.be.equal(strip(expected));
+
+        done();
+    });
+
     it('should inline absolute css', function (done) {
         var html = read('test/fixtures/index-absolute.html');
         var css = read('test/fixtures/critical.css');
