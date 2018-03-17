@@ -1,4 +1,24 @@
 
+v4.0.1 / 2018-03-18
+==================
+
+  * Fixes inlining if no scripts & stylesheets are present in head
+
+v4.0.0 / 2018-03-05
+===================
+
+  * drop node 4 support
+  * Bump deps
+  * Fixes minor typos in README.md (#233)
+
+v3.1.0 / 2017-12-15
+===================
+
+  * Fix outdated yarn.lock
+  * Bump dependencies
+  * CI: stop testing non-LTS node.js versions. (#232)
+  * Set the `onload` handler to `null`. (#231)
+
 v3.0.0 / 2017-11-29
 ===================
 
