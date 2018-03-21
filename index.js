@@ -114,7 +114,7 @@ module.exports = function (html, styles, options) {
 
     if (styles) {
         const elements = [
-            '<style type="text/css">',
+            '<style>',
             indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
             '</style>', ''
         ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2');
