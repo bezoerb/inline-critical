@@ -88,7 +88,6 @@ describe('Module: inline-critical', function () {
         var html = read('test/fixtures/cartoon.html');
         var css = read('test/fixtures/critical.css');
         var expected = read('test/expected/cartoon-expected-minified.css');
-        var expectedHtml = read('test/expected/cartoon-expected-minified-extracted.html');
 
         var out = inlineCritical(html, css, {minify: true, extract: true, basePath: 'test/fixtures'});
 
