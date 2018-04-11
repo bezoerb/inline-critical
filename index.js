@@ -71,6 +71,14 @@ function getIndent(html, $el) {
     return detectIndent(lines.join('\n')).indent;
 }
 
+/**
+ * Minify CSS
+ * @param {string} styles
+ */
+function minifyCSS(styles) {
+    return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
+}
+
 module.exports = function (html, styles, options) {
     if (!_.isString(html)) {
         html = String(html);
@@ -109,7 +117,7 @@ module.exports = function (html, styles, options) {
 
     // Minify if minify option is set
     if (o.minify) {
-        styles = new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
+        styles = minifyCSS(styles);
     }
 
     if (styles) {
@@ -142,7 +150,12 @@ module.exports = function (html, styles, options) {
                 const href = $el.attr('href');
                 const file = path.resolve(path.join(o.basePath, href));
                 if (fs.existsSync(file)) {
-                    const diff = normalizeNewline(cave(file, {css: styles}));
+                    let diff = normalizeNewline(cave(file, {css: styles}));
+
+                    if (o.minify) {
+                        diff = minifyCSS(diff);
+                    }
+
                     fs.writeFileSync(reaver.rev(file, diff), diff);
                     $el.attr('href', normalizePath(reaver.rev(href, diff)));
                 }
