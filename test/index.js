@@ -83,6 +83,19 @@ describe('Module: inline-critical', function () {
         done();
     });
 
+
+    it('should extract and minify css', function (done) {
+        var html = read('test/fixtures/cartoon.html');
+        var css = read('test/fixtures/critical.css');
+        var expected = read('test/expected/cartoon-expected-minified.css');
+
+        var out = inlineCritical(html, css, {minify: true, extract: true, basePath: 'test/fixtures'});
+
+        expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
+
+        done();
+    });
+
     it('should inline and extract css correctly with absolute paths', function (done) {
         var html = read('test/fixtures/cartoon-absolute.html');
         var css = read('test/fixtures/critical.css');
