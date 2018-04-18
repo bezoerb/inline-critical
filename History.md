@@ -1,4 +1,10 @@
 
+v4.0.3 / 2018-04-18
+==================
+
+  * Test existance of extracted stylesheets
+  * Support minifying extracted css (#237)
+
 v4.0.2 / 2018-03-21
 ===================
 
