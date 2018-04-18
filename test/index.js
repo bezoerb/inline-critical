@@ -76,10 +76,13 @@ describe('Module: inline-critical', function () {
         var expectedHtml = read('test/expected/cartoon-expected.html');
 
         var out = inlineCritical(html, css, {minify: false, extract: true, basePath: 'test/fixtures'});
-
+        expect(fs.existsSync('test/fixtures/css/cartoon.18d89c7f.css')).to.be.equal(true);
+        expect(fs.existsSync('test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css')).to.be.equal(true);
         expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
 
+        fs.unlinkSync('test/fixtures/css/cartoon.18d89c7f.css');
+        fs.unlinkSync('test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css');
         done();
     });
 
@@ -88,10 +91,17 @@ describe('Module: inline-critical', function () {
         var html = read('test/fixtures/cartoon.html');
         var css = read('test/fixtures/critical.css');
         var expected = read('test/expected/cartoon-expected-minified.css');
+        var expectedHtml = read('test/expected/cartoon-expected-minified.html');
 
         var out = inlineCritical(html, css, {minify: true, extract: true, basePath: 'test/fixtures'});
 
+        expect(fs.existsSync('test/fixtures/css/cartoon.c2b80bd6.css')).to.be.equal(true);
+        expect(fs.existsSync('test/fixtures/bower_components/bootstrap/dist/css/bootstrap.fe278701.css')).to.be.equal(true);
         expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
+        expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
+
+        fs.unlinkSync('test/fixtures/css/cartoon.c2b80bd6.css');
+        fs.unlinkSync('test/fixtures/bower_components/bootstrap/dist/css/bootstrap.fe278701.css');
 
         done();
     });
@@ -104,8 +114,13 @@ describe('Module: inline-critical', function () {
 
         var out = inlineCritical(html, css, {minify: false, extract: true, basePath: 'test/fixtures'});
 
+        expect(fs.existsSync('test/fixtures/css/cartoon.18d89c7f.css')).to.be.equal(true);
+        expect(fs.existsSync('test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css')).to.be.equal(true);
         expect(read(reaver.rev('test/fixtures/css/cartoon.css', expected))).to.be.equal(expected);
         expect(strip(out.toString('utf-8'))).to.be.equal(strip(expectedHtml));
+
+        fs.unlinkSync('test/fixtures/css/cartoon.18d89c7f.css');
+        fs.unlinkSync('test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css');
 
         done();
     });
