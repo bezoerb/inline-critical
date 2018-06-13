@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "xo && nyc mocha test/index.js --timeout 5000",
-    "prepublish": "nsp check",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "files": [
