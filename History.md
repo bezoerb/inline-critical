@@ -3,6 +3,7 @@ v4.0.5 / 2018-09-15
 ===================
 
   * fix: consider ignore passed as string
+  * Bump dependencies
 
 v4.0.4 / 2018-06-13
 ==================

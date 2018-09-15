@@ -69,7 +69,7 @@ cli.flags = _.reduce(cli.flags, (res, val, key) => {
         case 'html':
             try {
                 res[key] = read(val);
-            } catch (err) {
+            } catch (error) {
             }
             break;
         case 'base':
@@ -97,7 +97,7 @@ cli.flags = _.reduce(cli.flags, (res, val, key) => {
     return res;
 }, {});
 
-function error(err) {
+function processError(err) {
     process.stderr.write(indentString('Error: ' + (err.message || err), 4));
     process.stderr.write(os.EOL);
     process.stderr.write(indentString(help, 4));
@@ -107,8 +107,8 @@ function error(err) {
 function read(file) {
     try {
         return fs.readFileSync(file, 'utf8');
-    } catch (err) {
-        error(err);
+    } catch (error) {
+        processError(error);
     }
 }
 
@@ -121,7 +121,7 @@ function run(data) {
         try {
             css.parse(data);
             opts.css = data;
-        } catch (err) {
+        } catch (error) {
             opts.html = data;
         }
     }
@@ -131,7 +131,7 @@ function run(data) {
         try {
             css.parse(tmp);
             opts.css = tmp;
-        } catch (err) {
+        } catch (error) {
             opts.html = tmp;
         }
     });
@@ -143,8 +143,8 @@ function run(data) {
     try {
         const out = inlineCritical(opts.html, opts.css, opts);
         process.stdout.write(out.toString(), process.exit);
-    } catch (err) {
-        error(err);
+    } catch (error) {
+        processError(error);
     }
 }
 
