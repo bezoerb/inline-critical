@@ -109,7 +109,7 @@ module.exports = function (html, styles, options) {
     if (o.ignore) {
         links = _.filter(links, link => {
             const href = $(link).attr('href');
-            return _.findIndex(options.ignore, arg => {
+            return _.findIndex(o.ignore, arg => {
                 return (_.isRegExp(arg) && arg.test(href)) || arg === href;
             }) === -1;
         });

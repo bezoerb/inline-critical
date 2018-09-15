@@ -168,7 +168,7 @@ describe('Module: inline-critical', function () {
         done();
     });
 
-    it('should respect ignore option with string', function (done) {
+    it('should respect ignore option with string array', function (done) {
         function strip2(string) {
             return string.replace(/\s+/gm, '');
         }
@@ -181,7 +181,22 @@ describe('Module: inline-critical', function () {
         expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
         done();
     });
-    it('should respect ignore option with RegExp', function (done) {
+
+    it('should respect single ignore option with string', function (done) {
+        function strip2(string) {
+            return string.replace(/\s+/gm, '');
+        }
+
+        var html = read('test/fixtures/external.html');
+        var expected = read('test/expected/external-ignore-expected.html');
+        var css = read('test/fixtures/critical.css');
+        var out = inlineCritical(html, css, {minify: false, ignore: 'bower_components/bootstrap/dist/css/bootstrap.css'});
+
+        expect(strip2(out.toString('utf-8'))).to.be.equal(strip2(expected));
+        done();
+    });
+
+    it('should respect ignore option with RegExp array', function (done) {
         function strip2(string) {
             return string.replace(/\s+/gm, '');
         }
