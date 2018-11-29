@@ -17,7 +17,6 @@ const cave = require('cave');
 const reaver = require('reaver');
 const cheerio = require('cheerio');
 const render = require('dom-serializer');
-const parse = require('cheerio/lib/parse');
 const CleanCSS = require('clean-css');
 const slash = require('slash');
 const normalizeNewline = require('normalize-newline');
@@ -79,23 +78,47 @@ function minifyCSS(styles) {
     return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
 }
 
+/**
+ * Helper to prevent cheerio from messing with svg contrnt.
+ * Should be merged afe´ter https://github.com/fb55/htmlparser2/pull/259
+ * @param {array} str
+ */
+const getSvgs = (str = '') => {
+    const indices = [];
+    let start = str.indexOf('<svg', 0);
+    let end = str.indexOf('</svg>', start) + 6;
+    while (start >= 0) {
+        indices.push({start, end});
+        start = str.indexOf('<svg', end);
+        end = str.indexOf('</svg>', end) + 6;
+    }
+
+    return indices.map(({start, end}) => str.substring(start, end));
+};
+
 module.exports = function (html, styles, options) {
     if (!_.isString(html)) {
         html = String(html);
     }
+
     const $ = cheerio.load(html, {
         decodeEntities: false
     });
 
-    const allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function () {
+    const allLinks = $(
+        'link[rel="stylesheet"], link[rel="preload"][as="style"]'
+    ).filter(function () {
         return !$(this).parents('noscript').length;
     });
 
     let links = allLinks.filter('[rel="stylesheet"]');
 
-    const o = _.assign({
-        minify: true
-    }, options || {});
+    const o = _.assign(
+        {
+            minify: true
+        },
+        options || {}
+    );
 
     const target = o.selector || allLinks.get(0) || $('head script').get(0);
     const {indent} = detectIndent(html);
@@ -109,9 +132,11 @@ module.exports = function (html, styles, options) {
     if (o.ignore) {
         links = _.filter(links, link => {
             const href = $(link).attr('href');
-            return _.findIndex(o.ignore, arg => {
-                return (_.isRegExp(arg) && arg.test(href)) || arg === href;
-            }) === -1;
+            return (
+                _.findIndex(o.ignore, arg => {
+                    return (_.isRegExp(arg) && arg.test(href)) || arg === href;
+                }) === -1
+            );
         });
     }
 
@@ -123,10 +148,15 @@ module.exports = function (html, styles, options) {
     if (styles) {
         const elements = [
             '<style>',
-            indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
+            indent +
+                styles
+                    .replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent)
+                    .replace(/^[\s\t]+$/g, ''),
             '</style>',
             ''
-        ].join('\n' + targetIndent).replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2');
+        ]
+            .join('\n' + targetIndent)
+            .replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2');
 
         if ($target.length > 0) {
             // Insert inline styles right before first <link rel="stylesheet" /> or other target
@@ -141,7 +171,9 @@ module.exports = function (html, styles, options) {
         // Modify links and ad clones to noscript block
         $(links).each(function (idx, el) {
             if (o.extract && !o.basePath) {
-                throw new Error('Option `basePath` is missing and required when using `extract`!');
+                throw new Error(
+                    'Option `basePath` is missing and required when using `extract`!'
+                );
             }
 
             const $el = $(el);
@@ -163,7 +195,9 @@ module.exports = function (html, styles, options) {
             }
 
             // Add each fallback right behind the current style to keep source order when ignoring stylesheets
-            $el.after('\n' + elIndent + '<noscript>' + render(this) + '</noscript>');
+            $el.after(
+                '\n' + elIndent + '<noscript>' + render(this) + '</noscript>'
+            );
 
             // Add preload atttibutes to actual link element
             $el.attr('rel', 'preload');
@@ -172,15 +206,26 @@ module.exports = function (html, styles, options) {
         });
 
         // Add loadcss + cssrelpreload polyfill
-        const scriptAnchor = $('link[rel="stylesheet"], noscript').filter(function () {
-            return !$(this).parents('noscript').length;
-        }).last().get(0);
+        const scriptAnchor = $('link[rel="stylesheet"], noscript')
+            .filter(function () {
+                return !$(this).parents('noscript').length;
+            })
+            .last()
+            .get(0);
 
-        $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
+        $(scriptAnchor).after(
+            '\n' + targetIndent + '<script>' + getScript() + '</script>'
+        );
     }
 
-    const dom = parse($.html());
-    const markup = render(dom);
+    const output = $.html();
 
-    return Buffer.from(markup);
+    // Quickfix until https://github.com/fb55/htmlparser2/pull/259 is merged/fixed
+    const svgs = getSvgs(html);
+    const quickfixed = getSvgs(output).reduce(
+        (str, code, index) => str.replace(code, svgs[index] || code),
+        output
+    );
+
+    return Buffer.from(quickfixed);
 };
