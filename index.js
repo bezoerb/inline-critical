@@ -13,8 +13,9 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const UglifyJS = require('uglify-js');
-const cave = require('cave');
 const reaver = require('reaver');
+const postcss = require('postcss');
+const discard = require('postcss-discard');
 const cheerio = require('cheerio');
 const render = require('dom-serializer');
 const CleanCSS = require('clean-css');
@@ -76,6 +77,14 @@ function getIndent(html, $el) {
  */
 function minifyCSS(styles) {
     return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
+}
+
+function extract(css, critical, minify = false) {
+    if (minify) {
+        css = minifyCSS(css);
+        critical = minifyCSS(critical);
+    }
+    return normalizeNewline(postcss(discard({css: critical})).process(css).css);
 }
 
 /**
@@ -183,13 +192,11 @@ module.exports = function (html, styles, options) {
                 const href = $el.attr('href');
                 const file = path.resolve(path.join(o.basePath, href));
                 if (fs.existsSync(file)) {
-                    let diff = normalizeNewline(cave(file, {css: styles}));
+                    const orig = fs.readFileSync(file);
+                    const diff = extract(orig, styles, o.minify);
+                    const filename = reaver.rev(file, diff);
 
-                    if (o.minify) {
-                        diff = minifyCSS(diff);
-                    }
-
-                    fs.writeFileSync(reaver.rev(file, diff), diff);
+                    fs.writeFileSync(filename, diff);
                     $el.attr('href', normalizePath(reaver.rev(href, diff)));
                 }
             }
