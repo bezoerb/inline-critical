@@ -23,6 +23,7 @@ const slash = require('slash');
 const normalizeNewline = require('normalize-newline');
 const resolve = require('resolve');
 const detectIndent = require('detect-indent');
+const prettier = require('prettier');
 
 /**
  * Get loadcss + cssrelpreload script
@@ -81,11 +82,13 @@ function minifyCSS(styles) {
   return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
 }
 
-function extract(css, critical, minify = false) {
-  if (minify) {
-    css = minifyCSS(css);
-    critical = minifyCSS(critical);
-  }
+function prettifyCSS(styles) {
+  return prettier.format(styles, {parser: 'css'});
+}
+
+function extract(css, critical) {
+  css = minifyCSS(css);
+  critical = minifyCSS(critical);
   return normalizeNewline(postcss(discard({css: critical})).process(css).css);
 }
 
@@ -120,22 +123,35 @@ function inline(html, styles, options) {
     html = String(html);
   }
 
-  const $ = cheerio.load(html, {
-    decodeEntities: false,
-  });
-
-  const allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function() {
-    return !$(this).parents('noscript').length;
-  });
-
-  let links = allLinks.filter('[rel="stylesheet"]');
-
   const o = _.assign(
     {
       minify: true,
     },
     options || {}
   );
+
+  const $ = cheerio.load(html, {
+    decodeEntities: false,
+  });
+
+  // Fetch styles already inlined
+  const inlineStyles = $('head style')
+    .map((i, el) => $(el).html())
+    .get()
+    .join('\n');
+
+  // Only missing styles
+  let missing = extract(styles, inlineStyles);
+  if (!o.minify) {
+    missing = prettifyCSS(missing);
+  }
+
+  const inlined = `${inlineStyles}\n${missing}`;
+  const allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function() {
+    return !$(this).parents('noscript').length;
+  });
+
+  let links = allLinks.filter('[rel="stylesheet"]');
 
   const target = o.selector || allLinks.get(0) || $('head script').get(0);
   const {indent} = detectIndent(html);
@@ -157,15 +173,14 @@ function inline(html, styles, options) {
     });
   }
 
-  // Minify if minify option is set
-  if (o.minify) {
-    styles = minifyCSS(styles);
-  }
-
-  if (styles) {
+  if (missing) {
     const elements = [
       '<style>',
-      indent + styles.replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent).replace(/^[\s\t]+$/g, ''),
+      indent +
+        missing
+          .replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent)
+          .replace(/^[\s\t]+$/g, '')
+          .trim(),
       '</style>',
       '',
     ]
@@ -196,7 +211,12 @@ function inline(html, styles, options) {
         const file = path.resolve(path.join(o.basePath, href));
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
-          const diff = extract(orig, styles, o.minify);
+          let diff = extract(orig, inlined);
+
+          if (!o.minify) {
+            diff = prettifyCSS(diff);
+          }
+
           const filename = reaver.rev(file, diff);
 
           fs.writeFileSync(filename, diff);

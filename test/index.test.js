@@ -5,6 +5,7 @@ const postcss = require('postcss');
 const discard = require('postcss-discard');
 const normalizeNewline = require('normalize-newline');
 const CleanCSS = require('clean-css');
+const prettier = require('prettier');
 const inline = require('..');
 
 const {read, checkAndDelete, strip} = require('./helper');
@@ -14,11 +15,14 @@ function minifyCSS(styles) {
 }
 
 const extract = (css, critical, minify = false) => {
+  css = minifyCSS(css);
+  critical = minifyCSS(critical);
+  const result = normalizeNewline(postcss(discard({css: critical})).process(css).css);
   if (minify) {
-    css = minifyCSS(css);
-    critical = minifyCSS(critical);
+    return result;
   }
-  return normalizeNewline(postcss(discard({css: critical})).process(css).css);
+
+  return prettier.format(result, {parser: 'css'});
 };
 
 jest.setTimeout(20000);
@@ -28,7 +32,6 @@ test('Inline css', async () => {
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/index-inlined-async-final.html');
   const out = inline(html, css, {minify: false});
-
   expect(strip(out.toString())).toBe(strip(expected));
 });
 
@@ -170,7 +173,6 @@ test('should not keep external urls', async () => {
   const expected = await read('expected/external-expected.html');
   const css = await read('fixtures/critical.css');
   const out = inline(html, css, {minify: false});
-
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
@@ -194,7 +196,6 @@ test('should not extract on external urls', async () => {
     extract: true,
     basePath: 'test/fixtures',
   });
-
   expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
   expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
@@ -287,4 +288,14 @@ test("should skip loadcss if it's already present and used for all existing link
   const out = inline(html, css, {minify: true});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+});
+
+test('consider existing style tags', async () => {
+  const html = await read('fixtures/index-inlined.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-inlined.html');
+  const out = inline(html, css);
+
+  expect(out.toString('utf-8')).toBe(expected);
 });
