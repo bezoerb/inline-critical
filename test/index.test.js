@@ -1,8 +1,25 @@
 /* eslint-env jest */
+const path = require('path');
 const reaver = require('reaver');
+const postcss = require('postcss');
+const discard = require('postcss-discard');
+const normalizeNewline = require('normalize-newline');
+const CleanCSS = require('clean-css');
 const inline = require('..');
 
 const {read, checkAndDelete, strip} = require('./helper');
+
+function minifyCSS(styles) {
+  return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
+}
+
+const extract = (css, critical, minify = false) => {
+  if (minify) {
+    css = minifyCSS(css);
+    critical = minifyCSS(critical);
+  }
+  return normalizeNewline(postcss(discard({css: critical})).process(css).css);
+};
 
 jest.setTimeout(20000);
 
@@ -48,8 +65,17 @@ test('Inline and minify css', async () => {
 test('should inline and extract css', async () => {
   const html = await read('fixtures/cartoon.html');
   const css = await read('fixtures/critical.css');
-  const expected = await read('expected/cartoon-expected.css');
-  const expectedHtml = await read('expected/cartoon-expected.html');
+  const expected = await read('expected/cartoon-expected.html');
+
+  const styles = await Promise.all([
+    read('fixtures/css/cartoon.css'),
+    read('fixtures/bower_components/bootstrap/dist/css/bootstrap.css'),
+  ]);
+
+  const reved = [
+    reaver.rev('fixtures/css/cartoon.css', extract(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css)),
+  ];
 
   const out = inline(html, css, {
     minify: false,
@@ -57,49 +83,54 @@ test('should inline and extract css', async () => {
     basePath: 'test/fixtures',
   });
 
-  const reved = [
-    reaver.rev('fixtures/css/cartoon.css', expected),
-    'fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css',
-  ];
-
-  const revCartoon = await read(reved[0]);
-
+  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
-  expect(revCartoon).toBe(expected);
-  expect(strip(out.toString('utf-8'))).toBe(strip(expectedHtml));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('should extract and minify css', async () => {
   const html = await read('fixtures/cartoon.html');
   const css = await read('fixtures/critical.css');
-  const expected = await read('expected/cartoon-expected-minified.css');
-  const expectedHtml = await read('expected/cartoon-expected-minified.html');
+  const expected = await read('expected/cartoon-expected-minified.html');
+
+  const styles = await Promise.all([
+    read('fixtures/css/cartoon.css'),
+    read('fixtures/bower_components/bootstrap/dist/css/bootstrap.css'),
+  ]);
+
+  const reved = [
+    reaver.rev('fixtures/css/cartoon.css', extract(styles[0], css, true)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css, true)),
+  ];
 
   const out = inline(html, css, {
-    minify: true,
     extract: true,
     basePath: 'test/fixtures',
   });
 
-  const reved = [
-    reaver.rev('fixtures/css/cartoon.css', expected),
-    'fixtures/bower_components/bootstrap/dist/css/bootstrap.fe278701.css',
-  ];
-
-  const revCartoon = await read(reved[0]);
-
+  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
-  expect(revCartoon).toBe(expected);
-  expect(strip(out.toString('utf-8'))).toBe(strip(expectedHtml));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('should inline and extract css correctly with absolute paths', async () => {
   const html = await read('fixtures/cartoon-absolute.html');
   const css = await read('fixtures/critical.css');
-  const expected = await read('expected/cartoon-expected.css');
-  const expectedHtml = await read('expected/cartoon-absolute-expected.html');
+  const expected = await read('expected/cartoon-absolute-expected.html');
+
+  const styles = await Promise.all([
+    read('fixtures/css/cartoon.css'),
+    read('fixtures/bower_components/bootstrap/dist/css/bootstrap.css'),
+  ]);
+
+  const reved = [
+    reaver.rev('fixtures/css/cartoon.css', extract(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css)),
+  ];
 
   const out = inline(html, css, {
     minify: false,
@@ -107,17 +138,11 @@ test('should inline and extract css correctly with absolute paths', async () => 
     basePath: 'test/fixtures',
   });
 
-  const reved = [
-    reaver.rev('fixtures/css/cartoon.css', expected),
-    'fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css',
-  ];
-
-  const revCartoon = await read(reved[0]);
-
+  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
-  expect(revCartoon).toBe(expected);
-  expect(strip(out.toString('utf-8'))).toBe(strip(expectedHtml));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('should not strip of svg closing tags', async () => {
@@ -149,28 +174,32 @@ test('should not keep external urls', async () => {
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
-test('should not keep external urls on extract', async () => {
-  function strip2(string) {
-    return string.replace(/\s+/gm, '');
-  }
-
+test('should not extract on external urls', async () => {
   const html = await read('fixtures/external.html');
-  const expected = await read('expected/external-extract-expected.html');
   const css = await read('fixtures/critical.css');
+  const expected = await read('expected/external-extract-expected.html');
+
+  const styles = await Promise.all([
+    read('fixtures/css/main.css'),
+    read('fixtures/bower_components/bootstrap/dist/css/bootstrap.css'),
+  ]);
+
+  const reved = [
+    reaver.rev('fixtures/css/main.css', extract(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css)),
+  ];
+
   const out = inline(html, css, {
     minify: false,
     extract: true,
     basePath: 'test/fixtures',
   });
 
-  const reved = [
-    'fixtures/css/main.158f2990.css',
-    'fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css',
-  ];
-
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('should keep self closing svg elements', async () => {
