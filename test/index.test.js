@@ -299,3 +299,13 @@ test('consider existing style tags', async () => {
 
   expect(out.toString('utf-8')).toBe(expected);
 });
+
+test("don't add loadcss twice", async () => {
+  const html = await read('fixtures/loadcss-again.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/loadcss-again.html');
+  const out = inline(html, css);
+
+  expect(out.toString('utf-8')).toBe(expected);
+});

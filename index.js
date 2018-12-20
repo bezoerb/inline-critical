@@ -11,6 +11,9 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const isString = require('lodash/isString');
+const isRegExp = require('lodash/isRegExp');
+const filter = require('lodash/filter');
 const _ = require('lodash');
 const UglifyJS = require('uglify-js');
 const reaver = require('reaver');
@@ -24,6 +27,14 @@ const normalizeNewline = require('normalize-newline');
 const resolve = require('resolve');
 const detectIndent = require('detect-indent');
 const prettier = require('prettier');
+
+const DEFAULT_OPTIONS = {
+  minify: true,
+  extract: false,
+  polyfill: true,
+  ignore: [],
+  stylesheets: [],
+};
 
 /**
  * Get loadcss + cssrelpreload script
@@ -86,10 +97,15 @@ function prettifyCSS(styles) {
   return prettier.format(styles, {parser: 'css'});
 }
 
-function extract(css, critical) {
-  css = minifyCSS(css);
-  critical = minifyCSS(critical);
-  return normalizeNewline(postcss(discard({css: critical})).process(css).css);
+function extract(css, critical, minify = true) {
+  const minCss = minifyCSS(css);
+  const minCritical = minifyCSS(critical);
+  const diff = normalizeNewline(postcss(discard({css: minCritical})).process(minCss).css);
+  if (minify) {
+    return diff;
+  }
+
+  return prettifyCSS(diff);
 }
 
 /**
@@ -119,34 +135,26 @@ const getSvgs = (str = '') => {
  * @returns {string} HTML Source with inlined critical css
  */
 function inline(html, styles, options) {
-  if (!_.isString(html)) {
+  const o = {...DEFAULT_OPTIONS, ...(options || {})};
+
+  if (!isString(html)) {
     html = String(html);
   }
-
-  const o = _.assign(
-    {
-      minify: true,
-    },
-    options || {}
-  );
 
   const $ = cheerio.load(html, {
     decodeEntities: false,
   });
 
-  // Fetch styles already inlined
+  // Process style tags
   const inlineStyles = $('head style')
     .map((i, el) => $(el).html())
     .get()
     .join('\n');
 
-  // Only missing styles
-  let missing = extract(styles, inlineStyles);
-  if (!o.minify) {
-    missing = prettifyCSS(missing);
-  }
-
+  // Only inline the missing styles
+  const missing = extract(styles, inlineStyles, o.minify);
   const inlined = `${inlineStyles}\n${missing}`;
+
   const allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function() {
     return !$(this).parents('noscript').length;
   });
@@ -158,18 +166,14 @@ function inline(html, styles, options) {
   const targetIndent = getIndent(html, target);
   const $target = $(target);
 
-  if (_.isString(o.ignore)) {
-    o.ignore = [o.ignore];
+  if (!Array.isArray(o.ignore)) {
+    o.ignore = [o.ignore].filter(i => i);
   }
 
-  if (o.ignore) {
-    links = _.filter(links, link => {
+  if (o.ignore.length > 0) {
+    links = filter(links, link => {
       const href = $(link).attr('href');
-      return (
-        _.findIndex(o.ignore, arg => {
-          return (_.isRegExp(arg) && arg.test(href)) || arg === href;
-        }) === -1
-      );
+      return !o.ignore.some(i => (isRegExp(i) && i.test(href)) || i === href);
     });
   }
 
@@ -211,12 +215,7 @@ function inline(html, styles, options) {
         const file = path.resolve(path.join(o.basePath, href));
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
-          let diff = extract(orig, inlined);
-
-          if (!o.minify) {
-            diff = prettifyCSS(diff);
-          }
-
+          const diff = extract(orig, inlined, o.minify);
           const filename = reaver.rev(file, diff);
 
           fs.writeFileSync(filename, diff);
@@ -233,15 +232,22 @@ function inline(html, styles, options) {
       $el.attr('onload', "this.onload=null;this.rel='stylesheet'");
     });
 
-    // Add loadcss + cssrelpreload polyfill
-    const scriptAnchor = $('link[rel="stylesheet"], noscript')
-      .filter(function() {
-        return !$(this).parents('noscript').length;
-      })
-      .last()
-      .get(0);
+    // Only add loadcss if it's not already included
+    const loadCssIncluded = $('script')
+      .get()
+      .some(tag => ($(tag).html() || '').includes('loadCSS'));
 
-    $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
+    if (!loadCssIncluded && o.polyfill) {
+      // Add loadcss + cssrelpreload polyfill
+      const scriptAnchor = $('link[rel="stylesheet"], noscript')
+        .filter(function() {
+          return !$(this).parents('noscript').length;
+        })
+        .last()
+        .get(0);
+
+      $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
+    }
   }
 
   const output = $.html();
