@@ -297,7 +297,7 @@ test('consider existing style tags', async () => {
   const expected = await read('expected/index-inlined.html');
   const out = inline(html, css);
 
-  expect(out.toString('utf-8')).toBe(expected);
+  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
 test("don't add loadcss twice", async () => {
@@ -307,5 +307,5 @@ test("don't add loadcss twice", async () => {
   const expected = await read('expected/loadcss-again.html');
   const out = inline(html, css);
 
-  expect(out.toString('utf-8')).toBe(expected);
+  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
