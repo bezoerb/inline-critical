@@ -42,6 +42,7 @@ const cli = meow(help, {
     minify: {
       type: 'boolean',
       alias: 'm',
+      default: true,
     },
     extract: {
       type: 'boolean',
@@ -150,6 +151,7 @@ function run(data) {
     process.stdout.write(out.toString(), process.exit);
   } catch (error) {
     processError(error);
+    console.log(error);
   }
 }
 

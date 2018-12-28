@@ -1,29 +1,10 @@
 /* eslint-env jest */
 const path = require('path');
 const reaver = require('reaver');
-const postcss = require('postcss');
-const discard = require('postcss-discard');
-const normalizeNewline = require('normalize-newline');
-const CleanCSS = require('clean-css');
-const prettier = require('prettier');
+const {extractCss} = require('../src/css.js');
 const inline = require('..');
 
 const {read, checkAndDelete, strip} = require('./helper');
-
-function minifyCSS(styles) {
-  return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
-}
-
-const extract = (css, critical, minify = false) => {
-  css = minifyCSS(css);
-  critical = minifyCSS(critical);
-  const result = normalizeNewline(postcss(discard({css: critical})).process(css).css);
-  if (minify) {
-    return result;
-  }
-
-  return prettier.format(result, {parser: 'css'});
-};
 
 jest.setTimeout(20000);
 
@@ -65,7 +46,7 @@ test('Inline and minify css', async () => {
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
-test('should inline and extract css', async () => {
+test('Inline and extract css', async () => {
   const html = await read('fixtures/cartoon.html');
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/cartoon-expected.html');
@@ -76,8 +57,8 @@ test('should inline and extract css', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extract(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -93,7 +74,7 @@ test('should inline and extract css', async () => {
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
-test('should extract and minify css', async () => {
+test('Extract and minify css', async () => {
   const html = await read('fixtures/cartoon.html');
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/cartoon-expected-minified.html');
@@ -104,8 +85,8 @@ test('should extract and minify css', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extract(styles[0], css, true)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css, true)),
+    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -120,7 +101,7 @@ test('should extract and minify css', async () => {
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
-test('should inline and extract css correctly with absolute paths', async () => {
+test('Inline and extract css correctly with absolute paths', async () => {
   const html = await read('fixtures/cartoon-absolute.html');
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/cartoon-absolute-expected.html');
@@ -131,8 +112,8 @@ test('should inline and extract css correctly with absolute paths', async () => 
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extract(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -148,14 +129,14 @@ test('should inline and extract css correctly with absolute paths', async () => 
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
-test('should not strip of svg closing tags', async () => {
+test('Does not strip of svg closing tags', async () => {
   const html = await read('fixtures/entities.html');
   const out = inline(html, '', {minify: false});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(html));
 });
 
-test('should not strip of svg closing tags test 2', async () => {
+test('Does not strip svg closing tags test 2', async () => {
   const html = await read('fixtures/svg.html');
   const expected = await read('expected/test-svg.html');
   const css = 'html{font-size:16;}';
@@ -164,7 +145,7 @@ test('should not strip of svg closing tags test 2', async () => {
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
-test('should not keep external urls', async () => {
+test('Also preload external urls', async () => {
   function strip2(string) {
     return string.replace(/\s+/gm, '');
   }
@@ -176,7 +157,7 @@ test('should not keep external urls', async () => {
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
-test('should not extract on external urls', async () => {
+test("Don't try to extract for external urls", async () => {
   const html = await read('fixtures/external.html');
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/external-extract-expected.html');
@@ -187,8 +168,8 @@ test('should not extract on external urls', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/main.css', extract(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extract(styles[1], css)),
+    reaver.rev('fixtures/css/main.css', extractCss(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -203,13 +184,13 @@ test('should not extract on external urls', async () => {
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
-test('should keep self closing svg elements', async () => {
+test('Keep self closing svg elements', async () => {
   const html = await read('fixtures/entities2.html');
-  const out = inline(html, '', {minify: false});
+  const out = inline(html, '');
   expect(strip(out.toString('utf-8'))).toBe(strip(html));
 });
 
-test('should respect ignore option with string array', async () => {
+test('Respect ignore option with string array', async () => {
   function strip2(string) {
     return string.replace(/\s+/gm, '');
   }
@@ -225,7 +206,7 @@ test('should respect ignore option with string array', async () => {
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
-test('should respect single ignore option with string', async () => {
+test('Respect single ignore option with string', async () => {
   function strip2(string) {
     return string.replace(/\s+/gm, '');
   }
@@ -241,7 +222,7 @@ test('should respect single ignore option with string', async () => {
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
-test('should respect ignore option with RegExp array', async () => {
+test('Respect ignore option with RegExp array', async () => {
   function strip2(string) {
     return string.replace(/\s+/gm, '');
   }
@@ -257,7 +238,7 @@ test('should respect ignore option with RegExp array', async () => {
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
-test('should respect selector option', async () => {
+test('Respect selector option', async () => {
   const html = await read('fixtures/index.html');
   const css = await read('fixtures/critical.css');
 
@@ -270,7 +251,7 @@ test('should respect selector option', async () => {
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
-test('should ignore stylesheets wrapped in noscript', async () => {
+test('Ignore stylesheets wrapped in noscript', async () => {
   const html = await read('fixtures/index-noscript.html');
   const css = await read('fixtures/critical.css');
 
@@ -280,7 +261,7 @@ test('should ignore stylesheets wrapped in noscript', async () => {
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
-test("should skip loadcss if it's already present and used for all existing link tags", async () => {
+test("Skip loadcss if it's already present and used for all existing link tags", async () => {
   const html = await read('fixtures/loadcss.html');
   const css = await read('fixtures/critical.css');
 
@@ -290,7 +271,7 @@ test("should skip loadcss if it's already present and used for all existing link
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
-test('consider existing style tags', async () => {
+test('Consider existing style tags', async () => {
   const html = await read('fixtures/index-inlined.html');
   const css = await read('fixtures/critical.css');
 
@@ -300,7 +281,7 @@ test('consider existing style tags', async () => {
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
-test("don't add loadcss twice", async () => {
+test("Don't add loadcss twice", async () => {
   const html = await read('fixtures/loadcss-again.html');
   const css = await read('fixtures/critical.css');
 
@@ -308,4 +289,17 @@ test("don't add loadcss twice", async () => {
   const out = inline(html, css);
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+});
+
+test('Replace stylesheets', async () => {
+  const html = await read('fixtures/cartoon.html');
+  const css = await read('fixtures/critical.css');
+
+  const out = inline(html, css, {
+    replaceStylesheets: ['replace/all.css'],
+  });
+
+  expect(out.toString('utf8')).not.toMatch('css/cartoon.css');
+  expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
+  expect(out.toString('utf8')).toMatch('href="replace/all.css"');
 });

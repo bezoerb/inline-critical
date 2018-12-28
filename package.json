@@ -28,7 +28,7 @@
     "url": "https://github.com/bezoerb/inline-critical/issues"
   },
   "dependencies": {
-    "cheerio": "0.22.0",
+    "cheerio": "^1.0.0-rc.2",
     "clean-css": "^4.2.1",
     "css": "^2.2.4",
     "detect-indent": "5.0.0",
@@ -37,9 +37,11 @@
     "fs-extra": "^7.0.1",
     "get-stdin": "^6.0.0",
     "indent-string": "^3.2.0",
+    "jsdom": "^13.1.0",
     "lodash": "^4.17.11",
     "meow": "^5.0.0",
     "normalize-newline": "3.0.0",
+    "parse5": "^5.1.0",
     "postcss": "^7.0.7",
     "postcss-discard": "^0.3.0",
     "prettier": "^1.15.3",
