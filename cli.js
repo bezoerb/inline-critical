@@ -3,6 +3,7 @@
 const os = require('os');
 const fs = require('fs');
 const meow = require('meow');
+const chalk = require('chalk');
 const indentString = require('indent-string');
 const stdin = require('get-stdin');
 const css = require('css');
@@ -102,10 +103,10 @@ cli.flags = _.reduce(
 );
 
 function processError(err) {
-  process.stderr.write(indentString('Error: ' + (err.message || err), 4));
+  process.stderr.write(chalk.red(indentString('Error: ' + (err.message || err), 2)));
   process.stderr.write(os.EOL);
-  process.stderr.write(indentString(help, 4));
-  // Process.exit(1);
+  process.stderr.write(indentString(help, 2));
+  process.exit(1);
 }
 
 function read(file) {
@@ -151,7 +152,6 @@ function run(data) {
     process.stdout.write(out.toString(), process.exit);
   } catch (error) {
     processError(error);
-    console.log(error);
   }
 }
 
