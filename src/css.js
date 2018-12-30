@@ -36,8 +36,11 @@ function prettifyCss(styles, indent = {}) {
 function extractCss(styles, ...css) {
   const _styles = normalizeNewline(minifyCss(styles || ''));
   const _css = normalizeNewline(minifyCss(css.join('\n')));
+  if (_css.trim() !== '') {
+    return postcss(discard({css: _css})).process(_styles).css;
+  }
 
-  return postcss(discard({css: _css})).process(_styles).css;
+  return _styles;
 }
 
 module.exports = {
