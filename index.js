@@ -13,41 +13,19 @@ const fs = require('fs');
 const path = require('path');
 const isString = require('lodash/isString');
 const isRegExp = require('lodash/isRegExp');
-const filter = require('lodash/filter');
-const _ = require('lodash');
-const UglifyJS = require('uglify-js');
 const reaver = require('reaver');
-const postcss = require('postcss');
-const discard = require('postcss-discard');
-const cheerio = require('cheerio');
-const render = require('dom-serializer');
-const CleanCSS = require('clean-css');
 const slash = require('slash');
-const normalizeNewline = require('normalize-newline');
-const resolve = require('resolve');
-const detectIndent = require('detect-indent');
-const prettier = require('prettier');
+
+const Dom = require('./src/dom');
+const {prettifyCss, extractCss} = require('./src/css');
 
 const DEFAULT_OPTIONS = {
   minify: true,
   extract: false,
   polyfill: true,
   ignore: [],
-  stylesheets: [],
+  replaceStylesheets: [],
 };
-
-/**
- * Get loadcss + cssrelpreload script
- *
- * @returns {string} Minified loadcss script
- */
-function getScript() {
-  const loadCssMain = resolve.sync('fg-loadcss');
-  const loadCssBase = path.dirname(loadCssMain);
-
-  const loadCSS = read(path.join(loadCssBase, 'cssrelpreload.js'));
-  return UglifyJS.minify(loadCSS).code;
-}
 
 /**
  * Fixup slashes in file paths for windows
@@ -58,74 +36,6 @@ function getScript() {
 function normalizePath(str) {
   return process.platform === 'win32' ? slash(str) : str;
 }
-
-/**
- * Read file *
- * @param {string} file Filepath
- * @returns {string} Content
- */
-function read(file) {
-  return fs.readFileSync(file, 'utf8');
-}
-
-/**
- * Get the indentation of the link tags
- * @param {string} html Html source
- * @param {Cheerio} $el Cheerio object
- * @returns {string} Indetation
- */
-function getIndent(html, $el) {
-  const regName = new RegExp(_.escapeRegExp(_.get($el, 'name')));
-  const regHref = new RegExp(_.escapeRegExp(_.get($el, 'attribs.href')));
-  const regRel = new RegExp(_.escapeRegExp(_.get($el, 'attribs.rel')));
-  const lines = _.filter(html.split(/[\r\n]+/), line => {
-    return regName.test(line) && regHref.test(line) && regRel.test(line);
-  });
-  return detectIndent(lines.join('\n')).indent;
-}
-
-/**
- * Minify CSS
- * @param {string} styles CSS
- * @returns {string} Minified css string
- */
-function minifyCSS(styles) {
-  return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
-}
-
-function prettifyCSS(styles) {
-  return prettier.format(styles, {parser: 'css'});
-}
-
-function extract(css, critical, minify = true) {
-  const minCss = minifyCSS(css);
-  const minCritical = minifyCSS(critical);
-  const diff = normalizeNewline(postcss(discard({css: minCritical})).process(minCss).css);
-  if (minify) {
-    return diff;
-  }
-
-  return prettifyCSS(diff);
-}
-
-/**
- * Helper to prevent cheerio from messing with svg contrnt.
- * Should be merged afe´ter https://github.com/fb55/htmlparser2/pull/259
- * @param {string} str HTML String
- * @returns {array} SVG Strings found in HTML
- */
-const getSvgs = (str = '') => {
-  const indices = [];
-  let start = str.indexOf('<svg', 0);
-  let end = str.indexOf('</svg>', start) + 6;
-  while (start >= 0) {
-    indices.push({start, end});
-    start = str.indexOf('<svg', end);
-    end = str.indexOf('</svg>', end) + 6;
-  }
-
-  return indices.map(({start, end}) => str.substring(start, end));
-};
 
 /**
  * Main function ;)
@@ -141,122 +51,115 @@ function inline(html, styles, options) {
     html = String(html);
   }
 
-  const $ = cheerio.load(html, {
-    decodeEntities: false,
-  });
-
-  // Process style tags
-  const inlineStyles = $('head style')
-    .map((i, el) => $(el).html())
-    .get()
-    .join('\n');
-
-  // Only inline the missing styles
-  const missing = extract(styles, inlineStyles, o.minify);
-  const inlined = `${inlineStyles}\n${missing}`;
-
-  const allLinks = $('link[rel="stylesheet"], link[rel="preload"][as="style"]').filter(function() {
-    return !$(this).parents('noscript').length;
-  });
-
-  let links = allLinks.filter('[rel="stylesheet"]');
-
-  const target = o.selector || allLinks.get(0) || $('head script').get(0);
-  const {indent} = detectIndent(html);
-  const targetIndent = getIndent(html, target);
-  const $target = $(target);
-
   if (!Array.isArray(o.ignore)) {
     o.ignore = [o.ignore].filter(i => i);
   }
 
-  if (o.ignore.length > 0) {
-    links = filter(links, link => {
-      const href = $(link).attr('href');
-      return !o.ignore.some(i => (isRegExp(i) && i.test(href)) || i === href);
-    });
-  }
+  const document = new Dom(html, o);
 
-  if (missing) {
-    const elements = [
-      '<style>',
-      indent +
-        missing
-          .replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent)
-          .replace(/^[\s\t]+$/g, '')
-          .trim(),
-      '</style>',
-      '',
-    ]
-      .join('\n' + targetIndent)
-      .replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2');
+  const inlineStyles = document.getInlineStyles();
+  const extarnalStyles = document.getExternalStyles();
+  const missingStyles = extractCss(styles, ...inlineStyles);
 
-    if ($target.length > 0) {
-      // Insert inline styles right before first <link rel="stylesheet" /> or other target
-      $target.before(elements);
+  const links = extarnalStyles.filter(link => {
+    // Only take stylesheets
+    const stylesheet = link.getAttribute('rel') === 'stylesheet';
+    // Filter ignored links
+    const href = link.getAttribute('href');
+    return stylesheet && !o.ignore.some(i => (isRegExp(i) && i.test(href)) || i === href);
+  });
+
+  const targetSelectors = [
+    o.selector,
+    ':not(noscript) > link[rel="stylesheet"]',
+    ':not(noscript) > link[rel="preload"][as="style"]',
+    'head script',
+  ];
+
+  const target = document.querySelector(targetSelectors);
+  const inlined = `${inlineStyles}\n${missingStyles}`;
+
+  if (missingStyles) {
+    if (o.minify) {
+      document.addInlineStyles(missingStyles, target);
     } else {
-      // Just append to the head
-      $('head').append(elements);
+      document.addInlineStyles(prettifyCss(missingStyles, document.indent), target);
     }
   }
 
-  if (links.length > 0) {
-    // Modify links and ad clones to noscript block
-    $(links).each(function(idx, el) {
-      if (o.extract && !o.basePath) {
-        throw new Error('Option `basePath` is missing and required when using `extract`!');
+  if (o.replaceStylesheets.length > 0 && links.length > 0) {
+    // Detect links to be removed
+    const [ref] = links;
+    const removable = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"]')].filter(
+      link => {
+        // Filter ignored links
+        const href = link.getAttribute('href');
+        return !o.ignore.some(i => (isRegExp(i) && i.test(href)) || i === href);
       }
+    );
 
-      const $el = $(el);
-      const elIndent = getIndent(html, el);
+    // Add link tags before old links
+    // eslint-disable-next-line array-callback-return
+    o.replaceStylesheets.map(href => {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'stylesheet');
+      link.setAttribute('href', href);
 
+      const noscript = document.createElement('noscript');
+      noscript.append(link.cloneNode());
+
+      link.setAttribute('rel', 'preload');
+      link.setAttribute('as', 'style');
+      link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+
+      document.insertBefore(link, ref);
+      document.insertBefore(noscript, ref);
+    });
+
+    // Remove old links
+    // eslint-disable-next-line array-callback-return
+    removable.map(link => {
+      if (link.parentElement.tagName === 'NOSCRIPT') {
+        document.remove(link.parentElement);
+      } else {
+        document.remove(link);
+      }
+    });
+  } else {
+    // Modify links and add clones to noscript block
+    // eslint-disable-next-line array-callback-return
+    links.map(link => {
       if (o.extract) {
-        const href = $el.attr('href');
-        const file = path.resolve(path.join(o.basePath, href));
+        const href = link.getAttribute('href');
+        const file = path.resolve(path.join(o.basePath || process.cwd, href));
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
-          const diff = extract(orig, inlined, o.minify);
+          const diff = extractCss(orig, inlined, o.minify);
           const filename = reaver.rev(file, diff);
 
           fs.writeFileSync(filename, diff);
-          $el.attr('href', normalizePath(reaver.rev(href, diff)));
+          link.setAttribute('href', normalizePath(reaver.rev(href, diff)));
+        } else if (!/\/\//.test(href)) {
+          throw new Error(`Error: file "${href}" not found in "${o.basePath || process.cwd}". Specify base path.`);
         }
       }
 
-      // Add each fallback right behind the current style to keep source order when ignoring stylesheets
-      $el.after('\n' + elIndent + '<noscript>' + render(this) + '</noscript>');
+      const noscript = document.createElement('noscript');
+      noscript.append(link.cloneNode());
+      document.insertAfter(noscript, link);
 
-      // Add preload atttibutes to actual link element
-      $el.attr('rel', 'preload');
-      $el.attr('as', 'style');
-      $el.attr('onload', "this.onload=null;this.rel='stylesheet'");
+      link.setAttribute('rel', 'preload');
+      link.setAttribute('as', 'style');
+      link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
     });
-
-    // Only add loadcss if it's not already included
-    const loadCssIncluded = $('script')
-      .get()
-      .some(tag => ($(tag).html() || '').includes('loadCSS'));
-
-    if (!loadCssIncluded && o.polyfill) {
-      // Add loadcss + cssrelpreload polyfill
-      const scriptAnchor = $('link[rel="stylesheet"], noscript')
-        .filter(function() {
-          return !$(this).parents('noscript').length;
-        })
-        .last()
-        .get(0);
-
-      $(scriptAnchor).after('\n' + targetIndent + '<script>' + getScript() + '</script>');
-    }
   }
 
-  const output = $.html();
+  // Add loadcss if it's not already loaded
+  if (o.polyfill) {
+    document.maybeAddLoadcss();
+  }
 
-  // Quickfix until https://github.com/fb55/htmlparser2/pull/259 is merged/fixed
-  const svgs = getSvgs(html);
-  const quickfixed = getSvgs(output).reduce((str, code, index) => str.replace(code, svgs[index] || code), output);
-
-  return Buffer.from(quickfixed);
+  return Buffer.from(document.serialize());
 }
 
 module.exports = inline;
