@@ -9,7 +9,8 @@
   },
   "files": [
     "index.js",
-    "cli.js"
+    "cli.js",
+    "src"
   ],
   "bin": "cli.js",
   "repository": {
