@@ -73,6 +73,7 @@ class Dom {
     this.document = document;
     this.window = window;
     this.jsdom = jsdom;
+    this.noscript = [];
 
     this.indent = detectIndent(html);
     this.headIndent = detectIndent(this.document.querySelector('head').innerHTML);
@@ -85,7 +86,11 @@ class Dom {
     // See https://github.com/fb55/htmlparser2/pull/259 (htmlparser2)
     // See https://runkit.com/582b0e9ebe07a80014bf1e82/58400d2db3ef0f0013bae090 (parse5)
     // The current parsers have problems with foreign context elements like svg & math
-    return replacePartials(this.html, html, 'head');
+    const result = replacePartials(this.html, html, 'head');
+    // Add noscript blocks to the end
+    const result2 = result.replace(/^(\s*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+
+    return result2;
   }
 
   createStyleNode(css, referenceIndent = this.headIndent.indent) {
@@ -155,6 +160,12 @@ class Dom {
     referenceNode.append(styles);
     styles.before(this.document.createTextNode(this.headIndent.indent));
     styles.after(this.document.createTextNode('\n' + this.headIndent.indent));
+  }
+
+  addNoscript(link) {
+    const noscript = this.document.createElement('noscript');
+    noscript.append(link.cloneNode());
+    this.noscript = [...new Set([...this.noscript, `<noscript>${noscript.innerHTML}</noscript>`])];
   }
 
   insertBefore(node, referenceNode) {

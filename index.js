@@ -104,16 +104,13 @@ function inline(html, styles, options) {
       const link = document.createElement('link');
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', href);
-
-      const noscript = document.createElement('noscript');
-      noscript.append(link.cloneNode());
+      document.addNoscript(link);
 
       link.setAttribute('rel', 'preload');
       link.setAttribute('as', 'style');
       link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
 
       document.insertBefore(link, ref);
-      document.insertBefore(noscript, ref);
     });
 
     // Remove old links
@@ -144,9 +141,7 @@ function inline(html, styles, options) {
         }
       }
 
-      const noscript = document.createElement('noscript');
-      noscript.append(link.cloneNode());
-      document.insertAfter(noscript, link);
+      document.addNoscript(link);
 
       link.setAttribute('rel', 'preload');
       link.setAttribute('as', 'style');
