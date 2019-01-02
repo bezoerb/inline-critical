@@ -88,9 +88,11 @@ class Dom {
     // The current parsers have problems with foreign context elements like svg & math
     const result = replacePartials(this.html, html, 'head');
     // Add noscript blocks to the end
-    const result2 = result.replace(/^(\s*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    if (this.noscript.length === 0) {
+      return result;
+    }
 
-    return result2;
+    return result.replace(/^(\s*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
   }
 
   createStyleNode(css, referenceIndent = this.headIndent.indent) {
