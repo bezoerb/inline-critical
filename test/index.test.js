@@ -303,3 +303,15 @@ test('Replace stylesheets', async () => {
   expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
   expect(out.toString('utf8')).toMatch('href="replace/all.css"');
 });
+
+test('Remove stylesheets', async () => {
+  const html = await read('fixtures/cartoon.html');
+  const css = await read('fixtures/critical.css');
+
+  const out = inline(html, css, {
+    replaceStylesheets: [],
+  });
+
+  expect(out.toString('utf8')).not.toMatch('css/cartoon.css');
+  expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
+});

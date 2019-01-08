@@ -24,7 +24,7 @@ const DEFAULT_OPTIONS = {
   extract: false,
   polyfill: true,
   ignore: [],
-  replaceStylesheets: [],
+  replaceStylesheets: false,
 };
 
 /**
@@ -87,7 +87,7 @@ function inline(html, styles, options) {
     }
   }
 
-  if (o.replaceStylesheets.length > 0 && links.length > 0) {
+  if (Array.isArray(o.replaceStylesheets) > 0 && links.length > 0) {
     // Detect links to be removed
     const [ref] = links;
     const removable = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"]')].filter(
