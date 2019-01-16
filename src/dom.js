@@ -27,16 +27,17 @@ function getScript() {
  * @returns {array<string>} Array with aöö substrings
  */
 const getPartials = (html = '', tag = 'svg') => {
-  const indices = [];
-  let start = html.indexOf(`<${tag}`, 0);
-  let end = html.indexOf(`</${tag}>`, start) + `</${tag}>`.length;
-  while (start >= 0) {
-    indices.push({start, end});
-    start = html.indexOf(`<${tag}`, end);
-    end = html.indexOf(`</${tag}>`, end) + `</${tag}>`.length;
-  }
+  const result = [];
+  html.replace(new RegExp(`<${tag}(?:\\s[^>]+)?>`, 'ig'), (match, offset, str) => {
+    if (match.includes('/>')) {
+      result.push(str.substring(offset, offset + match.length));
+    } else {
+      result.push(str.substring(offset, str.indexOf(`</${tag}>`, offset) + `</${tag}>`.length));
+    }
+    return match;
+  });
 
-  return indices.map(({start, end}) => html.substring(start, end));
+  return result;
 };
 
 /**
@@ -64,6 +65,7 @@ const replacePartials = (source, dest, tag) => {
 class Dom {
   constructor(html, {minify = true} = {}) {
     const jsdom = new JSDOM(html);
+
     const {window} = jsdom;
     const {document} = window;
     document.$jsdom = jsdom;
@@ -92,7 +94,7 @@ class Dom {
       return result;
     }
 
-    return result.replace(/^(\s*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
   }
 
   createStyleNode(css, referenceIndent = this.headIndent.indent) {
