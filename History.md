@@ -1,4 +1,57 @@
 
+v5.2.0 / 2019-03-26
+===================
+
+  * Allow to configure noscript position
+
+v5.1.3 / 2019-01-16
+===================
+
+  * fix: removed endless loop in getPartials
+
+v5.1.2 / 2019-01-08
+===================
+
+  * fix: remove stylesheets on empty replace array
+
+v5.1.1 / 2019-01-02
+===================
+
+  * fix: prevent newline in case of 0 noscripts
+
+v5.1.0 / 2019-01-02
+===================
+
+  * feature: move noscript links to end of document #139
+
+v5.0.1 / 2019-01-01
+===================
+
+  * Tweaked package.json
+
+v5.0.0 / 2018-12-30
+===================
+
+  * Switched to jsdom (#240)
+  * Bump dependencies
+  * fix: prevent multiple loadcss includes
+  * feature: compare/check already inlined styles
+  * feature: drop cave in favour of postcss-discard
+  * Move tests to Jest
+  * Change indentation to 2 spaces
+  * drop node 6 support
+
+v4.0.7 / 2018-11-29
+===================
+
+  * Add temporary fix for breaking svgs
+  * Bump dependencies
+
+v4.0.6 / 2018-11-28
+===================
+
+  * Add another SVG Test
+
 v4.0.5 / 2018-09-15
 ===================
 
