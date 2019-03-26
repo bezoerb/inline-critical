@@ -22,6 +22,8 @@ Options:
     -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML
     -b, --base      Is used when extracting styles to find the files references by href attributes
     -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining
+
+    --noscript      Position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
 `;
 
 const cli = meow(help, {
@@ -56,6 +58,9 @@ const cli = meow(help, {
     selector: {
       type: 'string',
       alias: 's',
+    },
+    noscript: {
+      type: 'string',
     },
   },
 });

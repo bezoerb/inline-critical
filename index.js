@@ -25,6 +25,7 @@ const DEFAULT_OPTIONS = {
   polyfill: true,
   ignore: [],
   replaceStylesheets: false,
+  noscript: 'body',
 };
 
 /**

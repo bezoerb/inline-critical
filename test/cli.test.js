@@ -133,6 +133,8 @@ describe('Mocked', () => {
       'selector',
       '--minify',
       '--extract',
+      '--noscript',
+      'head',
     ]);
 
     const cssExpected = await read('fixtures/critical.css');
@@ -144,6 +146,7 @@ describe('Mocked', () => {
       ignore: ['ignore-me', /regexp/],
       minify: true,
       extract: true,
+      noscript: 'head',
     });
   });
 });

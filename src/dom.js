@@ -63,13 +63,14 @@ const replacePartials = (source, dest, tag) => {
 };
 
 class Dom {
-  constructor(html, {minify = true} = {}) {
+  constructor(html, {minify = true, noscript = 'body'} = {}) {
     const jsdom = new JSDOM(html);
 
     const {window} = jsdom;
     const {document} = window;
     document.$jsdom = jsdom;
 
+    this.noscriptPosition = noscript;
     this.minify = minify;
     this.html = html;
     this.document = document;
@@ -90,8 +91,12 @@ class Dom {
     // The current parsers have problems with foreign context elements like svg & math
     const result = replacePartials(this.html, html, 'head');
     // Add noscript blocks to the end
-    if (this.noscript.length === 0) {
+    if (this.noscript.length === 0 || this.noscriptPosition === false) {
       return result;
+    }
+
+    if (this.noscriptPosition === 'head') {
+      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
     }
 
     return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);

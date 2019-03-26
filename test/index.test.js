@@ -101,6 +101,34 @@ test('Extract and minify css', async () => {
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
+test('Extract and minify css with alternative noscript option', async () => {
+  const html = await read('fixtures/cartoon.html');
+  const css = await read('fixtures/critical.css');
+  const expected = await read('expected/cartoon-expected-minified-alt.html');
+
+  const styles = await Promise.all([
+    read('fixtures/css/cartoon.css'),
+    read('fixtures/bower_components/bootstrap/dist/css/bootstrap.css'),
+  ]);
+
+  const reved = [
+    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+  ];
+
+  const out = inline(html, css, {
+    extract: true,
+    noscript: 'head',
+    basePath: 'test/fixtures',
+  });
+
+  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(checkAndDelete(reved[0])).toBe(true);
+  expect(checkAndDelete(reved[1])).toBe(true);
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
+});
+
 test('Inline and extract css correctly with absolute paths', async () => {
   const html = await read('fixtures/cartoon-absolute.html');
   const css = await read('fixtures/critical.css');
