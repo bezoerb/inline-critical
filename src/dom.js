@@ -34,6 +34,7 @@ const getPartials = (html = '', tag = 'svg') => {
     } else {
       result.push(str.substring(offset, str.indexOf(`</${tag}>`, offset) + `</${tag}>`.length));
     }
+
     return match;
   });
 
@@ -195,6 +196,7 @@ class Dom {
     ) {
       node.previousSibling.remove();
     }
+
     node.remove();
   }
 

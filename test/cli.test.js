@@ -7,7 +7,7 @@ jest.setTimeout(10000);
 
 describe('acceptance', () => {
   test('Return version', async () => {
-    const {pkg} = await readPkgUp();
+    const {package: pkg} = await readPkgUp();
     const {stdout, stderr, code} = await run(['--version', '--no-update-notifier']);
 
     expect(stderr).toBeFalsy();

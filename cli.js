@@ -79,6 +79,7 @@ cli.flags = _.reduce(
         try {
           res[key] = read(val);
         } catch (error) {}
+
         break;
       case 'base':
         res.basePath = val;
@@ -87,6 +88,7 @@ cli.flags = _.reduce(
         if (_.isString(val) || _.isRegExp(val)) {
           val = [val];
         }
+
         res.ignore = _.map(val || [], ignore => {
           // Check regex
           const match = ignore.match(/^\/(.*)\/([igmy]+)?$/);
@@ -94,6 +96,7 @@ cli.flags = _.reduce(
           if (match) {
             return new RegExp(_.escapeRegExp(match[1]), match[2]);
           }
+
           return ignore;
         });
         break;
@@ -166,5 +169,6 @@ setTimeout(() => {
   if (ok) {
     return;
   }
+
   run();
 }, 100);

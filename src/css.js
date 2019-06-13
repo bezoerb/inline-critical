@@ -10,7 +10,7 @@ const normalizeNewline = require('normalize-newline');
  * @returns {string} Minified css string
  */
 function minifyCss(styles) {
-  return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
+  return new CleanCSS().minify(styles).styles;
 }
 
 /**
