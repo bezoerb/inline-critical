@@ -51,7 +51,7 @@
     "resolve": "^1.11.0",
     "slash": "^3.0.0",
     "uglify-js": "^3.6.0",
-    "snyk": "^1.189.0"
+    "snyk": "^1.192.2"
   },
   "devDependencies": {
     "coveralls": "^3.0.4",
