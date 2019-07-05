@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "xo && jest --coverage",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "files": [
     "index.js",
@@ -48,7 +50,8 @@
     "reaver": "2.0.0",
     "resolve": "^1.11.0",
     "slash": "^3.0.0",
-    "uglify-js": "^3.6.0"
+    "uglify-js": "^3.6.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.4",
@@ -75,5 +78,6 @@
   },
   "engines": {
     "node": ">= 8"
-  }
+  },
+  "snyk": true
 }
