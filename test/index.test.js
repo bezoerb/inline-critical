@@ -2,9 +2,8 @@
 const path = require('path');
 const reaver = require('reaver');
 const {extractCss} = require('../src/css.js');
-const inline = require('..');
-
 const {read, checkAndDelete, strip} = require('./helper');
+const inline = require('..');
 
 jest.setTimeout(20000);
 
