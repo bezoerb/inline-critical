@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+
 'use strict';
+
 const os = require('os');
 const fs = require('fs');
 const meow = require('meow');
@@ -111,7 +113,7 @@ cli.flags = _.reduce(
 );
 
 function processError(err) {
-  process.stderr.write(chalk.red(indentString('Error: ' + (err.message || err), 2)));
+  process.stderr.write(chalk.red(indentString(`Error: ${err.message || err}`, 2)));
   process.stderr.write(os.EOL);
   process.stderr.write(indentString(help, 2));
   process.exit(1);

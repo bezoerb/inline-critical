@@ -1,3 +1,5 @@
+'use strict';
+
 const prettier = require('prettier');
 const CleanCSS = require('clean-css');
 const postcss = require('postcss');
