@@ -4,15 +4,15 @@
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
-    "test": "xo && jest --coverage",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "jest": "jest --coverage",
+    "xo": "xo",
+    "test": "npm run xo && npm run jest",
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "files": [
     "index.js",
     "cli.js",
-    "src"
+    "src/*.js"
   ],
   "bin": "cli.js",
   "repository": {
@@ -37,26 +37,25 @@
     "detect-indent": "^6.0.0",
     "dom-serializer": "^0.1.1",
     "fg-loadcss": "^2.1.0",
-    "fs-extra": "^8.0.1",
     "get-stdin": "^7.0.0",
     "indent-string": "^4.0.0",
     "jsdom": "^15.1.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "meow": "^5.0.0",
     "normalize-newline": "3.0.0",
     "postcss": "^7.0.17",
     "postcss-discard": "^0.3.0",
     "prettier": "^1.18.2",
-    "reaver": "2.0.0",
-    "resolve": "^1.11.0",
+    "reaver": "^2.0.0",
+    "resolve": "^1.12.0",
     "slash": "^3.0.0",
-    "uglify-js": "^3.6.0",
-    "snyk": "^1.189.0"
+    "uglify-js": "^3.6.0"
   },
   "devDependencies": {
-    "coveralls": "^3.0.4",
+    "coveralls": "^3.0.6",
     "eslint-plugin-prettier": "^3.1.0",
     "execa": "^1.0.0",
+    "fs-extra": "^8.1.0",
     "jest": "^24.8.0",
     "read-pkg-up": "^6.0.0",
     "xo": "^0.24.0"
@@ -78,6 +77,5 @@
   },
   "engines": {
     "node": ">= 8"
-  },
-  "snyk": true
+  }
 }
