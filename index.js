@@ -8,7 +8,9 @@
  * http://bezoerb.mit-license.org/
  * All rights reserved.
  */
+
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const isString = require('lodash/isString');
@@ -103,6 +105,7 @@ function inline(html, styles, options) {
     // eslint-disable-next-line array-callback-return
     o.replaceStylesheets.map(href => {
       const link = document.createElement('link');
+
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', href);
       document.addNoscript(link);
@@ -130,6 +133,7 @@ function inline(html, styles, options) {
       if (o.extract) {
         const href = link.getAttribute('href');
         const file = path.resolve(path.join(o.basePath || process.cwd, href));
+
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
           const diff = extractCss(orig, inlined, o.minify);

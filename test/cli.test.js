@@ -1,4 +1,7 @@
 /* eslint-env jest */
+
+'use strict';
+
 const path = require('path');
 const readPkgUp = require('read-pkg-up');
 const {read, strip, run, getArgs, pipe} = require('./helper');

@@ -1,4 +1,7 @@
 /* eslint-env jest */
+
+'use strict';
+
 const path = require('path');
 const fs = require('fs-extra');
 const readPkgUp = require('read-pkg-up');

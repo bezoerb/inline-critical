@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const {JSDOM} = require('jsdom');
@@ -14,8 +16,8 @@ const UglifyJS = require('uglify-js');
 function getScript() {
   const loadCssMain = resolve.sync('fg-loadcss');
   const loadCssBase = path.dirname(loadCssMain);
-
   const loadCSS = fs.readFileSync(path.join(loadCssBase, 'cssrelpreload.js'), 'utf8');
+
   return UglifyJS.minify(loadCSS).code.trim();
 }
 
@@ -117,7 +119,7 @@ class Dom {
       .join(`\n${textIndent}`);
 
     const styles = this.document.createElement('style');
-    styles.append(this.document.createTextNode('\n' + textIndent + text + '\n' + referenceIndent));
+    styles.append(this.document.createTextNode(`\n${textIndent}${text}\n${referenceIndent}`));
     return styles;
   }
 
@@ -162,14 +164,14 @@ class Dom {
   insertStylesBefore(css, referenceNode) {
     const styles = this.createStyleNode(css);
     referenceNode.before(styles);
-    styles.after(this.document.createTextNode('\n' + this.headIndent.indent));
+    styles.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
   }
 
   appendStyles(css, referenceNode) {
     const styles = this.createStyleNode(css);
     referenceNode.append(styles);
     styles.before(this.document.createTextNode(this.headIndent.indent));
-    styles.after(this.document.createTextNode('\n' + this.headIndent.indent));
+    styles.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
   }
 
   addNoscript(link) {
@@ -180,12 +182,12 @@ class Dom {
 
   insertBefore(node, referenceNode) {
     referenceNode.before(node);
-    node.after(this.document.createTextNode('\n' + this.headIndent.indent));
+    node.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
   }
 
   insertAfter(node, referenceNode) {
     referenceNode.after(node);
-    referenceNode.after(this.document.createTextNode('\n' + this.headIndent.indent));
+    referenceNode.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
   }
 
   remove(node) {
@@ -220,7 +222,7 @@ class Dom {
 
     if (scriptAnchor) {
       scriptAnchor.after(script);
-      scriptAnchor.after(this.document.createTextNode('\n' + this.headIndent.indent));
+      scriptAnchor.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
     }
   }
 }
