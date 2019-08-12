@@ -4,7 +4,9 @@
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
-    "test": "xo && nyc mocha test/index.js --timeout 5000",
+    "mocha": "nyc mocha test/index.js --timeout 5000",
+    "xo": "xo",
+    "test": "npm run xo && npm run mocha",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "files": [
