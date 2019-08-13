@@ -27,7 +27,6 @@ describe("Module: inline-critical", function() {
 
         var expected = read("test/expected/index-inlined-async-final.html");
         var out = inlineCritical(html, css, { minify: false });
-
         expect(strip(out.toString("utf-8"))).to.be.equal(strip(expected));
 
         done();
@@ -87,7 +86,7 @@ describe("Module: inline-critical", function() {
         ).to.be.equal(true);
         expect(
             fs.existsSync(
-                "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css"
+                "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.155ef5f4.css"
             )
         ).to.be.equal(true);
         expect(
@@ -97,7 +96,7 @@ describe("Module: inline-critical", function() {
 
         fs.unlinkSync("test/fixtures/css/cartoon.18d89c7f.css");
         fs.unlinkSync(
-            "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css"
+            "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.155ef5f4.css"
         );
         done();
     });
@@ -115,11 +114,11 @@ describe("Module: inline-critical", function() {
         });
 
         expect(
-            fs.existsSync("test/fixtures/css/cartoon.c2b80bd6.css")
+            fs.existsSync("test/fixtures/css/cartoon.08b3295a.css")
         ).to.be.equal(true);
         expect(
             fs.existsSync(
-                "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.fe278701.css"
+                "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.c8dce395.css"
             )
         ).to.be.equal(true);
         expect(
@@ -127,9 +126,9 @@ describe("Module: inline-critical", function() {
         ).to.be.equal(expected);
         expect(strip(out.toString("utf-8"))).to.be.equal(strip(expectedHtml));
 
-        fs.unlinkSync("test/fixtures/css/cartoon.c2b80bd6.css");
+        fs.unlinkSync("test/fixtures/css/cartoon.08b3295a.css");
         fs.unlinkSync(
-            "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.fe278701.css"
+            "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.c8dce395.css"
         );
 
         done();
@@ -152,7 +151,7 @@ describe("Module: inline-critical", function() {
         ).to.be.equal(true);
         expect(
             fs.existsSync(
-                "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css"
+                "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.155ef5f4.css"
             )
         ).to.be.equal(true);
         expect(
@@ -162,7 +161,7 @@ describe("Module: inline-critical", function() {
 
         fs.unlinkSync("test/fixtures/css/cartoon.18d89c7f.css");
         fs.unlinkSync(
-            "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.d561412a.css"
+            "test/fixtures/bower_components/bootstrap/dist/css/bootstrap.155ef5f4.css"
         );
 
         done();
