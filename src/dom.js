@@ -32,9 +32,9 @@ const getPartials = (html = '', tag = 'svg') => {
   const result = [];
   html.replace(new RegExp(`<${tag}(?:\\s[^>]+)?>`, 'ig'), (match, offset, str) => {
     if (match.includes('/>')) {
-      result.push(str.substring(offset, offset + match.length));
+      result.push(str.slice(offset, offset + match.length));
     } else {
-      result.push(str.substring(offset, str.indexOf(`</${tag}>`, offset) + `</${tag}>`.length));
+      result.push(str.slice(offset, str.indexOf(`</${tag}>`, offset) + `</${tag}>`.length));
     }
 
     return match;

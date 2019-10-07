@@ -27,8 +27,8 @@ const checkAndDelete = file => {
 const strip = string => nn(string.replace(/[\r\n]+/gm, ' ').replace(/\s+/gm, ''));
 
 const getBin = async () => {
-  const {package: pkg} = await readPkgUp();
-  return path.join(__dirname, '../../', pkg.bin['inline-critical']);
+  const {packageJson} = await readPkgUp();
+  return path.join(__dirname, '../../', packageJson.bin['inline-critical']);
 };
 
 const run = async (args = []) => {

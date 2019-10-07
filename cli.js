@@ -80,7 +80,7 @@ cli.flags = _.reduce(
       case 'html':
         try {
           res[key] = read(val);
-        } catch (error) {}
+        } catch (_) {}
 
         break;
       case 'base':
@@ -136,7 +136,7 @@ function run(data) {
     try {
       css.parse(data);
       opts.css = data;
-    } catch (error) {
+    } catch (_) {
       opts.html = data;
     }
   }
@@ -146,7 +146,7 @@ function run(data) {
     try {
       css.parse(tmp);
       opts.css = tmp;
-    } catch (error) {
+    } catch (_) {
       opts.html = tmp;
     }
   });

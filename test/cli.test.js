@@ -10,12 +10,12 @@ jest.setTimeout(10000);
 
 describe('acceptance', () => {
   test('Return version', async () => {
-    const {package: pkg} = await readPkgUp();
+    const {packageJson} = await readPkgUp();
     const {stdout, stderr, code} = await run(['--version', '--no-update-notifier']);
 
     expect(stderr).toBeFalsy();
     expect(code).toBe(0);
-    expect(stdout).toBe(pkg.version);
+    expect(stdout).toBe(packageJson.version);
   });
 
   test('should work well with the critical CSS & html file passed as input', async () => {
