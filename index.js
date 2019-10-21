@@ -76,7 +76,7 @@ function getIndent(html, $el) {
  * @param {string} styles
  */
 function minifyCSS(styles) {
-    return new CleanCSS().minify(styles).styles; // eslint-disable-line prefer-destructuring
+    return new CleanCSS().minify(styles).styles;
 }
 
 function extract(css, critical, minify = false) {
@@ -84,6 +84,7 @@ function extract(css, critical, minify = false) {
         css = minifyCSS(css);
         critical = minifyCSS(critical);
     }
+
     return normalizeNewline(postcss(discard({css: critical})).process(css).css);
 }
 
