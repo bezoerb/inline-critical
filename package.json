@@ -6,8 +6,7 @@
   "scripts": {
     "jest": "jest --coverage",
     "xo": "xo",
-    "test": "npm run xo && npm run jest",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "test": "npm run xo && npm run jest"
   },
   "files": [
     "index.js",
@@ -52,7 +51,6 @@
     "uglify-js": "^3.6.0"
   },
   "devDependencies": {
-    "coveralls": "^3.0.6",
     "execa": "^1.0.0",
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",

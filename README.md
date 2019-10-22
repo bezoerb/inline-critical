@@ -81,14 +81,12 @@ Run `inline-critical --help` to see the list of options.
 MIT
 
 [npm-url]: https://npmjs.org/package/inline-critical
-[npm-image]: https://badge.fury.io/js/inline-critical.svg
-[travis-url]: https://travis-ci.org/bezoerb/inline-critical
-[travis-image]: https://secure.travis-ci.org/bezoerb/inline-critical.svg?branch=master
-[appveyor-url]: https://ci.appveyor.com/project/bezoerb/inline-critical/branch/master
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/qb9esocjkpp6hw3q/branch/master?svg=true
+[npm-image]: https://img.shields.io/npm/v/inline-critical.svg
+[ci-url]: https://github.com/bezoerb/inline-critical/actions?workflow=Tests
+[ci-image]: https://github.com/bezoerb/inline-critical/workflows/Tests/badge.svg
 [depstat-url]: https://david-dm.org/bezoerb/inline-critical
-[depstat-image]: https://david-dm.org/bezoerb/inline-critical.svg
+[depstat-image]: https://img.shields.io/david/bezoerb/inline-critical.svg
 [dlcounter-url]: https://www.npmjs.com/package/inline-critical
 [dlcounter-image]: https://img.shields.io/npm/dm/inline-critical.svg
 [coveralls-url]: https://coveralls.io/github/bezoerb/inline-critical?branch=master
-[coveralls-image]: https://coveralls.io/repos/github/bezoerb/inline-critical/badge.svg?branch=master
+[coveralls-image]: https://img.shields.io/coveralls/github/bezoerb/inline-critical/master.svg
