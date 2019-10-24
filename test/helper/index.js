@@ -55,7 +55,7 @@ const getArgs = async (params = []) => {
   expect(inline).toHaveBeenCalledTimes(1);
   inline.mockRestore();
   mockExit.mockRestore();
-  process.argv = origArgv; // eslint-disable-line require-atomic-updates
+  process.argv = origArgv;
   return [html, styles, options];
 };
 
