@@ -3,7 +3,7 @@
 Inline critical-path css and load the existing stylesheets asynchronously.
 Existing link tags will also be wrapped in `<noscript>` so the users with javascript disabled will see the site rendered normally.
 
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Build Status][appveyor-image]][appveyor-url] [![Dependency Status][depstat-image]][depstat-url] [![Download][dlcounter-image]][dlcounter-url] [![Coverage Status][coveralls-image]][coveralls-url]
+[![NPM version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Dependency Status][depstat-image]][depstat-url] [![Download][dlcounter-image]][dlcounter-url] [![Coverage Status][coveralls-image]][coveralls-url]
 
 ## Installation
 
