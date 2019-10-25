@@ -6,8 +6,7 @@
   "scripts": {
     "mocha": "nyc mocha test/index.js --timeout 5000",
     "xo": "xo",
-    "test": "npm run xo && npm run mocha",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "test": "npm run xo && npm run mocha"
   },
   "files": [
     "index.js",
@@ -46,13 +45,12 @@
     "reaver": "^2.0.0",
     "resolve": "^1.12.0",
     "slash": "^2.0.0",
-    "uglify-js": "^3.6.0"
+    "uglify-js": "^3.6.4"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "concat-stream": "^2.0.0",
-    "coveralls": "^3.0.6",
-    "mocha": "^6.2.1",
+    "mocha": "^6.2.2",
     "mockery": "^2.1.0",
     "nyc": "^14.1.1",
     "read-package-json": "^2.1.0",
@@ -70,5 +68,12 @@
   },
   "engines": {
     "node": ">= 6"
+  },
+  "nyc": {
+    "reporter": [
+      "html",
+      "lcov",
+      "text-summary"
+    ]
   }
 }
