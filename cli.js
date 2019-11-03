@@ -6,7 +6,9 @@ const meow = require('meow');
 const indentString = require('indent-string');
 const stdin = require('get-stdin');
 const css = require('css');
-const _ = require('lodash');
+const defaults = require('lodash.defaults');
+const escapeRegExp = require('lodash.escaperegexp');
+const reduce = require('lodash.reduce');
 const inlineCritical = require('.');
 
 let ok;
@@ -59,7 +61,7 @@ const cli = meow(help, {
 });
 
 // Cleanup cli flags
-cli.flags = _.reduce(cli.flags, (res, val, key) => {
+cli.flags = reduce(cli.flags, (res, val, key) => {
     if (key.length <= 1) {
         return res;
     }
@@ -77,16 +79,16 @@ cli.flags = _.reduce(cli.flags, (res, val, key) => {
             res.basePath = val;
             break;
         case 'ignore':
-            if (_.isString(val) || _.isRegExp(val)) {
+            if (!Array.isArray(val)) {
                 val = [val];
             }
 
-            res.ignore = _.map(val || [], ignore => {
+            res.ignore = (val || []).map(ignore => {
                 // Check regex
                 const match = ignore.match(/^\/(.*)\/([igmy]+)?$/);
 
                 if (match) {
-                    return new RegExp(_.escapeRegExp(match[1]), match[2]);
+                    return new RegExp(escapeRegExp(match[1]), match[2]);
                 }
 
                 return ignore;
@@ -116,7 +118,7 @@ function read(file) {
 }
 
 function run(data) {
-    const opts = _.defaults(cli.flags, {basePath: process.cwd()});
+    const opts = defaults(cli.flags, {basePath: process.cwd()});
     ok = true;
 
     if (data) {
@@ -129,7 +131,7 @@ function run(data) {
         }
     }
 
-    _.forEach(cli.input, file => {
+    (cli.input || []).forEach(file => {
         const tmp = read(file);
         try {
             css.parse(tmp);
