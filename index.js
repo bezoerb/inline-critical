@@ -13,8 +13,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const isString = require('lodash/isString');
-const isRegExp = require('lodash/isRegExp');
+const isString = require('lodash.isstring');
+const isRegExp = require('lodash.isregexp');
 const reaver = require('reaver');
 const slash = require('slash');
 

@@ -5,7 +5,6 @@ const path = require('path');
 const {JSDOM} = require('jsdom');
 const resolve = require('resolve');
 const detectIndent = require('detect-indent');
-const flatten = require('lodash/flatten');
 const UglifyJS = require('uglify-js');
 
 /**
@@ -19,6 +18,15 @@ function getScript() {
   const loadCSS = fs.readFileSync(path.join(loadCssBase, 'cssrelpreload.js'), 'utf8');
 
   return UglifyJS.minify(loadCSS).code.trim();
+}
+
+/**
+ * Flattens an array
+ * @param {array} arr Input Array
+ * @returns {array} Flattened Array
+ */
+function flatten(arr) {
+  return arr.reduce((a, b) => a.concat(b), []);
 }
 
 /**
