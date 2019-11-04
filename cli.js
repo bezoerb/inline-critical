@@ -9,7 +9,8 @@ const chalk = require('chalk');
 const indentString = require('indent-string');
 const stdin = require('get-stdin');
 const css = require('css');
-const _ = require('lodash');
+const escapeRegExp = require('lodash.escaperegexp');
+const defaults = require('lodash.defaults');
 const inlineCritical = require('.');
 
 let ok;
@@ -68,49 +69,45 @@ const cli = meow(help, {
 });
 
 // Cleanup cli flags
-cli.flags = _.reduce(
-  cli.flags,
-  (res, val, key) => {
-    if (key.length <= 1) {
-      return res;
-    }
+cli.flags = Object.entries(cli.flags).reduce((res, [key, val]) => {
+  if (key.length <= 1) {
+    return res;
+  }
 
-    switch (key) {
-      case 'css':
-      case 'html':
-        try {
-          res[key] = read(val);
-        } catch (_) {}
+  switch (key) {
+    case 'css':
+    case 'html':
+      try {
+        res[key] = read(val);
+      } catch (_) {}
 
-        break;
-      case 'base':
-        res.basePath = val;
-        break;
-      case 'ignore':
-        if (_.isString(val) || _.isRegExp(val)) {
-          val = [val];
+      break;
+    case 'base':
+      res.basePath = val;
+      break;
+    case 'ignore':
+      if (!Array.isArray(val)) {
+        val = [val];
+      }
+
+      res.ignore = (val || []).map(ignore => {
+        // Check regex
+        const match = ignore.match(/^\/(.*)\/([igmy]+)?$/);
+
+        if (match) {
+          return new RegExp(escapeRegExp(match[1]), match[2]);
         }
 
-        res.ignore = _.map(val || [], ignore => {
-          // Check regex
-          const match = ignore.match(/^\/(.*)\/([igmy]+)?$/);
+        return ignore;
+      });
+      break;
+    default:
+      res[key] = val;
+      break;
+  }
 
-          if (match) {
-            return new RegExp(_.escapeRegExp(match[1]), match[2]);
-          }
-
-          return ignore;
-        });
-        break;
-      default:
-        res[key] = val;
-        break;
-    }
-
-    return res;
-  },
-  {}
-);
+  return res;
+}, {});
 
 function processError(err) {
   process.stderr.write(chalk.red(indentString(`Error: ${err.message || err}`, 2)));
@@ -128,7 +125,7 @@ function read(file) {
 }
 
 function run(data) {
-  const opts = _.defaults(cli.flags, {basePath: process.cwd()});
+  const opts = defaults(cli.flags, {basePath: process.cwd()});
   ok = true;
 
   if (data) {
@@ -141,7 +138,7 @@ function run(data) {
     }
   }
 
-  _.forEach(cli.input, file => {
+  (cli.input || []).forEach(file => {
     const tmp = read(file);
     try {
       css.parse(tmp);
