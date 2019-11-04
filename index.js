@@ -11,7 +11,11 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const _ = require('lodash');
+const assign = require('lodash.assign');
+const escapeRegExp = require('lodash.escaperegexp');
+const filter = require('lodash.filter');
+const isRegExp = require('lodash.isregexp');
+const isString = require('lodash.isstring');
 const UglifyJS = require('uglify-js');
 const reaver = require('reaver');
 const postcss = require('postcss');
@@ -61,10 +65,10 @@ function read(file) {
  * @param $el
  */
 function getIndent(html, $el) {
-    const regName = new RegExp(_.escapeRegExp(_.get($el, 'name')));
-    const regHref = new RegExp(_.escapeRegExp(_.get($el, 'attribs.href')));
-    const regRel = new RegExp(_.escapeRegExp(_.get($el, 'attribs.rel')));
-    const lines = _.filter(html.split(/[\r\n]+/), line => {
+    const regName = new RegExp(escapeRegExp($el || 'name'));
+    const regHref = new RegExp(escapeRegExp($el || 'attribs.href'));
+    const regRel = new RegExp(escapeRegExp($el || 'attribs.rel'));
+    const lines = filter(html.split(/[\r\n]+/), line => {
         return regName.test(line) && regHref.test(line) && regRel.test(line);
     });
     return detectIndent(lines.join('\n')).indent;
@@ -106,7 +110,7 @@ const getSvgs = (str = '') => {
 };
 
 module.exports = function (html, styles, options) {
-    if (!_.isString(html)) {
+    if (!isString(html)) {
         html = String(html);
     }
 
@@ -122,7 +126,7 @@ module.exports = function (html, styles, options) {
 
     let links = allLinks.filter('[rel="stylesheet"]');
 
-    const o = _.assign(
+    const o = assign(
         {
             minify: true
         },
@@ -134,16 +138,16 @@ module.exports = function (html, styles, options) {
     const targetIndent = getIndent(html, target);
     const $target = $(target);
 
-    if (_.isString(o.ignore)) {
+    if (!Array.isArray(o.ignore)) {
         o.ignore = [o.ignore];
     }
 
     if (o.ignore) {
-        links = _.filter(links, link => {
+        links = filter(links, link => {
             const href = $(link).attr('href');
             return (
-                _.findIndex(o.ignore, arg => {
-                    return (_.isRegExp(arg) && arg.test(href)) || arg === href;
+                o.ignore.findIndex(arg => {
+                    return (isRegExp(arg) && arg.test(href)) || arg === href;
                 }) === -1
             );
         });
