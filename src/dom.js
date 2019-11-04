@@ -3,10 +3,11 @@
 const fs = require('fs');
 const path = require('path');
 const {JSDOM} = require('jsdom');
-const resolve = require('resolve');
 const detectIndent = require('detect-indent');
 const flatten = require('lodash/flatten');
 const UglifyJS = require('uglify-js');
+
+const loadCssMain = require.resolve('fg-loadcss');
 
 /**
  * Get loadcss + cssrelpreload script
@@ -14,9 +15,7 @@ const UglifyJS = require('uglify-js');
  * @returns {string} Minified loadcss script
  */
 function getScript() {
-  const loadCssMain = resolve.sync('fg-loadcss');
-  const loadCssBase = path.dirname(loadCssMain);
-  const loadCSS = fs.readFileSync(path.join(loadCssBase, 'cssrelpreload.js'), 'utf8');
+  const loadCSS = fs.readFileSync(path.join(path.dirname(loadCssMain), 'cssrelpreload.js'), 'utf8');
 
   return UglifyJS.minify(loadCSS).code.trim();
 }
