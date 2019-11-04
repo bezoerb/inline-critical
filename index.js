@@ -21,8 +21,9 @@ const render = require('dom-serializer');
 const CleanCSS = require('clean-css');
 const slash = require('slash');
 const normalizeNewline = require('normalize-newline');
-const resolve = require('resolve');
 const detectIndent = require('detect-indent');
+
+const loadCssMain = require.resolve('fg-loadcss');
 
 /**
  * Get loadcss + cssrelpreload script
@@ -30,10 +31,8 @@ const detectIndent = require('detect-indent');
  * @returns {string}
  */
 function getScript() {
-    const loadCssMain = resolve.sync('fg-loadcss');
-    const loadCssBase = path.dirname(loadCssMain);
+    const loadCSS = read(path.join(path.dirname(loadCssMain), 'cssrelpreload.js'));
 
-    const loadCSS = read(path.join(loadCssBase, 'cssrelpreload.js'));
     return UglifyJS.minify(loadCSS).code;
 }
 
