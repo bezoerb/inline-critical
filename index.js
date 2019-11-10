@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const assign = require('lodash.assign');
 const escapeRegExp = require('lodash.escaperegexp');
+const get = require('lodash.get');
 const filter = require('lodash.filter');
 const isRegExp = require('lodash.isregexp');
 const isString = require('lodash.isstring');
@@ -65,9 +66,9 @@ function read(file) {
  * @param $el
  */
 function getIndent(html, $el) {
-    const regName = new RegExp(escapeRegExp($el || 'name'));
-    const regHref = new RegExp(escapeRegExp($el || 'attribs.href'));
-    const regRel = new RegExp(escapeRegExp($el || 'attribs.rel'));
+    const regName = new RegExp(escapeRegExp(get($el, 'name')));
+    const regHref = new RegExp(escapeRegExp(get($el, 'attribs.href')));
+    const regRel = new RegExp(escapeRegExp(get($el, 'attribs.rel')));
     const lines = filter(html.split(/[\r\n]+/), line => {
         return regName.test(line) && regHref.test(line) && regRel.test(line);
     });
