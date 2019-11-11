@@ -109,7 +109,7 @@ const getSvgs = (str = '') => {
     return indices.map(({start, end}) => str.substring(start, end));
 };
 
-module.exports = function (html, styles, options) {
+module.exports = (html, styles, options) => {
     if (!isString(html)) {
         html = String(html);
     }
@@ -163,12 +163,12 @@ module.exports = function (html, styles, options) {
             '<style>',
             indent +
                 styles
-                    .replace(/(\r\n|\r|\n)/g, '$1' + targetIndent + indent)
+                    .replace(/(\r\n|\r|\n)/g, `$1${targetIndent}${indent}`)
                     .replace(/^[\s\t]+$/g, ''),
             '</style>',
             ''
         ]
-            .join('\n' + targetIndent)
+            .join(`\n${targetIndent}`)
             .replace(/(\r\n|\r|\n)[\s\t]+(\r\n|\r|\n)/g, '$1$2');
 
         if ($target.length > 0) {
@@ -207,7 +207,7 @@ module.exports = function (html, styles, options) {
 
             // Add each fallback right behind the current style to keep source order when ignoring stylesheets
             $el.after(
-                '\n' + elIndent + '<noscript>' + render(this) + '</noscript>'
+                `\n${elIndent}<noscript>${render(this)}</noscript>`
             );
 
             // Add preload atttibutes to actual link element
@@ -225,7 +225,7 @@ module.exports = function (html, styles, options) {
             .get(0);
 
         $(scriptAnchor).after(
-            '\n' + targetIndent + '<script>' + getScript() + '</script>'
+            `\n${targetIndent}<script>${getScript()}</script>`
         );
     }
 

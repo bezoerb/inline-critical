@@ -544,8 +544,8 @@ describe('CLI', () => {
                 '-e'
             ];
 
-            process.stdout.write = function () {};
-            process.stderr.write = function () {};
+            process.stdout.write = () => {};
+            process.stderr.write = () => {};
             require('../cli'); // eslint-disable-line import/no-unassigned-import
 
             // Timeout to wait for get-stdin timeout
@@ -591,8 +591,8 @@ describe('CLI', () => {
                 '--extract'
             ];
 
-            process.stdout.write = function () {};
-            process.stderr.write = function () {};
+            process.stdout.write = () => {};
+            process.stderr.write = () => {};
             require('../cli'); // eslint-disable-line import/no-unassigned-import
 
             // Timeout to wait for get-stdin timeout

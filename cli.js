@@ -103,7 +103,7 @@ cli.flags = reduce(cli.flags, (res, val, key) => {
 }, {});
 
 function processError(err) {
-    process.stderr.write(indentString('Error: ' + (err.message || err), 4));
+    process.stderr.write(indentString(`Error: ${err.message || err}`, 4));
     process.stderr.write(os.EOL);
     process.stderr.write(indentString(help, 4));
     process.exit(1);
