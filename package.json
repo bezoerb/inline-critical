@@ -69,7 +69,10 @@
     ],
     "ignores": [
       "test/*.js"
-    ]
+    ],
+    "rules": {
+      "valid-jsdoc": "off"
+    }
   },
   "engines": {
     "node": ">= 6"
