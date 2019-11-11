@@ -67,9 +67,6 @@
       "node",
       "mocha"
     ],
-    "ignores": [
-      "test/*.js"
-    ],
     "rules": {
       "valid-jsdoc": "off"
     }
