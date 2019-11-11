@@ -11,7 +11,6 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const assign = require('lodash.assign');
 const escapeRegExp = require('lodash.escaperegexp');
 const get = require('lodash.get');
 const filter = require('lodash.filter');
@@ -127,7 +126,7 @@ module.exports = function (html, styles, options) {
 
     let links = allLinks.filter('[rel="stylesheet"]');
 
-    const o = assign(
+    const o = Object.assign(
         {
             minify: true
         },
