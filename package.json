@@ -37,7 +37,6 @@
     "fg-loadcss": "^2.1.0",
     "get-stdin": "^6.0.0",
     "indent-string": "^3.2.0",
-    "lodash.assign": "^4.2.0",
     "lodash.defaults": "^4.2.0",
     "lodash.escaperegexp": "^4.1.2",
     "lodash.filter": "^4.6.0",
@@ -68,9 +67,9 @@
       "node",
       "mocha"
     ],
-    "ignores": [
-      "test/*.js"
-    ]
+    "rules": {
+      "valid-jsdoc": "off"
+    }
   },
   "engines": {
     "node": ">= 6"
