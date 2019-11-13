@@ -61,10 +61,10 @@ function inline(html, styles, options) {
   const document = new Dom(html, o);
 
   const inlineStyles = document.getInlineStyles();
-  const extarnalStyles = document.getExternalStyles();
+  const externalStyles = document.getExternalStyles();
   const missingStyles = extractCss(styles, ...inlineStyles);
 
-  const links = extarnalStyles.filter(link => {
+  const links = externalStyles.filter(link => {
     // Only take stylesheets
     const stylesheet = link.getAttribute('rel') === 'stylesheet';
     // Filter ignored links
