@@ -74,7 +74,7 @@ Run `inline-critical --help` to see the list of options.
   - `basePath` will be used when extracting styles to find the files references by `href` attributes
   - `ignore` ignore matching stylesheets when inlining.
   - `selector` defines the element used by loadCSS as a reference for inlining.
-  - `noscript` specifies osition of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
+  - `noscript` specifies position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
 
 ## License
 
