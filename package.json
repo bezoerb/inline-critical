@@ -6,7 +6,9 @@
   "scripts": {
     "jest": "jest --coverage",
     "xo": "xo",
-    "test": "npm run xo && npm run jest"
+    "test": "npm run xo && npm run jest",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "files": [
     "index.js",
@@ -49,7 +51,8 @@
     "prettier": "^1.19.1",
     "reaver": "^2.0.0",
     "slash": "^3.0.0",
-    "uglify-js": "^3.6.8"
+    "uglify-js": "^3.6.8",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "execa": "^1.0.0",
@@ -75,5 +78,6 @@
   },
   "engines": {
     "node": ">= 8"
-  }
+  },
+  "snyk": true
 }
