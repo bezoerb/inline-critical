@@ -22,10 +22,13 @@ Options:
     -h, --html      Path to HTML file
     -i, --ignore    Skip matching stylesheets
     -m, --minify    Minify the styles before inlining (default)
+    -p, --preload   Adds preload tags
+
     -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML
     -b, --base      Is used when extracting styles to find the files references by href attributes
     -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining
 
+    --polyfill      Use loadCSS polyfill instead of media=print
     --noscript      Position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
 `;
 
@@ -61,6 +64,15 @@ const cli = meow(help, {
     selector: {
       type: 'string',
       alias: 's',
+    },
+    preload: {
+      type: 'boolean',
+      alias: 'p',
+      default: false,
+    },
+    polyfill: {
+      type: 'boolean',
+      default: false,
     },
     noscript: {
       type: 'string',
