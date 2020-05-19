@@ -51,7 +51,6 @@ function normalizePath(str) {
 function inline(html, styles, options) {
   const o = {...DEFAULT_OPTIONS, ...(options || {})};
 
-  // console.log(o);
   if (!isString(html)) {
     html = String(html);
   }

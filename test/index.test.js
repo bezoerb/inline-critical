@@ -636,4 +636,6 @@ test('Remove stylesheets', async () => {
 
   expect(out2.toString('utf8')).not.toMatch('css/cartoon.css');
   expect(out2.toString('utf8')).not.toMatch('css/bootstrap.css');
+  expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
+  expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
 });
