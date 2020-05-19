@@ -19,7 +19,7 @@ describe('acceptance', () => {
   });
 
   test('should work well with the critical CSS & html file passed as input', async () => {
-    const expected = await read('expected/index-inlined-async-final.html');
+    const expected = await read('expected/index-inlined-async-final-print.html');
     const {stdout, code} = await run(['test/fixtures/index.html', 'test/fixtures/critical.css', '--no-minify']);
 
     expect(code).toBe(0);
@@ -33,6 +33,7 @@ describe('acceptance', () => {
       'test/fixtures/index.html',
       'test/fixtures/critical.css',
       '--no-minify',
+      '--polyfill',
     ]);
 
     expect(code).toBe(0);
@@ -46,6 +47,7 @@ describe('acceptance', () => {
       'test/fixtures/critical.css',
       'test/fixtures/index.html',
       '--no-minify',
+      '--polyfill',
     ]);
 
     expect(code).toBe(0);
@@ -53,7 +55,7 @@ describe('acceptance', () => {
   });
 
   test('Work well with the critical CSS file piped to inline-critical and html file as input', async () => {
-    const expected = await read('expected/index-inlined-async-final.html');
+    const expected = await read('expected/index-inlined-async-final-print.html');
     const {stdout, code} = await pipe('fixtures/critical.css', ['test/fixtures/index.html', '--no-minify']);
 
     expect(code).toBe(0);
@@ -61,7 +63,7 @@ describe('acceptance', () => {
   });
 
   test('Work well with the html file piped to inline-critical and critical CSS file as input', async () => {
-    const expected = await read('expected/index-inlined-async-final.html');
+    const expected = await read('expected/index-inlined-async-final-print.html');
     const {stdout, code} = await pipe('fixtures/index.html', ['test/fixtures/critical.css', '--no-minify']);
 
     expect(code).toBe(0);
@@ -100,6 +102,7 @@ describe('Mocked', () => {
       'selector',
       '-m',
       '-e',
+      '-p',
     ]);
 
     const cssExpected = await read('fixtures/critical.css');
@@ -111,6 +114,7 @@ describe('Mocked', () => {
       ignore: ['ignore-me', /regexp/],
       minify: true,
       extract: true,
+      preload: true,
     });
   });
 
@@ -130,6 +134,8 @@ describe('Mocked', () => {
       'selector',
       '--minify',
       '--extract',
+      '--preload',
+      '--polyfill',
       '--noscript',
       'head',
     ]);
@@ -143,6 +149,8 @@ describe('Mocked', () => {
       ignore: ['ignore-me', /regexp/],
       minify: true,
       extract: true,
+      preload: true,
+      polyfill: true,
       noscript: 'head',
     });
   });
