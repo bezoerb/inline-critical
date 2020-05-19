@@ -24,7 +24,8 @@ const {prettifyCss, extractCss} = require('./src/css');
 const DEFAULT_OPTIONS = {
   minify: true,
   extract: false,
-  polyfill: true,
+  polyfill: false,
+  preload: false,
   ignore: [],
   replaceStylesheets: false,
   noscript: 'body',
@@ -50,6 +51,7 @@ function normalizePath(str) {
 function inline(html, styles, options) {
   const o = {...DEFAULT_OPTIONS, ...(options || {})};
 
+  // console.log(o);
   if (!isString(html)) {
     html = String(html);
   }
@@ -110,11 +112,26 @@ function inline(html, styles, options) {
       link.setAttribute('href', href);
       document.addNoscript(link);
 
-      link.setAttribute('rel', 'preload');
-      link.setAttribute('as', 'style');
-      link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+      if (o.polyfill) {
+        link.setAttribute('rel', 'preload');
+        link.setAttribute('as', 'style');
+        link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+      } else {
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('media', 'print');
+        link.setAttribute('onload', "this.media='all'");
+      }
 
       document.insertBefore(link, ref);
+
+      if (!o.polyfill && o.preload) {
+        const preload = document.createElement('link');
+        preload.setAttribute('rel', 'preload');
+        preload.setAttribute('href', link.getAttribute('href'));
+        preload.setAttribute('as', 'style');
+
+        document.insertBefore(preload, link);
+      }
     });
 
     // Remove old links
@@ -148,9 +165,23 @@ function inline(html, styles, options) {
 
       document.addNoscript(link);
 
-      link.setAttribute('rel', 'preload');
-      link.setAttribute('as', 'style');
-      link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+      if (o.polyfill) {
+        link.setAttribute('rel', 'preload');
+        link.setAttribute('as', 'style');
+        link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+      } else {
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('media', 'print');
+        link.setAttribute('onload', "this.media='all'");
+      }
+
+      if (!o.polyfill && o.preload) {
+        const preload = document.createElement('link');
+        preload.setAttribute('href', link.getAttribute('href'));
+        preload.setAttribute('rel', 'preload');
+        preload.setAttribute('as', 'style');
+        document.insertBefore(preload, link);
+      }
     });
   }
 
