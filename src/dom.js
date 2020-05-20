@@ -106,10 +106,10 @@ class Dom {
     }
 
     if (this.noscriptPosition === 'head') {
-      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`); // eslint-disable-line prefer-named-capture-group
     }
 
-    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`); // eslint-disable-line prefer-named-capture-group
   }
 
   createStyleNode(css, referenceIndent = this.headIndent.indent) {

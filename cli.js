@@ -104,10 +104,11 @@ cli.flags = Object.entries(cli.flags).reduce((res, [key, val]) => {
 
       res.ignore = (val || []).map(ignore => {
         // Check regex
-        const match = ignore.match(/^\/(.*)\/([igmy]+)?$/);
+        const {groups} = /^\/(?<expression>.*)\/(?<flags>[igmy]+)?$/.exec(ignore) || {};
+        const {expression, flags} = groups || {};
 
-        if (match) {
-          return new RegExp(escapeRegExp(match[1]), match[2]);
+        if (groups) {
+          return new RegExp(escapeRegExp(expression), flags);
         }
 
         return ignore;
