@@ -37,8 +37,8 @@ const DEFAULT_OPTIONS = {
  * @param {string} str Filepath
  * @return {string} Normalized path
  */
-function normalizePath(str) {
-  return process.platform === 'win32' ? slash(str) : str;
+function normalizePath(string) {
+  return process.platform === 'win32' ? slash(string) : string;
 }
 
 /**
@@ -56,7 +56,7 @@ function inline(html, styles, options) {
   }
 
   if (!Array.isArray(o.ignore)) {
-    o.ignore = [o.ignore].filter(i => i);
+    o.ignore = [o.ignore].filter((i) => i);
   }
 
   const document = new Dom(html, o);
@@ -65,12 +65,12 @@ function inline(html, styles, options) {
   const externalStyles = document.getExternalStyles();
   const missingStyles = extractCss(styles, ...inlineStyles);
 
-  const links = externalStyles.filter(link => {
+  const links = externalStyles.filter((link) => {
     // Only take stylesheets
     const stylesheet = link.getAttribute('rel') === 'stylesheet';
     // Filter ignored links
     const href = link.getAttribute('href');
-    return stylesheet && !o.ignore.some(i => (isRegExp(i) && i.test(href)) || i === href);
+    return stylesheet && !o.ignore.some((i) => (isRegExp(i) && i.test(href)) || i === href);
   });
 
   const targetSelectors = [
@@ -95,16 +95,16 @@ function inline(html, styles, options) {
     // Detect links to be removed
     const [ref] = links;
     const removable = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"]')].filter(
-      link => {
+      (link) => {
         // Filter ignored links
         const href = link.getAttribute('href');
-        return !o.ignore.some(i => (isRegExp(i) && i.test(href)) || i === href);
+        return !o.ignore.some((i) => (isRegExp(i) && i.test(href)) || i === href);
       }
     );
 
     // Add link tags before old links
     // eslint-disable-next-line array-callback-return
-    o.replaceStylesheets.map(href => {
+    o.replaceStylesheets.map((href) => {
       const link = document.createElement('link');
 
       link.setAttribute('rel', 'stylesheet');
@@ -121,7 +121,7 @@ function inline(html, styles, options) {
         link.setAttribute('onload', "this.media='all'");
       }
 
-      document.insertBefore(link, ref);
+      ref.before(link);
 
       if (!o.polyfill && o.preload) {
         const preload = document.createElement('link');
@@ -129,13 +129,13 @@ function inline(html, styles, options) {
         preload.setAttribute('href', link.getAttribute('href'));
         preload.setAttribute('as', 'style');
 
-        document.insertBefore(preload, link);
+        link.before(preload);
       }
     });
 
     // Remove old links
     // eslint-disable-next-line array-callback-return
-    removable.map(link => {
+    removable.map((link) => {
       if (link.parentElement.tagName === 'NOSCRIPT') {
         document.remove(link.parentElement);
       } else {
@@ -145,7 +145,7 @@ function inline(html, styles, options) {
   } else {
     // Modify links and add clones to noscript block
     // eslint-disable-next-line array-callback-return
-    links.map(link => {
+    links.map((link) => {
       if (o.extract) {
         const href = link.getAttribute('href');
         const file = path.resolve(path.join(o.basePath || process.cwd, href));
@@ -179,7 +179,7 @@ function inline(html, styles, options) {
         preload.setAttribute('href', link.getAttribute('href'));
         preload.setAttribute('rel', 'preload');
         preload.setAttribute('as', 'style');
-        document.insertBefore(preload, link);
+        link.before(preload);
       }
     });
   }

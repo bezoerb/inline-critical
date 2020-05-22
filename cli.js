@@ -47,6 +47,7 @@ const cli = meow(help, {
     ignore: {
       type: 'string',
       alias: 'i',
+      isMultiple: true,
     },
     minify: {
       type: 'boolean',
@@ -81,28 +82,28 @@ const cli = meow(help, {
 });
 
 // Cleanup cli flags
-cli.flags = Object.entries(cli.flags).reduce((res, [key, val]) => {
+cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
   if (key.length <= 1) {
-    return res;
+    return result;
   }
 
   switch (key) {
     case 'css':
     case 'html':
       try {
-        res[key] = read(val);
+        result[key] = read(value);
       } catch (_) {}
 
       break;
     case 'base':
-      res.basePath = val;
+      result.basePath = value;
       break;
     case 'ignore':
-      if (!Array.isArray(val)) {
-        val = [val];
+      if (!Array.isArray(value)) {
+        value = [value];
       }
 
-      res.ignore = (val || []).map(ignore => {
+      result.ignore = (value || []).map((ignore) => {
         // Check regex
         const {groups} = /^\/(?<expression>.*)\/(?<flags>[igmy]+)?$/.exec(ignore) || {};
         const {expression, flags} = groups || {};
@@ -115,11 +116,11 @@ cli.flags = Object.entries(cli.flags).reduce((res, [key, val]) => {
       });
       break;
     default:
-      res[key] = val;
+      result[key] = value;
       break;
   }
 
-  return res;
+  return result;
 }, {});
 
 function processError(err) {
@@ -138,34 +139,34 @@ function read(file) {
 }
 
 function run(data) {
-  const opts = defaults(cli.flags, {basePath: process.cwd()});
+  const options_ = defaults(cli.flags, {basePath: process.cwd()});
   ok = true;
 
   if (data) {
     // Detect html
     try {
       css.parse(data);
-      opts.css = data;
+      options_.css = data;
     } catch (_) {
-      opts.html = data;
+      options_.html = data;
     }
   }
 
-  (cli.input || []).forEach(file => {
-    const tmp = read(file);
+  (cli.input || []).forEach((file) => {
+    const temporary = read(file);
     try {
-      css.parse(tmp);
-      opts.css = tmp;
+      css.parse(temporary);
+      options_.css = temporary;
     } catch (_) {
-      opts.html = tmp;
+      options_.html = temporary;
     }
   });
 
-  if (!opts.html || !opts.css) {
+  if (!options_.html || !options_.css) {
     cli.showHelp();
   }
 
-  const {html, css: styles, ...options} = opts;
+  const {html, css: styles, ...options} = options_;
 
   try {
     const out = inlineCritical(html, styles, options);

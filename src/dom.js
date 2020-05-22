@@ -24,8 +24,8 @@ function getScript() {
  * @param {array} arr Input Array
  * @returns {array} Flattened Array
  */
-function flatten(arr) {
-  return arr.reduce((a, b) => a.concat(b), []);
+function flatten(array) {
+  return array.reduce((a, b) => a.concat(b), []);
 }
 
 /**
@@ -37,11 +37,11 @@ function flatten(arr) {
  */
 const getPartials = (html = '', tag = 'svg') => {
   const result = [];
-  html.replace(new RegExp(`<${tag}(?:\\s[^>]+)?>`, 'ig'), (match, offset, str) => {
+  html.replace(new RegExp(`<${tag}(?:\\s[^>]+)?>`, 'ig'), (match, offset, string) => {
     if (match.includes('/>')) {
-      result.push(str.slice(offset, offset + match.length));
+      result.push(string.slice(offset, offset + match.length));
     } else {
-      result.push(str.slice(offset, str.indexOf(`</${tag}>`, offset) + `</${tag}>`.length));
+      result.push(string.slice(offset, string.indexOf(`</${tag}>`, offset) + `</${tag}>`.length));
     }
 
     return match;
@@ -68,7 +68,7 @@ const replacePartials = (source, dest, tag) => {
     const newTags = getPartials(dest, tag);
     const oldTags = getPartials(result, tag);
 
-    return oldTags.reduce((str, code, index) => str.replace(code, newTags[index] || code), result);
+    return oldTags.reduce((string, code, index) => string.replace(code, newTags[index] || code), result);
   }, source);
 };
 
@@ -106,10 +106,10 @@ class Dom {
     }
 
     if (this.noscriptPosition === 'head') {
-      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`); // eslint-disable-line prefer-named-capture-group
+      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
     }
 
-    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`); // eslint-disable-line prefer-named-capture-group
+    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
   }
 
   createStyleNode(css, referenceIndent = this.headIndent.indent) {
@@ -135,18 +135,18 @@ class Dom {
   }
 
   getInlineStyles() {
-    return [...this.document.querySelectorAll('head style')].map(node => node.textContent);
+    return [...this.document.querySelectorAll('head style')].map((node) => node.textContent);
   }
 
   getExternalStyles() {
     return [...this.document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"]')].filter(
-      link => link.parentElement.tagName !== 'NOSCRIPT'
+      (link) => link.parentElement.tagName !== 'NOSCRIPT'
     );
   }
 
   querySelector(...selector) {
     const s = flatten(selector)
-      .filter(s => s)
+      .filter((s) => s)
       .join(',');
 
     return this.document.querySelector(s);
@@ -154,7 +154,7 @@ class Dom {
 
   querySelectorAll(...selector) {
     const s = flatten(selector)
-      .filter(s => s)
+      .filter((s) => s)
       .join(',');
 
     return this.document.querySelectorAll(s);
@@ -211,7 +211,7 @@ class Dom {
 
   maybeAddLoadcss() {
     // Only add loadcss if it's not already included
-    const loadCssIncluded = [...this.document.querySelectorAll('script')].some(tag =>
+    const loadCssIncluded = [...this.document.querySelectorAll('script')].some((tag) =>
       (tag.textContent || '').includes('loadCSS')
     );
 
@@ -222,7 +222,7 @@ class Dom {
     // Add loadcss + cssrelpreload polyfill
     const nodes = [
       ...this.document.querySelectorAll('head link[rel="stylesheet"],head link[rel="preload"],head noscript'),
-    ].filter(link => link.parentElement.tagName !== 'NOSCRIPT');
+    ].filter((link) => link.parentElement.tagName !== 'NOSCRIPT');
     const scriptAnchor = nodes.pop();
     const script = this.document.createElement('script');
     script.append(this.document.createTextNode(getScript()));

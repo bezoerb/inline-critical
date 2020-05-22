@@ -30,33 +30,33 @@
     "url": "https://github.com/bezoerb/inline-critical/issues"
   },
   "dependencies": {
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "clean-css": "^4.2.3",
     "css": "^2.2.4",
     "detect-indent": "^6.0.0",
     "fg-loadcss": "^2.1.0",
-    "get-stdin": "^7.0.0",
+    "get-stdin": "^8.0.0",
     "indent-string": "^4.0.0",
-    "jsdom": "^15.2.1",
+    "jsdom": "^16.2.2",
     "lodash.defaults": "^4.2.0",
     "lodash.escaperegexp": "^4.1.2",
     "lodash.isregexp": "^4.0.1",
     "lodash.isstring": "^4.0.1",
-    "meow": "^5.0.0",
+    "meow": "^7.0.1",
     "normalize-newline": "^3.0.0",
     "postcss": "^7.0.30",
-    "postcss-discard": "^0.3.3",
-    "prettier": "^1.19.1",
+    "postcss-discard": "^0.3.7",
+    "prettier": "^2.0.5",
     "reaver": "^2.0.0",
     "slash": "^3.0.0",
     "uglify-js": "^3.9.3"
   },
   "devDependencies": {
-    "execa": "^1.0.0",
-    "fs-extra": "^8.1.0",
+    "execa": "^4.0.2",
+    "fs-extra": "^9.0.0",
     "jest": "^26.0.1",
     "read-pkg-up": "^7.0.1",
-    "xo": "^0.25.3"
+    "xo": "^0.30.0"
   },
   "xo": {
     "space": 2,

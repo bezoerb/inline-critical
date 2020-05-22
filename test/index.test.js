@@ -1,7 +1,5 @@
 /* eslint-env jest */
-
 'use strict';
-
 const path = require('path');
 const reaver = require('reaver');
 const {extractCss} = require('../src/css.js');
@@ -544,7 +542,6 @@ test('Ignore stylesheets wrapped in noscript', async () => {
 
   const expected = await read('expected/index-noscript-inlined-minified-final.html');
   const out = inline(html, css, {minify: true, polyfill: true});
-
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 

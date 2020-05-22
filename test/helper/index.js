@@ -1,20 +1,19 @@
 /* eslint-env jest */
 
 'use strict';
-
 const path = require('path');
 const fs = require('fs-extra');
 const readPkgUp = require('read-pkg-up');
 const execa = require('execa');
 const nn = require('normalize-newline');
 
-const read = async file => {
+const read = async (file) => {
   const filepath = path.isAbsolute(file) ? file : path.join(__dirname, '..', file);
   const content = await fs.readFile(filepath, 'utf8');
   return nn(content);
 };
 
-const checkAndDelete = file => {
+const checkAndDelete = (file) => {
   const filepath = path.isAbsolute(file) ? file : path.join(__dirname, '..', file);
   if (fs.existsSync(filepath)) {
     fs.removeSync(filepath);
@@ -24,7 +23,7 @@ const checkAndDelete = file => {
   return false;
 };
 
-const strip = string => nn(string.replace(/[\r\n]+/gm, ' ').replace(/\s+/gm, ''));
+const strip = (string) => nn(string.replace(/[\r\n]+/gm, ' ').replace(/\s+/gm, ''));
 
 const getBin = async () => {
   const {packageJson} = await readPkgUp();
@@ -36,20 +35,20 @@ const run = async (args = []) => {
   return execa('node', [bin, ...args]);
 };
 
-const getArgs = async (params = []) => {
+const getArgs = async (parameters = []) => {
   const bin = await getBin();
   const origArgv = process.argv;
   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
 
   jest.mock('../../index', () => jest.fn(() => ''));
 
-  process.argv = ['node', bin, ...params];
+  process.argv = ['node', bin, ...parameters];
   const inline = require('../..');
 
   require('../../cli'); // eslint-disable-line import/no-unassigned-import
 
   // wait for cli to run
-  await new Promise(resolve => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 200));
   const [args] = inline.mock.calls;
   const [html, styles, options] = args || ['', '', {}];
   expect(inline).toHaveBeenCalledTimes(1);
@@ -64,7 +63,7 @@ const pipe = async (file, args = []) => {
   const cat = process.platform === 'win32' ? 'type' : 'cat';
   const bin = await getBin();
   const cmd = `${cat} ${path.normalize(filepath)} | node ${bin} ${args.join(' ')}`;
-  return execa.shell(cmd);
+  return execa(cmd, {shell: true});
 };
 
 module.exports = {
