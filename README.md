@@ -16,21 +16,20 @@ $ npm install inline-critical
 ## Example Usage
 
 ```js
-var inline = require('inline-critical');
-var html = fs.readFileSync('test/fixtures/index.html', 'utf8');
-var critical = fs.readFileSync('test/fixtures/critical.css', 'utf8');
-
-var inlined = inline(html, critical);
+const inline = require('inline-critical');
+const html = fs.readFileSync('test/fixtures/index.html', 'utf8');
+const critical = fs.readFileSync('test/fixtures/critical.css', 'utf8');
+const inlined = inline(html, critical);
 ```
 
 ## Example Usage ignoring stylesheet per regex
 
 ```js
-var inline = require('inline-critical');
-var html = fs.readFileSync('test/fixtures/index.html', 'utf8');
-var critical = fs.readFileSync('test/fixtures/critical.css', 'utf8');
+const inline = require('inline-critical');
+const html = fs.readFileSync('test/fixtures/index.html', 'utf8');
+const critical = fs.readFileSync('test/fixtures/critical.css', 'utf8');
 
-var inlined = inline(html, critical, {
+const inlined = inline(html, critical, {
   ignore: [/bootstrap/],
 });
 ```
