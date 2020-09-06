@@ -48,7 +48,7 @@ const getArgs = async (parameters = []) => {
   require('../../cli'); // eslint-disable-line import/no-unassigned-import
 
   // wait for cli to run
-  await new Promise((resolve) => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 200)); // eslint-disable-line no-promise-executor-return
   const [args] = inline.mock.calls;
   const [html, styles, options] = args || ['', '', {}];
   expect(inline).toHaveBeenCalledTimes(1);

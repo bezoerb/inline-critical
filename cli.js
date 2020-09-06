@@ -92,7 +92,7 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
     case 'html':
       try {
         result[key] = read(value);
-      } catch (_) {}
+      } catch {}
 
       break;
     case 'base':
@@ -147,7 +147,7 @@ function run(data) {
     try {
       css.parse(data);
       options_.css = data;
-    } catch (_) {
+    } catch {
       options_.html = data;
     }
   }
@@ -157,7 +157,7 @@ function run(data) {
     try {
       css.parse(temporary);
       options_.css = temporary;
-    } catch (_) {
+    } catch {
       options_.html = temporary;
     }
   });

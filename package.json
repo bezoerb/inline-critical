@@ -30,37 +30,40 @@
     "url": "https://github.com/bezoerb/inline-critical/issues"
   },
   "dependencies": {
-    "chalk": "^4.0.0",
+    "chalk": "^4.1.0",
     "clean-css": "^4.2.3",
-    "css": "^2.2.4",
+    "css": "^3.0.0",
     "detect-indent": "^6.0.0",
     "fg-loadcss": "^2.1.0",
     "get-stdin": "^8.0.0",
     "indent-string": "^4.0.0",
-    "jsdom": "^16.2.2",
+    "jsdom": "^16.4.0",
     "lodash.defaults": "^4.2.0",
     "lodash.escaperegexp": "^4.1.2",
     "lodash.isregexp": "^4.0.1",
     "lodash.isstring": "^4.0.1",
-    "meow": "^7.0.1",
+    "meow": "^7.1.1",
     "normalize-newline": "^3.0.0",
-    "postcss": "^7.0.30",
-    "postcss-discard": "^0.3.7",
-    "prettier": "^2.0.5",
+    "postcss": "^7.0.32",
+    "postcss-discard": "^1.0.0",
+    "prettier": "^2.1.1",
     "reaver": "^2.0.0",
     "slash": "^3.0.0",
-    "uglify-js": "^3.9.3"
+    "uglify-js": "^3.10.4"
   },
   "devDependencies": {
-    "execa": "^4.0.2",
-    "fs-extra": "^9.0.0",
-    "jest": "^26.0.1",
+    "execa": "^4.0.3",
+    "fs-extra": "^9.0.1",
+    "jest": "^26.4.2",
     "read-pkg-up": "^7.0.1",
-    "xo": "^0.30.0"
+    "xo": "^0.33.1"
   },
   "xo": {
     "space": 2,
-    "prettier": true
+    "prettier": true,
+    "rules": {
+      "unicorn/no-reduce": "off"
+    }
   },
   "jest": {
     "roots": [
