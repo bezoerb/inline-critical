@@ -1,6 +1,6 @@
 {
   "name": "inline-critical",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,9 @@
     "cli.js",
     "src/*.js"
   ],
-  "bin": "cli.js",
+  "bin": {
+    "inline-critical": "cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bezoerb/inline-critical"
