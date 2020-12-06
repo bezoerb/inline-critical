@@ -179,6 +179,12 @@ function inline(html, styles, options) {
         preload.setAttribute('href', link.getAttribute('href'));
         preload.setAttribute('rel', 'preload');
         preload.setAttribute('as', 'style');
+        const integrity = link.getAttribute('integrity');
+
+        if (integrity !== null) {
+          preload.setAttribute('integrity', integrity);
+        }
+
         link.before(preload);
       }
     });
