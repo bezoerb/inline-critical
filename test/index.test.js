@@ -636,3 +636,33 @@ test('Remove stylesheets', async () => {
   expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
   expect(out.toString('utf8')).not.toMatch('css/bootstrap.css');
 });
+
+test('Keep existing integrity attribute on style tags', async () => {
+  const html = await read('fixtures/index-integrity.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-inlined-async-integrity.html');
+  const out = inline(html, css, {minify: false, polyfill: true});
+
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Keep existing integrity attribute on style tags with media=print', async () => {
+  const html = await read('fixtures/index-integrity.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-inlined-async-integrity-print.html');
+  const out = inline(html, css, {minify: false, polyfill: false});
+
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Keep existing integrity attribute on style tags with media=print && preload', async () => {
+  const html = await read('fixtures/index-integrity.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-inlined-async-integrity-print-preload.html');
+  const out = inline(html, css, {minify: false, polyfill: false, preload: true});
+
+  expect(strip(out.toString())).toBe(strip(expected));
+});
