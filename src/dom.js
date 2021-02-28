@@ -25,7 +25,7 @@ function getScript() {
  * @returns {array} Flattened Array
  */
 function flatten(array) {
-  return array.reduce((a, b) => a.concat(b), []);
+  return array.reduce((a, b) => [...a, b], []);
 }
 
 /**
