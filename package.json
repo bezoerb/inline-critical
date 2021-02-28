@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "clean-css": "^4.2.3",
+    "clean-css": "^5.1.0",
     "css": "^3.0.0",
     "detect-indent": "^6.0.0",
     "fg-loadcss": "^2.1.0",
@@ -44,27 +44,29 @@
     "lodash.escaperegexp": "^4.1.2",
     "lodash.isregexp": "^4.0.1",
     "lodash.isstring": "^4.0.1",
-    "meow": "^8.1.0",
+    "meow": "^9.0.0",
     "normalize-newline": "^3.0.0",
-    "postcss": "^7.0.32",
+    "postcss": "^8.2.6",
     "postcss-discard": "^1.0.1",
     "prettier": "^2.2.1",
     "reaver": "^2.0.0",
     "slash": "^3.0.0",
-    "uglify-js": "^3.12.3"
+    "uglify-js": "^3.12.8"
   },
   "devDependencies": {
-    "execa": "^4.1.0",
-    "fs-extra": "^9.0.1",
+    "execa": "^5.0.0",
+    "fs-extra": "^9.1.0",
     "jest": "^26.6.3",
     "read-pkg-up": "^7.0.1",
-    "xo": "^0.36.1"
+    "xo": "^0.38.2"
   },
   "xo": {
     "space": 2,
     "prettier": true,
     "rules": {
-      "unicorn/no-reduce": "off"
+      "unicorn/no-reduce": "off",
+      "unicorn/no-array-reduce": "off",
+      "unicorn/no-array-for-each": "off"
     }
   },
   "jest": {
@@ -79,6 +81,6 @@
     "bracketSpacing": false
   },
   "engines": {
-    "node": ">=10"
+    "node": "^10 || ^12 || >=14"
   }
 }

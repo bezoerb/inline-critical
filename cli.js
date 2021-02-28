@@ -123,8 +123,8 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
   return result;
 }, {});
 
-function processError(err) {
-  process.stderr.write(chalk.red(indentString(`Error: ${err.message || err}`, 2)));
+function processError(error) {
+  process.stderr.write(chalk.red(indentString(`Error: ${error.message || error}`, 2)));
   process.stderr.write(os.EOL);
   process.stderr.write(indentString(help, 2));
   process.exit(1);
