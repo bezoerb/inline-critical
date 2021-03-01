@@ -70,7 +70,6 @@ Run `inline-critical --help` to see the list of options.
 - `options` is an optional configuration object
   - `polyfill` will use loadCSS polyfill instead of preferred media=print strategy (https://www.filamentgroup.com/lab/load-css-simpler/)
   - `preload` will add preload tags
-  - `minify` will minify the styles before inlining (default: true)
   - `extract` will remove the inlined styles from any stylesheets referenced in the HTML
   - `basePath` will be used when extracting styles to find the files references by `href` attributes
   - `ignore` ignore matching stylesheets when inlining.

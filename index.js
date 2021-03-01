@@ -19,7 +19,7 @@ const reaver = require('reaver');
 const slash = require('slash');
 
 const Dom = require('./src/dom');
-const {prettifyCss, extractCss} = require('./src/css');
+const {extractCss} = require('./src/css');
 
 const DEFAULT_OPTIONS = {
   minify: true,
@@ -84,11 +84,7 @@ function inline(html, styles, options) {
   const inlined = `${inlineStyles}\n${missingStyles}`;
 
   if (missingStyles) {
-    if (o.minify) {
-      document.addInlineStyles(missingStyles, target);
-    } else {
-      document.addInlineStyles(prettifyCss(missingStyles, document.indent), target);
-    }
+    document.addInlineStyles(missingStyles, target);
   }
 
   if (Array.isArray(o.replaceStylesheets) && links.length > 0) {
@@ -152,7 +148,7 @@ function inline(html, styles, options) {
 
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
-          const diff = extractCss(orig, inlined, o.minify);
+          const diff = extractCss(orig, inlined);
           const filename = reaver.rev(file, diff);
 
           fs.writeFileSync(filename, diff);

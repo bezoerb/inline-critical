@@ -1,6 +1,5 @@
 'use strict';
 
-const prettier = require('prettier');
 const CleanCSS = require('clean-css');
 const postcss = require('postcss');
 const discard = require('postcss-discard');
@@ -13,20 +12,6 @@ const normalizeNewline = require('normalize-newline');
  */
 function minifyCss(styles) {
   return new CleanCSS().minify(styles).styles;
-}
-
-/**
- * Prettify CSS
- * @param {string} styles CSS
- * @param {object} indent Result object returned by detect-indent
- * @returns {string} Prettified css string
- */
-function prettifyCss(styles, indent = {}) {
-  return prettier.format(styles, {
-    parser: 'css',
-    useTabs: indent.type === 'tab',
-    tabWidth: indent.amount || 2,
-  });
 }
 
 /**
@@ -47,6 +32,5 @@ function extractCss(styles, ...css) {
 
 module.exports = {
   minifyCss,
-  prettifyCss,
   extractCss,
 };
