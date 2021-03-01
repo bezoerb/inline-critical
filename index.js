@@ -148,16 +148,23 @@ function inline(html, styles, options) {
     links.map((link) => {
       if (o.extract) {
         const href = link.getAttribute('href');
-        const file = path.resolve(path.join(o.basePath || process.cwd, href));
+        const fileOrig = path.resolve(path.join(o.basePath || process.cwd, href));
+        const files = [fileOrig, fileOrig.replace(/\?.*/, '')];
 
-        if (fs.existsSync(file)) {
-          const orig = fs.readFileSync(file);
-          const diff = extractCss(orig, inlined, o.minify);
-          const filename = reaver.rev(file, diff);
+        for (const file of files) {
+          if (fs.existsSync(file)) {
+            const orig = fs.readFileSync(file);
+            const diff = extractCss(orig, inlined, o.minify);
+            const filename = reaver.rev(file, diff);
 
-          fs.writeFileSync(filename, diff);
-          link.setAttribute('href', normalizePath(reaver.rev(href, diff)));
-        } else if (!/\/\//.test(href)) {
+            fs.writeFileSync(filename, diff);
+            link.setAttribute('href', normalizePath(reaver.rev(href, diff)));
+            // eslint-disable-next-line array-callback-return
+            return;
+          }
+        }
+
+        if (!/\/\//.test(href)) {
           throw new Error(`Error: file "${href}" not found in "${o.basePath || process.cwd}". Specify base path.`);
         }
       }

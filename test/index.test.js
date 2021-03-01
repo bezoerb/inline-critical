@@ -16,6 +16,14 @@ test('Inline css', async () => {
   expect(strip(out.toString())).toBe(strip(expected));
 });
 
+test('Inline css with query string link', async () => {
+  const html = await read('fixtures/index-query.html');
+  const css = await read('fixtures/critical.css');
+  const expected = await read('expected/index-inlined-async-query.html');
+  const out = inline(html, css, {minify: false, polyfill: true});
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
 test('Inline css with media=print', async () => {
   const html = await read('fixtures/index.html');
   const css = await read('fixtures/critical.css');
