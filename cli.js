@@ -41,10 +41,6 @@ const cli = meow(help, {
       type: 'string',
       alias: 'c',
     },
-    exactSelector: {
-      type: 'boolean',
-      default: false,
-    },
     html: {
       type: 'string',
       alias: 'h',
@@ -59,6 +55,11 @@ const cli = meow(help, {
       alias: 'm',
       default: true,
     },
+    preload: {
+      type: 'boolean',
+      alias: 'p',
+      default: false,
+    },
     extract: {
       type: 'boolean',
       alias: 'e',
@@ -71,9 +72,8 @@ const cli = meow(help, {
       type: 'string',
       alias: 's',
     },
-    preload: {
+    exactSelector: {
       type: 'boolean',
-      alias: 'p',
       default: false,
     },
     polyfill: {
