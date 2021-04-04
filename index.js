@@ -73,12 +73,21 @@ function inline(html, styles, options) {
     return stylesheet && !o.ignore.some((i) => (isRegExp(i) && i.test(href)) || i === href);
   });
 
-  const targetSelectors = [
-    o.selector,
-    ':not(noscript) > link[rel="stylesheet"]',
-    ':not(noscript) > link[rel="preload"][as="style"]',
-    'head script',
-  ];
+  let targetSelectors;
+  if (o.exactSelector) {
+    if (!o.selector) {
+      throw new Error(`Error: exactSelector option provided but no selector provided. Specify selector.`);
+    }
+
+    targetSelectors = [o.selector];
+  } else {
+    targetSelectors = [
+      o.selector,
+      ':not(noscript) > link[rel="stylesheet"]',
+      ':not(noscript) > link[rel="preload"][as="style"]',
+      'head script',
+    ];
+  }
 
   const target = document.querySelector(targetSelectors);
   const inlined = `${inlineStyles}\n${missingStyles}`;

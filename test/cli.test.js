@@ -135,6 +135,7 @@ describe('Mocked', () => {
       '--minify',
       '--extract',
       '--preload',
+      '--exactSelector',
       '--polyfill',
       '--noscript',
       'head',
@@ -150,6 +151,7 @@ describe('Mocked', () => {
       minify: true,
       extract: true,
       preload: true,
+      exactSelector: true,
       polyfill: true,
       noscript: 'head',
     });
