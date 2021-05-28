@@ -22,13 +22,11 @@ const Dom = require('./src/dom');
 const {extractCss} = require('./src/css');
 
 const DEFAULT_OPTIONS = {
-  minify: true,
   extract: false,
-  polyfill: false,
-  preload: false,
   ignore: [],
   replaceStylesheets: false,
   noscript: 'body',
+  strategy: undefined,
 };
 
 /**
@@ -142,8 +140,11 @@ function inline(html, styles, options) {
     // Modify links and add clones to noscript block
     // eslint-disable-next-line array-callback-return
     links.map((link) => {
+      const href = link.getAttribute('href');
+      const media = link.getAttribute('media');
+      const integrity = link.getAttribute('integrity');
+
       if (o.extract) {
-        const href = link.getAttribute('href');
         const file = path.resolve(path.join(o.basePath || process.cwd, href));
 
         if (fs.existsSync(file)) {
@@ -158,36 +159,40 @@ function inline(html, styles, options) {
         }
       }
 
-      document.addNoscript(link);
+      const noscriptFallback =
+        o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap' || o.strategy === 'media';
+      if (noscriptFallback) {
+        document.addNoscript(link);
+      }
 
-      if (o.polyfill) {
+      if (o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap') {
         link.setAttribute('rel', 'preload');
         link.setAttribute('as', 'style');
         link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
-      } else {
+      } else if (o.strategy === 'media') {
+        // @see https://www.filamentgroup.com/lab/load-css-simpler/
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('media', 'print');
-        link.setAttribute('onload', "this.media='all'");
-      }
+        link.setAttribute('onload', `this.media='${media || 'all'}'`);
+      } else {
+        link.setAttribute('rel', 'preload');
+        link.setAttribute('as', 'style');
+        const bodyLink = document.createElement('link');
+        bodyLink.setAttribute('rel', 'stylesheet');
+        if (media) bodyLink.setAttribute('media', media);
+        if (integrity) bodyLink.setAttribute('integrity', integrity);
+        bodyLink.setAttribute('href', href);
+        document.addElementToBody(bodyLink);
 
-      if (!o.polyfill && o.preload) {
-        const preload = document.createElement('link');
-        preload.setAttribute('href', link.getAttribute('href'));
-        preload.setAttribute('rel', 'preload');
-        preload.setAttribute('as', 'style');
-        const integrity = link.getAttribute('integrity');
-
-        if (integrity !== null) {
-          preload.setAttribute('integrity', integrity);
+        if (o.strategy === 'body') {
+          document.remove(link);
         }
-
-        link.before(preload);
       }
     });
   }
 
   // Add loadcss if it's not already loaded
-  if (o.polyfill) {
+  if (o.polyfill || o.strategy === 'polyfill') {
     document.maybeAddLoadcss();
   }
 

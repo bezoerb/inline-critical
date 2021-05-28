@@ -87,6 +87,8 @@ class Dom {
     this.window = window;
     this.jsdom = jsdom;
     this.noscript = [];
+    this.headElements = [];
+    this.bodyElements = [];
 
     this.indent = detectIndent(html);
     this.headIndent = detectIndent(this.document.querySelector('head').innerHTML);
@@ -99,17 +101,26 @@ class Dom {
     // See https://github.com/fb55/htmlparser2/pull/259 (htmlparser2)
     // See https://runkit.com/582b0e9ebe07a80014bf1e82/58400d2db3ef0f0013bae090 (parse5)
     // The current parsers have problems with foreign context elements like svg & math
-    const result = replacePartials(this.html, html, 'head');
-    // Add noscript blocks to the end
-    if (this.noscript.length === 0 || this.noscriptPosition === false) {
-      return result;
+    let result = replacePartials(this.html, html, 'head');
+
+    const head =
+      this.noscriptPosition === 'head' && this.noscriptPosition !== false
+        ? [...this.headElements, ...this.noscript]
+        : [...this.headElements];
+    const body =
+      this.noscriptPosition !== 'head' && this.noscriptPosition !== false
+        ? [...this.bodyElements, ...this.noscript]
+        : [...this.bodyElements];
+
+    if (head.length > 0) {
+      result = result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${head.join('\n$1$1')}\n$1$2`);
     }
 
-    if (this.noscriptPosition === 'head') {
-      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    if (body.length > 0) {
+      result = result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${body.join('\n$1$1')}\n$1$2`);
     }
 
-    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    return result;
   }
 
   createStyleNode(css, referenceIndent = this.headIndent.indent) {
@@ -132,6 +143,14 @@ class Dom {
 
   createElement(tag) {
     return this.document.createElement(tag);
+  }
+
+  addElementToHead(element) {
+    this.headElements.push(element.outerHTML);
+  }
+
+  addElementToBody(element) {
+    this.bodyElements.push(element.outerHTML);
   }
 
   getInlineStyles() {
