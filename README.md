@@ -68,7 +68,7 @@ Run `inline-critical --help` to see the list of options.
 - `html` is the HTML you want to use to inline your critical styles, or any other styles
 - `styles` are the styles you're looking to inline
 - `options` is an optional configuration object
-  - `strategy` select the [preload strategy](#preloadstrategy) use loadCSS polyfill instead of preferred media=print strategy (https://www.filamentgroup.com/lab/load-css-simpler/)
+  - `strategy` select the [preload strategy](#preloadstrategy)
   - `extract` will remove the inlined styles from any stylesheets referenced in the HTML
   - `basePath` will be used when extracting styles to find the files references by `href` attributes
   - `ignore` ignore matching stylesheets when inlining.
@@ -82,7 +82,7 @@ _[JS]_ indicates that a strategy requires JavaScript (falls back to `<noscript>`
 
 - **default:** Move stylesheet links to the end of the document and insert preload meta tags in their place.
 - **"body":** Move all external stylesheet links to the end of the document.
-- **"media":** Load stylesheets asynchronously by adding `media="print"` and removing once loaded. _[JS]_
+- **"media":** Load stylesheets asynchronously by adding `media="print"` and swap to `media="all"` once loaded (https://www.filamentgroup.com/lab/load-css-simpler/). _[JS]_
 - **"swap":** Convert stylesheet links to preloads that swap to `rel="stylesheet"` once loaded. _[JS]_
 - **"polyfill":** Inject [LoadCSS](https://github.com/filamentgroup/loadCSS) and use it to load stylesheets. _[JS]_
 
