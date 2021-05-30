@@ -85,6 +85,13 @@ function inline(html, styles, options) {
     document.addInlineStyles(missingStyles, target);
   }
 
+  const noscriptFallback = o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap' || o.strategy === 'media';
+
+  // Add loadcss if it's not already loaded
+  if (o.polyfill || o.strategy === 'polyfill') {
+    document.maybeAddLoadcss();
+  }
+
   if (Array.isArray(o.replaceStylesheets) && links.length > 0) {
     // Detect links to be removed
     const [ref] = links;
@@ -103,27 +110,32 @@ function inline(html, styles, options) {
 
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', href);
-      document.addNoscript(link);
+      ref.before(link);
 
-      if (o.polyfill) {
+      if (noscriptFallback) {
+        document.addNoscript(link);
+      }
+
+      if (o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap') {
         link.setAttribute('rel', 'preload');
         link.setAttribute('as', 'style');
         link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
-      } else {
+      } else if (o.strategy === 'media') {
+        // @see https://www.filamentgroup.com/lab/load-css-simpler/
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('media', 'print');
-        link.setAttribute('onload', "this.media='all'");
-      }
+        link.setAttribute('onload', `this.media='all'`);
+      } else {
+        link.setAttribute('rel', 'preload');
+        link.setAttribute('as', 'style');
+        const bodyLink = document.createElement('link');
+        bodyLink.setAttribute('rel', 'stylesheet');
+        bodyLink.setAttribute('href', href);
+        document.addElementToBody(bodyLink);
 
-      ref.before(link);
-
-      if (!o.polyfill && o.preload) {
-        const preload = document.createElement('link');
-        preload.setAttribute('rel', 'preload');
-        preload.setAttribute('href', link.getAttribute('href'));
-        preload.setAttribute('as', 'style');
-
-        link.before(preload);
+        if (o.strategy === 'body') {
+          document.remove(link);
+        }
       }
     });
 
@@ -142,6 +154,7 @@ function inline(html, styles, options) {
     links.map((link) => {
       const href = link.getAttribute('href');
       const media = link.getAttribute('media');
+      const type = link.getAttribute('type');
       const integrity = link.getAttribute('integrity');
 
       if (o.extract) {
@@ -159,8 +172,6 @@ function inline(html, styles, options) {
         }
       }
 
-      const noscriptFallback =
-        o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap' || o.strategy === 'media';
       if (noscriptFallback) {
         document.addNoscript(link);
       }
@@ -177,10 +188,24 @@ function inline(html, styles, options) {
       } else {
         link.setAttribute('rel', 'preload');
         link.setAttribute('as', 'style');
+        if (type) {
+          link.removeAttribute('type');
+        }
+
         const bodyLink = document.createElement('link');
         bodyLink.setAttribute('rel', 'stylesheet');
-        if (media) bodyLink.setAttribute('media', media);
-        if (integrity) bodyLink.setAttribute('integrity', integrity);
+        if (media) {
+          bodyLink.setAttribute('media', media);
+        }
+
+        if (integrity) {
+          bodyLink.setAttribute('integrity', integrity);
+        }
+
+        if (type) {
+          bodyLink.setAttribute('type', type);
+        }
+
         bodyLink.setAttribute('href', href);
         document.addElementToBody(bodyLink);
 
@@ -189,11 +214,6 @@ function inline(html, styles, options) {
         }
       }
     });
-  }
-
-  // Add loadcss if it's not already loaded
-  if (o.polyfill || o.strategy === 'polyfill') {
-    document.maybeAddLoadcss();
   }
 
   return Buffer.from(document.serialize());

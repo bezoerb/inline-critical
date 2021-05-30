@@ -8,6 +8,8 @@ const UglifyJS = require('uglify-js');
 
 const loadCssMain = require.resolve('fg-loadcss');
 
+const escapeRegExp = (string) => (string || '').replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+
 /**
  * Get loadcss + cssrelpreload script
  *
@@ -187,10 +189,15 @@ class Dom {
     }
   }
 
+  getNodeIndent(node) {
+    const reg = new RegExp(`([^\\S\\r\\n]*)${escapeRegExp(node.outerHTML)}`);
+    const [, indent] = reg.exec(this.jsdom.serialize()) || ['', ''];
+    return indent || '';
+  }
+
   insertStylesBefore(css, referenceNode) {
     const styles = this.createStyleNode(css);
-    referenceNode.before(styles);
-    styles.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    this.insertBefore(styles, referenceNode);
   }
 
   appendStyles(css, referenceNode) {
@@ -207,13 +214,19 @@ class Dom {
   }
 
   insertBefore(node, referenceNode) {
+    const indent = this.getNodeIndent(referenceNode);
     referenceNode.before(node);
-    node.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    if (indent.length > 0) {
+      node.after(this.document.createTextNode(`\n${indent}`));
+    }
   }
 
   insertAfter(node, referenceNode) {
+    const indent = this.getNodeIndent(referenceNode);
     referenceNode.after(node);
-    referenceNode.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    if (indent.length > 0) {
+      referenceNode.after(this.document.createTextNode(`\n${indent}`));
+    }
   }
 
   remove(node) {
@@ -247,8 +260,7 @@ class Dom {
     script.append(this.document.createTextNode(getScript()));
 
     if (scriptAnchor) {
-      scriptAnchor.after(script);
-      scriptAnchor.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+      this.insertAfter(script, scriptAnchor);
     }
   }
 }

@@ -2,7 +2,8 @@
 <html class="no-js">
     <head>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="css/main.css">
+        <style>.blue{color:#00f}.green{color:green}</style>
+        <link rel="preload" href="css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <style>
             .red {
                 color: red;
@@ -13,5 +14,6 @@
         <div class="container">
             Test
         </div>
+        <noscript><link rel="stylesheet" href="css/main.css"></noscript>
     </body>
 </html>
