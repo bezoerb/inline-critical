@@ -522,6 +522,19 @@ test('Respect selector option (with media=print)', async () => {
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
+test('Respect selector option (with exactSelector option)', async () => {
+  const html = await read('fixtures/index-script.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-script-before-exact.html');
+  const out = inline(html, css, {
+    polyfill: true,
+    selector: 'link[rel="stylesheet"]',
+    exactSelector: true,
+  });
+
+  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+});
 test('Ignore stylesheets wrapped in noscript', async () => {
   const html = await read('fixtures/index-noscript.html');
   const css = await read('fixtures/critical.css');

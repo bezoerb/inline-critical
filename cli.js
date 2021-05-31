@@ -18,18 +18,19 @@ const help = `
 Usage: inline-critical <input> [<option>]
 
 Options:
-    -c, --css       Path to CSS file
-    -h, --html      Path to HTML file
-    -i, --ignore    Skip matching stylesheets
-    -m, --minify    Minify the styles before inlining (default)
-    -p, --preload   Adds preload tags
+    -c, --css         Path to CSS file
+    -h, --html        Path to HTML file
+    -i, --ignore      Skip matching stylesheets
+    -m, --minify      Minify the styles before inlining (default)
+    -p, --preload     Adds preload tags
 
-    -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML
-    -b, --base      Is used when extracting styles to find the files references by href attributes
-    -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining
+    -e, --extract     Remove the inlined styles from any stylesheets referenced in the HTML
+    -b, --base        Is used when extracting styles to find the files references by href attributes
+    -s, --selector    Optionally defines the element used by loadCSS as a reference for inlining
 
-    --polyfill      Use loadCSS polyfill instead of media=print
-    --noscript      Position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
+    --exact-selector  Match against only the provided selector as a reference for inlining
+    --polyfill        Use loadCSS polyfill instead of media=print
+    --noscript        Position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
 `;
 
 const cli = meow(help, {
@@ -54,6 +55,11 @@ const cli = meow(help, {
       alias: 'm',
       default: true,
     },
+    preload: {
+      type: 'boolean',
+      alias: 'p',
+      default: false,
+    },
     extract: {
       type: 'boolean',
       alias: 'e',
@@ -66,9 +72,8 @@ const cli = meow(help, {
       type: 'string',
       alias: 's',
     },
-    preload: {
+    exactSelector: {
       type: 'boolean',
-      alias: 'p',
       default: false,
     },
     polyfill: {
