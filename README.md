@@ -74,6 +74,7 @@ Run `inline-critical --help` to see the list of options.
   - `ignore` ignore matching stylesheets when inlining.
   - `selector` defines the element used by loadCSS as a reference for inlining.
   - `noscript` specifies position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
+  - `replaceStylesheets` takes an array of stylesheet hrefs to replace the original links in the document. (Used by critical when you extract uncritical css to a target file)
 
 ### PreloadStrategy
 

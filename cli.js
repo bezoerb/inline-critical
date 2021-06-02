@@ -100,10 +100,6 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
       result.basePath = value;
       break;
     case 'ignore':
-      if (!Array.isArray(value)) {
-        value = [value];
-      }
-
       result.ignore = (value || []).map((ignore) => {
         // Check regex
         const {groups} = /^\/(?<expression>.*)\/(?<flags>[igmy]+)?$/.exec(ignore) || {};

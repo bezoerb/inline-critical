@@ -19,7 +19,7 @@ const reaver = require('reaver');
 const slash = require('slash');
 
 const Dom = require('./src/dom');
-const {extractCss} = require('./src/css');
+const {removeDuplicateStyles} = require('./src/css');
 
 const DEFAULT_OPTIONS = {
   extract: false,
@@ -53,6 +53,10 @@ function inline(html, styles, options) {
     html = String(html);
   }
 
+  if (!isString(styles)) {
+    styles = String(styles);
+  }
+
   if (!Array.isArray(o.ignore)) {
     o.ignore = [o.ignore].filter((i) => i);
   }
@@ -61,7 +65,7 @@ function inline(html, styles, options) {
 
   const inlineStyles = document.getInlineStyles();
   const externalStyles = document.getExternalStyles();
-  const missingStyles = extractCss(styles, ...inlineStyles);
+  const missingStyles = removeDuplicateStyles(styles, ...inlineStyles);
 
   const links = externalStyles.filter((link) => {
     // Only take stylesheets
@@ -162,7 +166,7 @@ function inline(html, styles, options) {
 
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
-          const diff = extractCss(orig, inlined);
+          const diff = removeDuplicateStyles(orig, inlined);
           const filename = reaver.rev(file, diff);
 
           fs.writeFileSync(filename, diff);
@@ -188,6 +192,7 @@ function inline(html, styles, options) {
       } else {
         link.setAttribute('rel', 'preload');
         link.setAttribute('as', 'style');
+        link.removeAttribute('media');
         if (type) {
           link.removeAttribute('type');
         }

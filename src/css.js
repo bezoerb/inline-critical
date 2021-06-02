@@ -20,7 +20,7 @@ function minifyCss(styles) {
  * @param {array<string>} css CSS
  * @returns {string} css string not containing any of the styles defined in css array
  */
-function extractCss(styles, ...css) {
+function removeDuplicateStyles(styles, ...css) {
   const _styles = normalizeNewline(minifyCss(styles || ''));
   const _css = normalizeNewline(minifyCss(css.join('\n')));
   if (_css.trim() !== '') {
@@ -32,5 +32,5 @@ function extractCss(styles, ...css) {
 
 module.exports = {
   minifyCss,
-  extractCss,
+  removeDuplicateStyles,
 };

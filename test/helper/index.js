@@ -19,8 +19,6 @@ const checkAndDelete = (file) => {
     fs.removeSync(filepath);
     return true;
   }
-
-  return false;
 };
 
 const strip = (string) => nn(string.replace(/[\r\n]+/gm, ' ').replace(/\s+/gm, ''));

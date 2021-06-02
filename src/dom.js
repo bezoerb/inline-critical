@@ -31,11 +31,11 @@ function flatten(array) {
 }
 
 /**
- * Get all subsctings of of the passed tags
+ * Get all substrings of of the passed tags
  * Does not work with self closing tags
  * @param {string} html Html string
  * @param {string} tag Tagname
- * @returns {array<string>} Array with aöö substrings
+ * @returns {array<string>} Array with substrings
  */
 const getPartials = (html = '', tag = 'svg') => {
   const result = [];
@@ -125,30 +125,14 @@ class Dom {
     return result;
   }
 
-  createStyleNode(css, referenceIndent = this.headIndent.indent) {
-    if (this.minify) {
-      const styles = this.document.createElement('style');
-      styles.append(this.document.createTextNode(css));
-      return styles;
-    }
-
-    const textIndent = String(referenceIndent + this.indent.indent);
-    const text = css
-      .trim()
-      .split(/[\r\n]+/)
-      .join(`\n${textIndent}`);
-
+  createStyleNode(css) {
     const styles = this.document.createElement('style');
-    styles.append(this.document.createTextNode(`\n${textIndent}${text}\n${referenceIndent}`));
+    styles.append(this.document.createTextNode(css));
     return styles;
   }
 
   createElement(tag) {
     return this.document.createElement(tag);
-  }
-
-  addElementToHead(element) {
-    this.headElements.push(element.outerHTML);
   }
 
   addElementToBody(element) {
