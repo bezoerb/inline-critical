@@ -8,6 +8,8 @@ const UglifyJS = require('uglify-js');
 
 const loadCssMain = require.resolve('fg-loadcss');
 
+const escapeRegExp = (string) => (string || '').replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+
 /**
  * Get loadcss + cssrelpreload script
  *
@@ -29,11 +31,11 @@ function flatten(array) {
 }
 
 /**
- * Get all subsctings of of the passed tags
+ * Get all substrings of of the passed tags
  * Does not work with self closing tags
  * @param {string} html Html string
  * @param {string} tag Tagname
- * @returns {array<string>} Array with aöö substrings
+ * @returns {array<string>} Array with substrings
  */
 const getPartials = (html = '', tag = 'svg') => {
   const result = [];
@@ -87,6 +89,8 @@ class Dom {
     this.window = window;
     this.jsdom = jsdom;
     this.noscript = [];
+    this.headElements = [];
+    this.bodyElements = [];
 
     this.indent = detectIndent(html);
     this.headIndent = detectIndent(this.document.querySelector('head').innerHTML);
@@ -99,39 +103,40 @@ class Dom {
     // See https://github.com/fb55/htmlparser2/pull/259 (htmlparser2)
     // See https://runkit.com/582b0e9ebe07a80014bf1e82/58400d2db3ef0f0013bae090 (parse5)
     // The current parsers have problems with foreign context elements like svg & math
-    const result = replacePartials(this.html, html, 'head');
-    // Add noscript blocks to the end
-    if (this.noscript.length === 0 || this.noscriptPosition === false) {
-      return result;
+    let result = replacePartials(this.html, html, 'head');
+
+    const head =
+      this.noscriptPosition === 'head' && this.noscriptPosition !== false
+        ? [...this.headElements, ...this.noscript]
+        : [...this.headElements];
+    const body =
+      this.noscriptPosition !== 'head' && this.noscriptPosition !== false
+        ? [...this.bodyElements, ...this.noscript]
+        : [...this.bodyElements];
+
+    if (head.length > 0) {
+      result = result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${head.join('\n$1$1')}\n$1$2`);
     }
 
-    if (this.noscriptPosition === 'head') {
-      return result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    if (body.length > 0) {
+      result = result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${body.join('\n$1$1')}\n$1$2`);
     }
 
-    return result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${this.noscript.join('\n$1$1')}\n$1$2`);
+    return result;
   }
 
-  createStyleNode(css, referenceIndent = this.headIndent.indent) {
-    if (this.minify) {
-      const styles = this.document.createElement('style');
-      styles.append(this.document.createTextNode(css));
-      return styles;
-    }
-
-    const textIndent = String(referenceIndent + this.indent.indent);
-    const text = css
-      .trim()
-      .split(/[\r\n]+/)
-      .join(`\n${textIndent}`);
-
+  createStyleNode(css) {
     const styles = this.document.createElement('style');
-    styles.append(this.document.createTextNode(`\n${textIndent}${text}\n${referenceIndent}`));
+    styles.append(this.document.createTextNode(css));
     return styles;
   }
 
   createElement(tag) {
     return this.document.createElement(tag);
+  }
+
+  addElementToBody(element) {
+    this.bodyElements.push(element.outerHTML);
   }
 
   getInlineStyles() {
@@ -168,10 +173,15 @@ class Dom {
     }
   }
 
+  getNodeIndent(node) {
+    const reg = new RegExp(`([^\\S\\r\\n]*)${escapeRegExp(node.outerHTML)}`);
+    const [, indent] = reg.exec(this.jsdom.serialize()) || ['', ''];
+    return indent || '';
+  }
+
   insertStylesBefore(css, referenceNode) {
     const styles = this.createStyleNode(css);
-    referenceNode.before(styles);
-    styles.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    this.insertBefore(styles, referenceNode);
   }
 
   appendStyles(css, referenceNode) {
@@ -188,13 +198,19 @@ class Dom {
   }
 
   insertBefore(node, referenceNode) {
+    const indent = this.getNodeIndent(referenceNode);
     referenceNode.before(node);
-    node.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    if (indent.length > 0) {
+      node.after(this.document.createTextNode(`\n${indent}`));
+    }
   }
 
   insertAfter(node, referenceNode) {
+    const indent = this.getNodeIndent(referenceNode);
     referenceNode.after(node);
-    referenceNode.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    if (indent.length > 0) {
+      referenceNode.after(this.document.createTextNode(`\n${indent}`));
+    }
   }
 
   remove(node) {
@@ -228,8 +244,7 @@ class Dom {
     script.append(this.document.createTextNode(getScript()));
 
     if (scriptAnchor) {
-      scriptAnchor.after(script);
-      scriptAnchor.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+      this.insertAfter(script, scriptAnchor);
     }
   }
 }

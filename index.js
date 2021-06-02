@@ -19,16 +19,14 @@ const reaver = require('reaver');
 const slash = require('slash');
 
 const Dom = require('./src/dom');
-const {extractCss} = require('./src/css');
+const {removeDuplicateStyles} = require('./src/css');
 
 const DEFAULT_OPTIONS = {
-  minify: true,
   extract: false,
-  polyfill: false,
-  preload: false,
   ignore: [],
   replaceStylesheets: false,
   noscript: 'body',
+  strategy: undefined,
 };
 
 /**
@@ -55,6 +53,10 @@ function inline(html, styles, options) {
     html = String(html);
   }
 
+  if (!isString(styles)) {
+    styles = String(styles);
+  }
+
   if (!Array.isArray(o.ignore)) {
     o.ignore = [o.ignore].filter((i) => i);
   }
@@ -63,7 +65,7 @@ function inline(html, styles, options) {
 
   const inlineStyles = document.getInlineStyles();
   const externalStyles = document.getExternalStyles();
-  const missingStyles = extractCss(styles, ...inlineStyles);
+  const missingStyles = removeDuplicateStyles(styles, ...inlineStyles);
 
   const links = externalStyles.filter((link) => {
     // Only take stylesheets
@@ -87,6 +89,13 @@ function inline(html, styles, options) {
     document.addInlineStyles(missingStyles, target);
   }
 
+  const noscriptFallback = o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap' || o.strategy === 'media';
+
+  // Add loadcss if it's not already loaded
+  if (o.polyfill || o.strategy === 'polyfill') {
+    document.maybeAddLoadcss();
+  }
+
   if (Array.isArray(o.replaceStylesheets) && links.length > 0) {
     // Detect links to be removed
     const [ref] = links;
@@ -105,27 +114,32 @@ function inline(html, styles, options) {
 
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', href);
-      document.addNoscript(link);
+      ref.before(link);
 
-      if (o.polyfill) {
+      if (noscriptFallback) {
+        document.addNoscript(link);
+      }
+
+      if (o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap') {
         link.setAttribute('rel', 'preload');
         link.setAttribute('as', 'style');
         link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
-      } else {
+      } else if (o.strategy === 'media') {
+        // @see https://www.filamentgroup.com/lab/load-css-simpler/
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('media', 'print');
-        link.setAttribute('onload', "this.media='all'");
-      }
+        link.setAttribute('onload', `this.media='all'`);
+      } else {
+        link.setAttribute('rel', 'preload');
+        link.setAttribute('as', 'style');
+        const bodyLink = document.createElement('link');
+        bodyLink.setAttribute('rel', 'stylesheet');
+        bodyLink.setAttribute('href', href);
+        document.addElementToBody(bodyLink);
 
-      ref.before(link);
-
-      if (!o.polyfill && o.preload) {
-        const preload = document.createElement('link');
-        preload.setAttribute('rel', 'preload');
-        preload.setAttribute('href', link.getAttribute('href'));
-        preload.setAttribute('as', 'style');
-
-        link.before(preload);
+        if (o.strategy === 'body') {
+          document.remove(link);
+        }
       }
     });
 
@@ -142,13 +156,17 @@ function inline(html, styles, options) {
     // Modify links and add clones to noscript block
     // eslint-disable-next-line array-callback-return
     links.map((link) => {
+      const href = link.getAttribute('href');
+      const media = link.getAttribute('media');
+      const type = link.getAttribute('type');
+      const integrity = link.getAttribute('integrity');
+
       if (o.extract) {
-        const href = link.getAttribute('href');
         const file = path.resolve(path.join(o.basePath || process.cwd, href));
 
         if (fs.existsSync(file)) {
           const orig = fs.readFileSync(file);
-          const diff = extractCss(orig, inlined);
+          const diff = removeDuplicateStyles(orig, inlined);
           const filename = reaver.rev(file, diff);
 
           fs.writeFileSync(filename, diff);
@@ -158,37 +176,49 @@ function inline(html, styles, options) {
         }
       }
 
-      document.addNoscript(link);
+      if (noscriptFallback) {
+        document.addNoscript(link);
+      }
 
-      if (o.polyfill) {
+      if (o.polyfill || o.strategy === 'polyfill' || o.strategy === 'swap') {
         link.setAttribute('rel', 'preload');
         link.setAttribute('as', 'style');
         link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
-      } else {
+      } else if (o.strategy === 'media') {
+        // @see https://www.filamentgroup.com/lab/load-css-simpler/
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('media', 'print');
-        link.setAttribute('onload', "this.media='all'");
-      }
-
-      if (!o.polyfill && o.preload) {
-        const preload = document.createElement('link');
-        preload.setAttribute('href', link.getAttribute('href'));
-        preload.setAttribute('rel', 'preload');
-        preload.setAttribute('as', 'style');
-        const integrity = link.getAttribute('integrity');
-
-        if (integrity !== null) {
-          preload.setAttribute('integrity', integrity);
+        link.setAttribute('onload', `this.media='${media || 'all'}'`);
+      } else {
+        link.setAttribute('rel', 'preload');
+        link.setAttribute('as', 'style');
+        link.removeAttribute('media');
+        if (type) {
+          link.removeAttribute('type');
         }
 
-        link.before(preload);
+        const bodyLink = document.createElement('link');
+        bodyLink.setAttribute('rel', 'stylesheet');
+        if (media) {
+          bodyLink.setAttribute('media', media);
+        }
+
+        if (integrity) {
+          bodyLink.setAttribute('integrity', integrity);
+        }
+
+        if (type) {
+          bodyLink.setAttribute('type', type);
+        }
+
+        bodyLink.setAttribute('href', href);
+        document.addElementToBody(bodyLink);
+
+        if (o.strategy === 'body') {
+          document.remove(link);
+        }
       }
     });
-  }
-
-  // Add loadcss if it's not already loaded
-  if (o.polyfill) {
-    document.maybeAddLoadcss();
   }
 
   return Buffer.from(document.serialize());

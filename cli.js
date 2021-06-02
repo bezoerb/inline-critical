@@ -22,14 +22,12 @@ Options:
     -h, --html      Path to HTML file
     -i, --ignore    Skip matching stylesheets
     -m, --minify    Minify the styles before inlining (default)
-    -p, --preload   Adds preload tags
 
     -e, --extract   Remove the inlined styles from any stylesheets referenced in the HTML
     -b, --base      Is used when extracting styles to find the files references by href attributes
     -s, --selector  Optionally defines the element used by loadCSS as a reference for inlining
 
-    --polyfill      Use loadCSS polyfill instead of media=print
-    --noscript      Position of noscript fallback ('body' - end of body, 'head' - end of head, false - no noscript)
+    --strategy      body|media|swap|polyfill
 `;
 
 const cli = meow(help, {
@@ -78,6 +76,9 @@ const cli = meow(help, {
     noscript: {
       type: 'string',
     },
+    strategy: {
+      type: 'string',
+    },
   },
 });
 
@@ -99,10 +100,6 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
       result.basePath = value;
       break;
     case 'ignore':
-      if (!Array.isArray(value)) {
-        value = [value];
-      }
-
       result.ignore = (value || []).map((ignore) => {
         // Check regex
         const {groups} = /^\/(?<expression>.*)\/(?<flags>[igmy]+)?$/.exec(ignore) || {};

@@ -2,7 +2,7 @@
 'use strict';
 const path = require('path');
 const reaver = require('reaver');
-const {extractCss} = require('../src/css.js');
+const {removeDuplicateStyles} = require('../src/css.js');
 const {read, checkAndDelete, strip} = require('./helper');
 const inline = require('..');
 
@@ -12,7 +12,15 @@ test('Inline css', async () => {
   const html = await read('fixtures/index.html');
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/index-inlined-async-minified-final.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Inline css (Buffer)', async () => {
+  const html = await read('fixtures/index.html');
+  const css = await read('fixtures/critical.css');
+  const expected = await read('expected/index-inlined-async-minified-final.html');
+  const out = inline(Buffer.from(html), Buffer.from(css), {strategy: 'polyfill'});
   expect(strip(out.toString())).toBe(strip(expected));
 });
 
@@ -20,7 +28,7 @@ test('Inline css with media=print', async () => {
   const html = await read('fixtures/index.html');
   const css = await read('fixtures/critical.css');
   const expected = await read('expected/index-inlined-async-minified-final-print.html');
-  const out = inline(html, css, {polyfill: false});
+  const out = inline(html, css, {strategy: 'media'});
   expect(strip(out.toString())).toBe(strip(expected));
 });
 
@@ -29,7 +37,7 @@ test('Inline in head if no stylesheets are there', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-nostyle.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -39,7 +47,7 @@ test('Inline absolute css', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-inlined-absolute.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -49,9 +57,59 @@ test('Inline absolute css with media=print', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-inlined-absolute-print.html');
-  const out = inline(html, css, {polyfill: false});
+  const out = inline(html, css, {strategy: 'media'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+});
+
+test('Inline css using strategy default', async () => {
+  const html = await read('fixtures/simple.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/simple-critical-default.html');
+  const out = inline(html, css);
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Inline css using strategy media', async () => {
+  const html = await read('fixtures/simple.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/simple-critical-media.html');
+  const out = inline(html, css, {strategy: 'media'});
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Inline css using strategy polyfill', async () => {
+  const html = await read('fixtures/simple.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/simple-critical-polyfill.html');
+  const out = inline(html, css, {strategy: 'polyfill'});
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Inline css using strategy swap', async () => {
+  const html = await read('fixtures/simple.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/simple-critical-swap.html');
+  const out = inline(html, css, {strategy: 'swap'});
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Inline css using strategy body', async () => {
+  const html = await read('fixtures/simple.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/simple-critical-body.html');
+  const out = inline(html, css, {strategy: 'body'});
+
+  expect(out.toString()).toBe(expected);
 });
 
 test('Inline and minify css', async () => {
@@ -59,7 +117,7 @@ test('Inline and minify css', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-inlined-async-minified-final.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -69,7 +127,7 @@ test('Inline and minify css with media=print', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-inlined-async-minified-final-print.html');
-  const out = inline(html, css, {polyfill: false});
+  const out = inline(html, css, {strategy: 'media'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -85,8 +143,8 @@ test('Inline and extract css', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -102,6 +160,18 @@ test('Inline and extract css', async () => {
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
+test('Throw error on invalid extract config', async () => {
+  const html = await read('fixtures/cartoon.html');
+  const css = await read('fixtures/critical.css');
+
+  expect(() => {
+    inline(html, css, {
+      extract: true,
+      basePath: 'test/missing',
+    });
+  }).toThrow('Specify base path');
+});
+
 test('Inline and extract css with media=print', async () => {
   const html = await read('fixtures/cartoon.html');
   const css = await read('fixtures/critical.css');
@@ -113,21 +183,21 @@ test('Inline and extract css with media=print', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
     extract: true,
-    polyfill: false,
     basePath: 'test/fixtures',
+    strategy: 'media',
   });
 
   expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
   expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
-  expect(strip(out.toString('utf8'))).toBe(strip(expected));
+  expect(out.toString('utf8')).toBe(expected);
 });
 
 test('Extract and minify css', async () => {
@@ -141,8 +211,8 @@ test('Extract and minify css', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -169,13 +239,13 @@ test('Extract and minify css with media=print', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
     extract: true,
-    polyfill: false,
+    strategy: 'media',
     basePath: 'test/fixtures',
   });
 
@@ -197,8 +267,8 @@ test('Extract and minify css with alternative noscript option', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -226,13 +296,13 @@ test('Extract and minify css with alternative noscript option with media=print',
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
     extract: true,
-    polyfill: false,
+    strategy: 'media',
     noscript: 'head',
     basePath: 'test/fixtures',
   });
@@ -255,8 +325,8 @@ test('Inline and extract css correctly with absolute paths', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -283,12 +353,12 @@ test('Inline and extract css correctly with absolute paths with media=print', as
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
-    polyfill: false,
+    strategy: 'media',
     extract: true,
     basePath: 'test/fixtures',
   });
@@ -302,7 +372,7 @@ test('Inline and extract css correctly with absolute paths with media=print', as
 
 test('Does not strip of svg closing tags', async () => {
   const html = await read('fixtures/entities.html');
-  const out = inline(html, '', {polyfill: true});
+  const out = inline(html, '', {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(html));
 });
@@ -311,7 +381,7 @@ test('Does not strip svg closing tags test 2', async () => {
   const html = await read('fixtures/svg.html');
   const expected = await read('expected/test-svg.html');
   const css = 'html{font-size:16;}';
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -324,20 +394,16 @@ test('Also preload external urls', async () => {
   const html = await read('fixtures/external.html');
   const expected = await read('expected/external-expected.html');
   const css = await read('fixtures/critical.css');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
   expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
 });
 
 test('Also preload external urls with media=print', async () => {
-  function strip2(string) {
-    return string.replace(/\s+/gm, '');
-  }
-
   const html = await read('fixtures/external.html');
   const expected = await read('expected/external-expected-print.html');
   const css = await read('fixtures/critical.css');
-  const out = inline(html, css, {polyfill: false, preload: true});
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  const out = inline(html, css);
+  expect(out.toString('utf-8')).toBe(expected);
 });
 
 test("Don't try to extract for external urls", async () => {
@@ -351,8 +417,8 @@ test("Don't try to extract for external urls", async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/main.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/main.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -378,13 +444,13 @@ test("Don't try to extract for external urls (with media=print)", async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/main.css', extractCss(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', extractCss(styles[1], css)),
+    reaver.rev('fixtures/css/main.css', removeDuplicateStyles(styles[0], css)),
+    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
     extract: true,
-    polyfill: false,
+    strategy: 'media',
     basePath: 'test/fixtures',
   });
   expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
@@ -396,7 +462,7 @@ test("Don't try to extract for external urls (with media=print)", async () => {
 
 test('Keep self closing svg elements', async () => {
   const html = await read('fixtures/entities2.html');
-  const out = inline(html, '', {polyfill: true});
+  const out = inline(html, '', {strategy: 'polyfill'});
   expect(strip(out.toString('utf-8'))).toBe(strip(html));
 });
 
@@ -425,7 +491,7 @@ test('Respect ignore option with string array  (with media=print)', async () => 
   const expected = await read('expected/external-ignore-expected-print.html');
   const css = await read('fixtures/critical.css');
   const out = inline(html, css, {
-    polyfill: false,
+    strategy: 'media',
     ignore: ['bower_components/bootstrap/dist/css/bootstrap.css'],
   });
 
@@ -457,7 +523,7 @@ test('Respect single ignore option with string (with media=print)', async () => 
   const expected = await read('expected/external-ignore-expected-print.html');
   const css = await read('fixtures/critical.css');
   const out = inline(html, css, {
-    polyfill: false,
+    strategy: 'media',
     ignore: 'bower_components/bootstrap/dist/css/bootstrap.css',
   });
 
@@ -489,7 +555,7 @@ test('Respect ignore option with RegExp array (with media=print)', async () => {
   const expected = await read('expected/external-ignore-expected-print.html');
   const css = await read('fixtures/critical.css');
   const out = inline(html, css, {
-    polyfill: false,
+    strategy: 'media',
     ignore: [/bootstrap/],
   });
 
@@ -515,7 +581,7 @@ test('Respect selector option (with media=print)', async () => {
 
   const expected = await read('expected/index-before-print.html');
   const out = inline(html, css, {
-    polyfill: false,
+    strategy: 'media',
     selector: 'title',
   });
 
@@ -527,7 +593,7 @@ test('Ignore stylesheets wrapped in noscript', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-noscript-inlined-minified-final.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
 
@@ -536,7 +602,7 @@ test("Skip loadcss if it's already present and used for all existing link tags",
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-loadcss.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -546,7 +612,17 @@ test('Consider existing style tags', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-inlined.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
+
+  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+});
+
+test('Consider existing style tags with media=print && strategy media', async () => {
+  const html = await read('fixtures/index-inlined.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-inlined-print.html');
+  const out = inline(html, css, {strategy: 'media'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -555,20 +631,10 @@ test('Consider existing style tags with media=print', async () => {
   const html = await read('fixtures/index-inlined.html');
   const css = await read('fixtures/critical.css');
 
-  const expected = await read('expected/index-inlined-print.html');
+  const expected = await read('expected/index-inlined-print-default.html');
   const out = inline(html, css);
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
-});
-
-test('Consider existing style tags with media=print && preload', async () => {
-  const html = await read('fixtures/index-inlined.html');
-  const css = await read('fixtures/critical.css');
-
-  const expected = await read('expected/index-inlined-print-preload.html');
-  const out = inline(html, css, {preload: true});
-
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(out.toString('utf-8')).toBe(expected);
 });
 
 test("Don't add loadcss twice", async () => {
@@ -576,7 +642,7 @@ test("Don't add loadcss twice", async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/loadcss-again.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
 
   expect(strip(out.toString('utf-8'))).toBe(strip(expected));
 });
@@ -592,7 +658,7 @@ test('Replace stylesheets', async () => {
 
   const out2 = inline(html, css, {
     replaceStylesheets: ['replace/all.css'],
-    polyfill: false,
+    strategy: 'media',
   });
 
   expect(out.toString('utf8')).not.toMatch('css/cartoon.css');
@@ -614,7 +680,7 @@ test('Remove stylesheets', async () => {
 
   const out2 = inline(html, css, {
     replaceStylesheets: [],
-    polyfill: false,
+    strategy: 'media',
   });
 
   expect(out2.toString('utf8')).not.toMatch('css/cartoon.css');
@@ -628,7 +694,17 @@ test('Keep existing integrity attribute on style tags', async () => {
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/index-inlined-async-integrity.html');
-  const out = inline(html, css, {polyfill: true});
+  const out = inline(html, css, {strategy: 'polyfill'});
+
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Keep existing integrity attribute on style tags with media=print and strategy media', async () => {
+  const html = await read('fixtures/index-integrity.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/index-inlined-async-integrity-print.html');
+  const out = inline(html, css, {strategy: 'media'});
 
   expect(strip(out.toString())).toBe(strip(expected));
 });
@@ -637,18 +713,95 @@ test('Keep existing integrity attribute on style tags with media=print', async (
   const html = await read('fixtures/index-integrity.html');
   const css = await read('fixtures/critical.css');
 
-  const expected = await read('expected/index-inlined-async-integrity-print.html');
-  const out = inline(html, css, {polyfill: false});
+  const expected = await read('expected/index-inlined-async-integrity-print-default.html');
+  const out = inline(html, css);
 
-  expect(strip(out.toString())).toBe(strip(expected));
+  expect(out.toString()).toBe(expected);
 });
 
-test('Keep existing integrity attribute on style tags with media=print && preload', async () => {
+test('Keep existing integrity attribute on style tags with media=print', async () => {
   const html = await read('fixtures/index-integrity.html');
   const css = await read('fixtures/critical.css');
 
-  const expected = await read('expected/index-inlined-async-integrity-print-preload.html');
-  const out = inline(html, css, {polyfill: false, preload: true});
+  const expected = await read('expected/index-inlined-async-integrity-print-default.html');
+  const out = inline(html, css);
 
-  expect(strip(out.toString())).toBe(strip(expected));
+  expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (default)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-default.html');
+  const out = inline(html, css, {
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (default, ignore)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-default-ignore.html');
+  const out = inline(html, css, {
+    ignore: [/default/, '/css/default.css'],
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (polyfill)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-polyfill.html');
+  const out = inline(html, css, {
+    strategy: 'polyfill',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (body)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-body.html');
+  const out = inline(html, css, {
+    strategy: 'body',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (media)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-media.html');
+  const out = inline(html, css, {
+    strategy: 'media',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (swap)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-swap.html');
+  const out = inline(html, css, {
+    strategy: 'swap',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(out.toString()).toBe(expected);
 });
