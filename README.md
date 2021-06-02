@@ -101,5 +101,5 @@ MIT
 [depstat-image]: https://img.shields.io/david/bezoerb/inline-critical.svg
 [dlcounter-url]: https://www.npmjs.com/package/inline-critical
 [dlcounter-image]: https://img.shields.io/npm/dm/inline-critical.svg
-[coveralls-url]: https://coveralls.io/github/bezoerb/inline-critical?branch=master
-[coveralls-image]: https://img.shields.io/coveralls/github/bezoerb/inline-critical/master.svg
+[coveralls-url]: https://coveralls.io/github/bezoerb/inline-critical?branch=main
+[coveralls-image]: https://img.shields.io/coveralls/github/bezoerb/inline-critical/main.svg
