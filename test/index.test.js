@@ -3,8 +3,8 @@
 const path = require('path');
 const reaver = require('reaver');
 const {removeDuplicateStyles} = require('../src/css.js');
-const {read, checkAndDelete, strip} = require('./helper');
 const inline = require('..');
+const {read, checkAndDelete, strip} = require('./helper');
 
 jest.setTimeout(20000);
 
