@@ -1,6 +1,6 @@
 {
   "name": "inline-critical",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
   "scripts": {
