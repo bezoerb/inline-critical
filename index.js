@@ -211,7 +211,7 @@ function inline(html, styles, options) {
           bodyLink.setAttribute('type', type);
         }
 
-        bodyLink.setAttribute('href', href);
+        bodyLink.setAttribute('href', link.getAttribute('href'));
         document.addElementToBody(bodyLink);
 
         if (o.strategy === 'body') {
