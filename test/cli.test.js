@@ -1,7 +1,4 @@
 /* eslint-env jest */
-
-'use strict';
-
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {readPackageUp} from 'read-pkg-up';
