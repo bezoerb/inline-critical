@@ -16,17 +16,24 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v1
-        with:
-          fetch-depth: 5
+        uses: actions/checkout@v2
 
-      - name: Set Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
 
       - run: node --version
       - run: npm --version
+
+      - name: Set up npm cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-v${{ matrix.node }}-${{ hashFiles('package.json') }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-v${{ matrix.node }}-${{ hashFiles('package.json') }}-${{ hashFiles('package-lock.json') }}
+            ${{ runner.OS }}-node-v${{ matrix.node }}-
 
       - name: Install npm dependencies
         run: npm ci
