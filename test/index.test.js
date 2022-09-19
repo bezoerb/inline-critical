@@ -10,6 +10,7 @@ import {read, checkAndDelete, strip} from './helper/index.js';
 const {rev} = reaver;
 
 jest.setTimeout(20000);
+jest.useFakeTimers();
 
 test('Inline css', async () => {
   const html = await read('fixtures/index.html');

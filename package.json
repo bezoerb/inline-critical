@@ -6,8 +6,8 @@
   "exports": "./index.js",
   "type": "module",
   "scripts": {
-    "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --detectOpenHandles",
-    "xo": "xo",
+    "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "xo": "xo --fix",
     "test": "npm run xo && npm run jest"
   },
   "files": [

@@ -7,7 +7,8 @@ import {read, strip, run, getArgs, pipe} from './helper/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-jest.setTimeout(10000);
+jest.setTimeout(20000);
+jest.useFakeTimers();
 
 describe('acceptance', () => {
   test('Return version', async () => {
