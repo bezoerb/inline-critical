@@ -1,10 +1,13 @@
 /* eslint-env jest */
-'use strict';
-const path = require('path');
-const reaver = require('reaver');
-const {removeDuplicateStyles} = require('../src/css.js');
-const inline = require('..');
-const {read, checkAndDelete, strip} = require('./helper');
+import {basename} from 'node:path';
+import {Buffer} from 'node:buffer';
+import reaver from 'reaver';
+import {jest} from '@jest/globals';
+import {removeDuplicateStyles} from '../src/css.js';
+import inline from '..';
+import {read, checkAndDelete, strip} from './helper/index.js';
+
+const {rev} = reaver;
 
 jest.setTimeout(20000);
 
@@ -39,7 +42,7 @@ test('Inline in head if no stylesheets are there', async () => {
   const expected = await read('expected/index-nostyle.html');
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Inline absolute css', async () => {
@@ -49,7 +52,7 @@ test('Inline absolute css', async () => {
   const expected = await read('expected/index-inlined-absolute.html');
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Inline absolute css with media=print', async () => {
@@ -59,7 +62,7 @@ test('Inline absolute css with media=print', async () => {
   const expected = await read('expected/index-inlined-absolute-print.html');
   const out = inline(html, css, {strategy: 'media'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Inline css using strategy default', async () => {
@@ -119,7 +122,7 @@ test('Inline and minify css', async () => {
   const expected = await read('expected/index-inlined-async-minified-final.html');
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Inline and minify css with media=print', async () => {
@@ -129,7 +132,7 @@ test('Inline and minify css with media=print', async () => {
   const expected = await read('expected/index-inlined-async-minified-final-print.html');
   const out = inline(html, css, {strategy: 'media'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Inline and extract css', async () => {
@@ -143,8 +146,8 @@ test('Inline and extract css', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -153,8 +156,8 @@ test('Inline and extract css', async () => {
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -183,8 +186,8 @@ test('Inline and extract css with media=print', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -193,8 +196,8 @@ test('Inline and extract css with media=print', async () => {
     strategy: 'media',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(out.toString('utf8')).toBe(expected);
@@ -211,8 +214,8 @@ test('Extract and minify css', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -221,8 +224,8 @@ test('Extract and minify css', async () => {
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -239,8 +242,8 @@ test('Extract and minify css with media=print', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -249,8 +252,8 @@ test('Extract and minify css with media=print', async () => {
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -267,8 +270,8 @@ test('Extract and minify css with alternative noscript option', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -278,8 +281,8 @@ test('Extract and minify css with alternative noscript option', async () => {
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -296,8 +299,8 @@ test('Extract and minify css with alternative noscript option with media=print',
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -307,8 +310,8 @@ test('Extract and minify css with alternative noscript option with media=print',
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -325,8 +328,8 @@ test('Inline and extract css correctly with absolute paths', async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -335,8 +338,8 @@ test('Inline and extract css correctly with absolute paths', async () => {
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -353,8 +356,8 @@ test('Inline and extract css correctly with absolute paths with media=print', as
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/cartoon.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -363,8 +366,8 @@ test('Inline and extract css correctly with absolute paths with media=print', as
     basePath: 'test/fixtures',
   });
 
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -374,7 +377,7 @@ test('Does not strip of svg closing tags', async () => {
   const html = await read('fixtures/entities.html');
   const out = inline(html, '', {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(html));
+  expect(strip(out.toString('utf8'))).toBe(strip(html));
 });
 
 test('Does not strip svg closing tags test 2', async () => {
@@ -383,7 +386,7 @@ test('Does not strip svg closing tags test 2', async () => {
   const css = 'html{font-size:16;}';
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Also preload external urls', async () => {
@@ -395,7 +398,7 @@ test('Also preload external urls', async () => {
   const expected = await read('expected/external-expected.html');
   const css = await read('fixtures/critical.css');
   const out = inline(html, css, {strategy: 'polyfill'});
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Also preload external urls with media=print', async () => {
@@ -403,7 +406,7 @@ test('Also preload external urls with media=print', async () => {
   const expected = await read('expected/external-expected-print.html');
   const css = await read('fixtures/critical.css');
   const out = inline(html, css);
-  expect(out.toString('utf-8')).toBe(expected);
+  expect(out.toString('utf8')).toBe(expected);
 });
 
 test("Don't try to extract for external urls", async () => {
@@ -417,8 +420,8 @@ test("Don't try to extract for external urls", async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/main.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/main.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -426,8 +429,8 @@ test("Don't try to extract for external urls", async () => {
     polyfill: true,
     basePath: 'test/fixtures',
   });
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -444,8 +447,8 @@ test("Don't try to extract for external urls (with media=print)", async () => {
   ]);
 
   const reved = [
-    reaver.rev('fixtures/css/main.css', removeDuplicateStyles(styles[0], css)),
-    reaver.rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
+    rev('fixtures/css/main.css', removeDuplicateStyles(styles[0], css)),
+    rev('fixtures/bower_components/bootstrap/dist/css/bootstrap.css', removeDuplicateStyles(styles[1], css)),
   ];
 
   const out = inline(html, css, {
@@ -453,8 +456,8 @@ test("Don't try to extract for external urls (with media=print)", async () => {
     strategy: 'media',
     basePath: 'test/fixtures',
   });
-  expect(out.toString('utf8')).toMatch(path.basename(reved[0]));
-  expect(out.toString('utf8')).toMatch(path.basename(reved[1]));
+  expect(out.toString('utf8')).toMatch(basename(reved[0]));
+  expect(out.toString('utf8')).toMatch(basename(reved[1]));
   expect(checkAndDelete(reved[0])).toBe(true);
   expect(checkAndDelete(reved[1])).toBe(true);
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
@@ -463,7 +466,7 @@ test("Don't try to extract for external urls (with media=print)", async () => {
 test('Keep self closing svg elements', async () => {
   const html = await read('fixtures/entities2.html');
   const out = inline(html, '', {strategy: 'polyfill'});
-  expect(strip(out.toString('utf-8'))).toBe(strip(html));
+  expect(strip(out.toString('utf8'))).toBe(strip(html));
 });
 
 test('Respect ignore option with string array', async () => {
@@ -479,7 +482,7 @@ test('Respect ignore option with string array', async () => {
     ignore: ['bower_components/bootstrap/dist/css/bootstrap.css'],
   });
 
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Respect ignore option with string array  (with media=print)', async () => {
@@ -495,7 +498,7 @@ test('Respect ignore option with string array  (with media=print)', async () => 
     ignore: ['bower_components/bootstrap/dist/css/bootstrap.css'],
   });
 
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Respect single ignore option with string', async () => {
@@ -511,7 +514,7 @@ test('Respect single ignore option with string', async () => {
     ignore: 'bower_components/bootstrap/dist/css/bootstrap.css',
   });
 
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Respect single ignore option with string (with media=print)', async () => {
@@ -527,7 +530,7 @@ test('Respect single ignore option with string (with media=print)', async () => 
     ignore: 'bower_components/bootstrap/dist/css/bootstrap.css',
   });
 
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Respect ignore option with RegExp array', async () => {
@@ -543,7 +546,7 @@ test('Respect ignore option with RegExp array', async () => {
     ignore: [/bootstrap/],
   });
 
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Respect ignore option with RegExp array (with media=print)', async () => {
@@ -559,7 +562,7 @@ test('Respect ignore option with RegExp array (with media=print)', async () => {
     ignore: [/bootstrap/],
   });
 
-  expect(strip2(out.toString('utf-8'))).toBe(strip2(expected));
+  expect(strip2(out.toString('utf8'))).toBe(strip2(expected));
 });
 
 test('Respect selector option', async () => {
@@ -572,7 +575,7 @@ test('Respect selector option', async () => {
     selector: 'title',
   });
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Respect selector option (with media=print)', async () => {
@@ -585,7 +588,7 @@ test('Respect selector option (with media=print)', async () => {
     selector: 'title',
   });
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Ignore stylesheets wrapped in noscript', async () => {
@@ -594,7 +597,7 @@ test('Ignore stylesheets wrapped in noscript', async () => {
 
   const expected = await read('expected/index-noscript-inlined-minified-final.html');
   const out = inline(html, css, {strategy: 'polyfill'});
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test("Skip loadcss if it's already present and used for all existing link tags", async () => {
@@ -604,7 +607,7 @@ test("Skip loadcss if it's already present and used for all existing link tags",
   const expected = await read('expected/index-loadcss.html');
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Consider existing style tags', async () => {
@@ -614,7 +617,7 @@ test('Consider existing style tags', async () => {
   const expected = await read('expected/index-inlined.html');
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Consider existing style tags with media=print && strategy media', async () => {
@@ -624,7 +627,7 @@ test('Consider existing style tags with media=print && strategy media', async ()
   const expected = await read('expected/index-inlined-print.html');
   const out = inline(html, css, {strategy: 'media'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Consider existing style tags with media=print', async () => {
@@ -634,7 +637,7 @@ test('Consider existing style tags with media=print', async () => {
   const expected = await read('expected/index-inlined-print-default.html');
   const out = inline(html, css);
 
-  expect(out.toString('utf-8')).toBe(expected);
+  expect(out.toString('utf8')).toBe(expected);
 });
 
 test("Don't add loadcss twice", async () => {
@@ -644,7 +647,7 @@ test("Don't add loadcss twice", async () => {
   const expected = await read('expected/loadcss-again.html');
   const out = inline(html, css, {strategy: 'polyfill'});
 
-  expect(strip(out.toString('utf-8'))).toBe(strip(expected));
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
 
 test('Replace stylesheets', async () => {

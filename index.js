@@ -9,17 +9,17 @@
  * All rights reserved.
  */
 
-'use strict';
+import {existsSync, readFileSync, writeFileSync} from 'node:fs';
+import process from 'node:process';
+import {Buffer} from 'node:buffer';
+import {resolve, join} from 'node:path';
+import isString from 'lodash.isstring';
+import isRegExp from 'lodash.isregexp';
+import reaver from 'reaver';
+import slash from 'slash';
 
-const fs = require('fs');
-const path = require('path');
-const isString = require('lodash.isstring');
-const isRegExp = require('lodash.isregexp');
-const reaver = require('reaver');
-const slash = require('slash');
-
-const Dom = require('./src/dom');
-const {removeDuplicateStyles} = require('./src/css');
+import Dom from './src/dom.js';
+import {removeDuplicateStyles} from './src/css.js';
 
 const DEFAULT_OPTIONS = {
   extract: false,
@@ -46,8 +46,8 @@ function normalizePath(string) {
  * @param {object} options Options
  * @returns {string} HTML Source with inlined critical css
  */
-function inline(html, styles, options) {
-  const o = {...DEFAULT_OPTIONS, ...(options || {})};
+export function inline(html, styles, options) {
+  const o = {...DEFAULT_OPTIONS, ...options};
 
   if (!isString(html)) {
     html = String(html);
@@ -58,7 +58,7 @@ function inline(html, styles, options) {
   }
 
   if (!Array.isArray(o.ignore)) {
-    o.ignore = [o.ignore].filter((i) => i);
+    o.ignore = [o.ignore].filter(Boolean);
   }
 
   const document = new Dom(html, o);
@@ -162,14 +162,14 @@ function inline(html, styles, options) {
       const integrity = link.getAttribute('integrity');
 
       if (o.extract) {
-        const file = path.resolve(path.join(o.basePath || process.cwd, href));
+        const file = resolve(join(o.basePath || process.cwd, href));
 
-        if (fs.existsSync(file)) {
-          const orig = fs.readFileSync(file);
+        if (existsSync(file)) {
+          const orig = readFileSync(file);
           const diff = removeDuplicateStyles(orig, inlined);
           const filename = reaver.rev(file, diff);
 
-          fs.writeFileSync(filename, diff);
+          writeFileSync(filename, diff);
           link.setAttribute('href', normalizePath(reaver.rev(href, diff)));
         } else if (!/\/\//.test(href)) {
           throw new Error(`Error: file "${href}" not found in "${o.basePath || process.cwd}". Specify base path.`);
@@ -224,4 +224,4 @@ function inline(html, styles, options) {
   return Buffer.from(document.serialize());
 }
 
-module.exports = inline;
+export default inline;

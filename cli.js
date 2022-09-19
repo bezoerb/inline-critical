@@ -1,17 +1,15 @@
 #!/usr/bin/env node
-
-'use strict';
-
-const os = require('os');
-const fs = require('fs');
-const meow = require('meow');
-const chalk = require('chalk');
-const indentString = require('indent-string');
-const stdin = require('get-stdin');
-const css = require('css');
-const escapeRegExp = require('lodash.escaperegexp');
-const defaults = require('lodash.defaults');
-const inlineCritical = require('.');
+import {EOL} from 'node:os';
+import {readFileSync} from 'node:fs';
+import process from 'node:process';
+import meow from 'meow';
+import picocolors from 'picocolors';
+import indentString from 'indent-string';
+import stdin from 'get-stdin';
+import {parse} from 'css';
+import escapeRegExp from 'lodash.escaperegexp';
+import defaults from 'lodash.defaults';
+import {inline as inlineCritical} from './index.js';
 
 let ok;
 const help = `
@@ -33,6 +31,7 @@ Options:
 const cli = meow(help, {
   autoHelp: true,
   autoVersion: true,
+  importMeta: import.meta,
   flags: {
     css: {
       type: 'string',
@@ -121,15 +120,15 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
 }, {});
 
 function processError(error) {
-  process.stderr.write(chalk.red(indentString(`Error: ${error.message || error}`, 2)));
-  process.stderr.write(os.EOL);
+  process.stderr.write(picocolors.red(indentString(`Error: ${error.message || error}`, 2)));
+  process.stderr.write(EOL);
   process.stderr.write(indentString(help, 2));
   process.exit(1);
 }
 
 function read(file) {
   try {
-    return fs.readFileSync(file, 'utf8');
+    return readFileSync(file, 'utf8');
   } catch (error) {
     processError(error);
   }
@@ -142,7 +141,7 @@ function run(data) {
   if (data) {
     // Detect html
     try {
-      css.parse(data);
+      parse(data);
       options_.css = data;
     } catch {
       options_.html = data;
@@ -152,7 +151,7 @@ function run(data) {
   (cli.input || []).forEach((file) => {
     const temporary = read(file);
     try {
-      css.parse(temporary);
+      parse(temporary);
       options_.css = temporary;
     } catch {
       options_.html = temporary;
@@ -167,7 +166,7 @@ function run(data) {
 
   try {
     const out = inlineCritical(html, styles, options);
-    process.stdout.write(out.toString(), process.exit);
+    process.stdout.write(out?.toString() ?? '', process.exit);
   } catch (error) {
     processError(error);
   }

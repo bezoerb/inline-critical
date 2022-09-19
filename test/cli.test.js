@@ -2,15 +2,19 @@
 
 'use strict';
 
-const path = require('path');
-const readPkgUp = require('read-pkg-up');
-const {read, strip, run, getArgs, pipe} = require('./helper');
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {readPackageUp} from 'read-pkg-up';
+import {jest} from '@jest/globals';
+import {read, strip, run, getArgs, pipe} from './helper/index.js';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 jest.setTimeout(10000);
 
 describe('acceptance', () => {
   test('Return version', async () => {
-    const {packageJson} = await readPkgUp();
+    const {packageJson} = await readPackageUp();
     const result = await run(['--version']);
     const {stdout, stderr, exitCode} = result || {};
     expect(stderr).toBeFalsy();
@@ -138,9 +142,9 @@ describe('Mocked', () => {
   test('should pass the correct opts when using long opts', async () => {
     const [html, css, args] = await getArgs([
       '--css',
-      path.join(__dirname, 'fixtures/critical.css'),
+      join(__dirname, 'fixtures/critical.css'),
       '--html',
-      path.join(__dirname, 'fixtures/index.html'),
+      join(__dirname, 'fixtures/index.html'),
       '--ignore',
       'ignore-me',
       '--ignore',
