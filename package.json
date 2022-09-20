@@ -6,7 +6,7 @@
   "exports": "./index.js",
   "type": "module",
   "scripts": {
-    "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --runInBand --detectOpenHandles",
     "xo": "xo --fix",
     "test": "npm run xo && npm run jest"
   },
