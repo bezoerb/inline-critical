@@ -1,75 +1,47 @@
 /* eslint-env jest */
+import {isAbsolute, join, normalize} from 'node:path';
+import process from 'node:process';
+import {fileURLToPath} from 'node:url';
+import {existsSync} from 'node:fs';
+import {readFile} from 'node:fs/promises';
+import fsExtra from 'fs-extra';
+import {readPackageUp} from 'read-pkg-up';
+import {execa} from 'execa';
+import nn from 'normalize-newline';
 
-'use strict';
-const path = require('path');
-const fs = require('fs-extra');
-const readPkgUp = require('read-pkg-up');
-const execa = require('execa');
-const nn = require('normalize-newline');
+const {removeSync} = fsExtra;
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-const read = async (file) => {
-  const filepath = path.isAbsolute(file) ? file : path.join(__dirname, '..', file);
-  const content = await fs.readFile(filepath, 'utf8');
+export const read = async (file) => {
+  const filepath = isAbsolute(file) ? file : join(__dirname, '..', file);
+  const content = await readFile(filepath, 'utf8');
   return nn(content);
 };
 
-const checkAndDelete = (file) => {
-  const filepath = path.isAbsolute(file) ? file : path.join(__dirname, '..', file);
-  if (fs.existsSync(filepath)) {
-    fs.removeSync(filepath);
+export const checkAndDelete = (file) => {
+  const filepath = isAbsolute(file) ? file : join(__dirname, '..', file);
+  if (existsSync(filepath)) {
+    removeSync(filepath);
     return true;
   }
 };
 
-const strip = (string) => nn(string.replace(/[\r\n]+/gm, ' ').replace(/\s+/gm, ''));
+export const strip = (string) => nn(string.replace(/[\r\n]+/gm, ' ').replace(/\s+/gm, ''));
 
-const getBin = async () => {
-  const {packageJson} = await readPkgUp();
-  return path.join(__dirname, '../../', packageJson.bin['inline-critical']);
+export const getBin = async () => {
+  const {packageJson} = await readPackageUp();
+  return join(__dirname, '../../', packageJson.bin['inline-critical']);
 };
 
-const run = async (args = []) => {
+export const run = async (args = []) => {
   const bin = await getBin();
   return execa('node', [bin, ...args]);
 };
 
-const getArgs = async (parameters = []) => {
-  const bin = await getBin();
-  const origArgv = process.argv;
-  const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
-
-  jest.mock('../../index', () => jest.fn(() => ''));
-
-  process.argv = ['node', bin, ...parameters];
-  const inline = require('../..');
-
-  require('../../cli'); // eslint-disable-line import/no-unassigned-import
-
-  // wait for cli to run
-  await new Promise((resolve) => setTimeout(resolve, 200)); // eslint-disable-line no-promise-executor-return
-  const [args] = inline.mock.calls;
-  const [html, styles, options] = args || ['', '', {}];
-  expect(inline).toHaveBeenCalledTimes(1);
-  inline.mockRestore();
-  mockExit.mockRestore();
-  process.argv = origArgv;
-  return [html, styles, options];
-};
-
-const pipe = async (file, args = []) => {
-  const filepath = path.isAbsolute(file) ? file : path.join(__dirname, '..', file);
+export const pipe = async (file, args = []) => {
+  const filepath = isAbsolute(file) ? file : join(__dirname, '..', file);
   const cat = process.platform === 'win32' ? 'type' : 'cat';
   const bin = await getBin();
-  const cmd = `${cat} ${path.normalize(filepath)} | node ${bin} ${args.join(' ')}`;
+  const cmd = `${cat} ${normalize(filepath)} | node ${bin} ${args.join(' ')}`;
   return execa(cmd, {shell: true});
-};
-
-module.exports = {
-  read,
-  checkAndDelete,
-  strip,
-  getBin,
-  run,
-  getArgs,
-  pipe,
 };

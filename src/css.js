@@ -1,16 +1,14 @@
-'use strict';
-
-const CleanCSS = require('clean-css');
-const postcss = require('postcss');
-const discard = require('postcss-discard');
-const normalizeNewline = require('normalize-newline');
+import CleanCSS from 'clean-css';
+import postcss from 'postcss';
+import discard from 'postcss-discard';
+import normalizeNewline from 'normalize-newline';
 
 /**
  * Minify CSS
  * @param {string} styles CSS
  * @returns {string} Minified css string
  */
-function minifyCss(styles) {
+export function minifyCss(styles) {
   return new CleanCSS().minify(styles).styles;
 }
 
@@ -20,7 +18,7 @@ function minifyCss(styles) {
  * @param {array<string>} css CSS
  * @returns {string} css string not containing any of the styles defined in css array
  */
-function removeDuplicateStyles(styles, ...css) {
+export function removeDuplicateStyles(styles, ...css) {
   const _styles = normalizeNewline(minifyCss(styles || ''));
   const _css = normalizeNewline(minifyCss(css.join('\n')));
   if (_css.trim() !== '') {
@@ -29,8 +27,3 @@ function removeDuplicateStyles(styles, ...css) {
 
   return _styles;
 }
-
-module.exports = {
-  minifyCss,
-  removeDuplicateStyles,
-};

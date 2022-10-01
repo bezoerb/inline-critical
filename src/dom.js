@@ -1,11 +1,11 @@
-'use strict';
+import {readFileSync} from 'node:fs';
+import {join, dirname} from 'node:path';
+import {createRequire} from 'node:module';
+import {JSDOM} from 'jsdom';
+import detectIndent from 'detect-indent';
+import {minify as _minify} from 'uglify-js';
 
-const fs = require('fs');
-const path = require('path');
-const {JSDOM} = require('jsdom');
-const detectIndent = require('detect-indent');
-const UglifyJS = require('uglify-js');
-
+const require = createRequire(import.meta.url);
 const loadCssMain = require.resolve('fg-loadcss');
 
 const escapeRegExp = (string) => (string || '').replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
@@ -16,9 +16,9 @@ const escapeRegExp = (string) => (string || '').replace(/[\\^$.*+?()[\]{}|]/g, '
  * @returns {string} Minified loadcss script
  */
 function getScript() {
-  const loadCSS = fs.readFileSync(path.join(path.dirname(loadCssMain), 'cssrelpreload.js'), 'utf8');
+  const loadCSS = readFileSync(join(dirname(loadCssMain), 'cssrelpreload.js'), 'utf8');
 
-  return UglifyJS.minify(loadCSS).code.trim();
+  return _minify(loadCSS).code.trim();
 }
 
 /**
@@ -150,17 +150,13 @@ class Dom {
   }
 
   querySelector(...selector) {
-    const s = flatten(selector)
-      .filter((s) => s)
-      .join(',');
+    const s = flatten(selector).filter(Boolean).join(',');
 
     return this.document.querySelector(s);
   }
 
   querySelectorAll(...selector) {
-    const s = flatten(selector)
-      .filter((s) => s)
-      .join(',');
+    const s = flatten(selector).filter(Boolean).join(',');
 
     return this.document.querySelectorAll(s);
   }
@@ -249,4 +245,4 @@ class Dom {
   }
 }
 
-module.exports = Dom;
+export default Dom;

@@ -1,16 +1,46 @@
 /* eslint-env jest */
+import {join} from 'node:path';
+import process from 'node:process';
+import {fileURLToPath} from 'node:url';
+import {readPackageUp} from 'read-pkg-up';
+import {jest} from '@jest/globals';
+import {read, strip, run, pipe, getBin} from './helper/index.js';
 
-'use strict';
-
-const path = require('path');
-const readPkgUp = require('read-pkg-up');
-const {read, strip, run, getArgs, pipe} = require('./helper');
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 jest.setTimeout(10000);
 
+jest.unstable_mockModule('../index.js', () => ({
+  default: jest.fn(),
+  inline: jest.fn(),
+}));
+
+const getArgs = async (parameters = []) => {
+  const bin = await getBin();
+  const origArgv = process.argv;
+  const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+  const {inline} = await import('../index.js');
+
+  process.argv = ['node', bin, ...parameters];
+  await import('../cli.js');
+  process.argv = origArgv;
+
+  // Wait for cli to run
+  await new Promise((resolve) => setTimeout(resolve, 200)); // eslint-disable-line no-promise-executor-return
+
+  expect(inline).toHaveBeenCalledTimes(1);
+
+  const [args] = inline.mock.calls;
+  const [html, styles, options] = args || ['', '', {}];
+
+  inline.mockRestore();
+  mockExit.mockRestore();
+  return [html, styles, options];
+};
+
 describe('acceptance', () => {
   test('Return version', async () => {
-    const {packageJson} = await readPkgUp();
+    const {packageJson} = await readPackageUp();
     const result = await run(['--version']);
     const {stdout, stderr, exitCode} = result || {};
     expect(stderr).toBeFalsy();
@@ -138,9 +168,9 @@ describe('Mocked', () => {
   test('should pass the correct opts when using long opts', async () => {
     const [html, css, args] = await getArgs([
       '--css',
-      path.join(__dirname, 'fixtures/critical.css'),
+      join(__dirname, 'fixtures/critical.css'),
       '--html',
-      path.join(__dirname, 'fixtures/index.html'),
+      join(__dirname, 'fixtures/index.html'),
       '--ignore',
       'ignore-me',
       '--ignore',
