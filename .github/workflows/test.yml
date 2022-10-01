@@ -36,7 +36,7 @@ jobs:
             ${{ runner.OS }}-node-v${{ matrix.node }}-
 
       - name: Install npm dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm test

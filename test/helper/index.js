@@ -4,7 +4,6 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
-import {jest} from '@jest/globals';
 import fsExtra from 'fs-extra';
 import {readPackageUp} from 'read-pkg-up';
 import {execa} from 'execa';
@@ -12,13 +11,6 @@ import nn from 'normalize-newline';
 
 const {removeSync} = fsExtra;
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-
-const mockIndex = {
-  default: jest.fn().mockReturnValue(''),
-  inline: jest.fn().mockReturnValue(''),
-};
-
-jest.unstable_mockModule('../index.js', () => mockIndex);
 
 export const read = async (file) => {
   const filepath = isAbsolute(file) ? file : join(__dirname, '..', file);
@@ -44,27 +36,6 @@ export const getBin = async () => {
 export const run = async (args = []) => {
   const bin = await getBin();
   return execa('node', [bin, ...args]);
-};
-
-export const getArgs = async (parameters = []) => {
-  const bin = await getBin();
-  const origArgv = process.argv;
-  const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
-
-  process.argv = ['node', bin, ...parameters];
-  const {inline} = await import('../../index.js');
-
-  await import('../../cli.js');
-
-  // Wait for cli to run
-  await new Promise((resolve) => setTimeout(resolve, 200)); // eslint-disable-line no-promise-executor-return
-  const [args] = inline.mock.calls;
-  const [html, styles, options] = args || ['', '', {}];
-  expect(inline).toHaveBeenCalledTimes(1);
-  inline.mockRestore();
-  mockExit.mockRestore();
-  process.argv = origArgv;
-  return [html, styles, options];
 };
 
 export const pipe = async (file, args = []) => {

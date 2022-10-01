@@ -1,13 +1,39 @@
 /* eslint-env jest */
 import {join} from 'node:path';
+import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {readPackageUp} from 'read-pkg-up';
 import {jest} from '@jest/globals';
-import {read, strip, run, getArgs, pipe} from './helper/index.js';
+import {read, strip, run, pipe, getBin} from './helper/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-jest.setTimeout(20000);
+jest.setTimeout(10000);
+
+jest.unstable_mockModule('../index.js', () => ({
+  default: jest.fn(),
+  inline: jest.fn(),
+}));
+
+const getArgs = async (parameters = []) => {
+  const bin = await getBin();
+  const origArgv = process.argv;
+  const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+  const {inline} = await import('../index.js');
+
+  process.argv = ['node', bin, ...parameters];
+  await import('../cli.js');
+  process.argv = origArgv;
+
+  expect(inline).toHaveBeenCalledTimes(1);
+
+  const [args] = inline.mock.calls;
+  const [html, styles, options] = args || ['', '', {}];
+
+  inline.mockRestore();
+  mockExit.mockRestore();
+  return [html, styles, options];
+};
 
 describe('acceptance', () => {
   test('Return version', async () => {
