@@ -51,7 +51,7 @@
     "postcss": "^8.4.16",
     "postcss-discard": "^2.0.0",
     "reaver": "^2.0.0",
-    "slash": "^4.0.0",
+    "slash": "^5.0.0",
     "uglify-js": "^3.17.1"
   },
   "devDependencies": {
