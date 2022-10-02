@@ -3,7 +3,11 @@
   "version": "10.0.0",
   "description": "Inline critical-path css and load the existing stylesheets asynchronously",
   "main": "index.js",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./css": "./src/css.js",
+    "./dom": "./src/dom.js"
+  },
   "type": "module",
   "scripts": {
     "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --runInBand --detectOpenHandles",
