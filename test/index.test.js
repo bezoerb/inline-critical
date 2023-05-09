@@ -810,7 +810,7 @@ test('Replace stylesheets (swap)', async () => {
 });
 
 test('Issue 300', async () => {
-  const html = await read('fixtures/index-noscript.html');
+  const html = await read('fixtures/issue-300.html');
   const css = await read('fixtures/critical.css');
 
   const expected = await read('expected/issue-300.html');
