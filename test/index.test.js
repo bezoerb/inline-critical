@@ -808,3 +808,15 @@ test('Replace stylesheets (swap)', async () => {
 
   expect(out.toString()).toBe(expected);
 });
+
+test('Issue 300', async () => {
+  const html = await read('fixtures/index-noscript.html');
+  const css = await read('fixtures/critical.css');
+
+  const expected = await read('expected/issue-300.html');
+  const out = inline(html, css, {
+    selector: ':not(noscript) > [rel="stylesheet"]',
+  });
+
+  expect(strip(out.toString('utf8'))).toBe(strip(expected));
+});
