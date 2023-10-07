@@ -391,7 +391,7 @@ test('Does not strip svg closing tags test 2', async () => {
 
 test('Also preload external urls', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
@@ -471,7 +471,7 @@ test('Keep self closing svg elements', async () => {
 
 test('Respect ignore option with string array', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
@@ -487,7 +487,7 @@ test('Respect ignore option with string array', async () => {
 
 test('Respect ignore option with string array  (with media=print)', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
@@ -503,7 +503,7 @@ test('Respect ignore option with string array  (with media=print)', async () => 
 
 test('Respect single ignore option with string', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
@@ -519,7 +519,7 @@ test('Respect single ignore option with string', async () => {
 
 test('Respect single ignore option with string (with media=print)', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
@@ -535,7 +535,7 @@ test('Respect single ignore option with string (with media=print)', async () => 
 
 test('Respect ignore option with RegExp array', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
@@ -551,7 +551,7 @@ test('Respect ignore option with RegExp array', async () => {
 
 test('Respect ignore option with RegExp array (with media=print)', async () => {
   function strip2(string) {
-    return string.replace(/\s+/gm, '');
+    return string.replaceAll(/\s+/gm, '');
   }
 
   const html = await read('fixtures/external.html');
