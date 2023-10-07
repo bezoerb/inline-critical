@@ -820,3 +820,13 @@ test('Issue 300', async () => {
 
   expect(strip(out.toString('utf8'))).toBe(strip(expected));
 });
+
+test("don't add onload attribute to print stylesheet", async () => {
+  const html = await read('fixtures/print.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/print.html');
+  const out = inline(html, css, {strategy: 'media'});
+
+  expect(out.toString()).toBe(expected);
+});

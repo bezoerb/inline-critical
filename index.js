@@ -108,8 +108,7 @@ export function inline(html, styles, options) {
     );
 
     // Add link tags before old links
-    // eslint-disable-next-line array-callback-return
-    o.replaceStylesheets.map((href) => {
+    o.replaceStylesheets.forEach((href) => {
       const link = document.createElement('link');
 
       link.setAttribute('rel', 'stylesheet');
@@ -144,8 +143,7 @@ export function inline(html, styles, options) {
     });
 
     // Remove old links
-    // eslint-disable-next-line array-callback-return
-    removable.map((link) => {
+    removable.forEach((link) => {
       if (link.parentElement.tagName === 'NOSCRIPT') {
         document.remove(link.parentElement);
       } else {
@@ -154,12 +152,15 @@ export function inline(html, styles, options) {
     });
   } else {
     // Modify links and add clones to noscript block
-    // eslint-disable-next-line array-callback-return
-    links.map((link) => {
+    links.forEach((link) => {
       const href = link.getAttribute('href');
       const media = link.getAttribute('media');
       const type = link.getAttribute('type');
       const integrity = link.getAttribute('integrity');
+
+      if (['print', 'speech'].includes(media)) {
+        return;
+      }
 
       if (o.extract) {
         const file = resolve(join(o.basePath || process.cwd, href));
