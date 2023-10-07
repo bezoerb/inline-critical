@@ -17,7 +17,6 @@ import isString from 'lodash.isstring';
 import isRegExp from 'lodash.isregexp';
 import reaver from 'reaver';
 import slash from 'slash';
-
 import Dom from './src/dom.js';
 import {removeDuplicateStyles} from './src/css.js';
 

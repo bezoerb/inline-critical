@@ -8,7 +8,7 @@ import {minify as _minify} from 'uglify-js';
 const require = createRequire(import.meta.url);
 const loadCssMain = require.resolve('fg-loadcss');
 
-const escapeRegExp = (string) => (string || '').replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+const escapeRegExp = (string) => (string || '').replaceAll(/[\\^$.*+?()[\]{}|]/g, '\\$&');
 
 /**
  * Get loadcss + cssrelpreload script
@@ -39,7 +39,7 @@ function flatten(array) {
  */
 const getPartials = (html = '', tag = 'svg') => {
   const result = [];
-  html.replace(new RegExp(`<${tag}(?:\\s[^>]+)?>`, 'ig'), (match, offset, string) => {
+  html.replaceAll(new RegExp(`<${tag}(?:\\s[^>]+)?>`, 'ig'), (match, offset, string) => {
     if (match.includes('/>')) {
       result.push(string.slice(offset, offset + match.length));
     } else {
@@ -115,11 +115,11 @@ class Dom {
         : [...this.bodyElements];
 
     if (head.length > 0) {
-      result = result.replace(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${head.join('\n$1$1')}\n$1$2`);
+      result = result.replaceAll(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${head.join('\n$1$1')}\n$1$2`);
     }
 
     if (body.length > 0) {
-      result = result.replace(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${body.join('\n$1$1')}\n$1$2`);
+      result = result.replaceAll(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${body.join('\n$1$1')}\n$1$2`);
     }
 
     return result;
