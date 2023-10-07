@@ -35,37 +35,37 @@ const cli = meow(help, {
   flags: {
     css: {
       type: 'string',
-      shortFlag: 'c',
+      alias: 'c',
     },
     html: {
       type: 'string',
-      shortFlag: 'h',
+      alias: 'h',
     },
     ignore: {
       type: 'string',
-      shortFlag: 'i',
+      alias: 'i',
       isMultiple: true,
     },
     minify: {
       type: 'boolean',
-      shortFlag: 'm',
+      alias: 'm',
       default: true,
     },
     extract: {
       type: 'boolean',
-      shortFlag: 'e',
+      alias: 'e',
     },
     base: {
       type: 'string',
-      shortFlag: 'b',
+      alias: 'b',
     },
     selector: {
       type: 'string',
-      shortFlag: 's',
+      alias: 's',
     },
     preload: {
       type: 'boolean',
-      shortFlag: 'p',
+      alias: 'p',
       default: false,
     },
     polyfill: {
@@ -89,20 +89,16 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
 
   switch (key) {
     case 'css':
-    case 'html': {
+    case 'html':
       try {
         result[key] = read(value);
       } catch {}
 
       break;
-    }
-
-    case 'base': {
+    case 'base':
       result.basePath = value;
       break;
-    }
-
-    case 'ignore': {
+    case 'ignore':
       result.ignore = (value || []).map((ignore) => {
         // Check regex
         const {groups} = /^\/(?<expression>.*)\/(?<flags>[igmy]+)?$/.exec(ignore) || {};
@@ -115,12 +111,9 @@ cli.flags = Object.entries(cli.flags).reduce((result, [key, value]) => {
         return ignore;
       });
       break;
-    }
-
-    default: {
+    default:
       result[key] = value;
       break;
-    }
   }
 
   return result;
@@ -180,6 +173,7 @@ function run(data) {
 }
 
 // Get stdin
+stdin().then(run);
 setTimeout(() => {
   if (ok) {
     return;
@@ -187,6 +181,3 @@ setTimeout(() => {
 
   run();
 }, 100);
-
-const input = await stdin();
-run(input);
