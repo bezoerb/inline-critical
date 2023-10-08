@@ -6,7 +6,7 @@ import meow from 'meow';
 import picocolors from 'picocolors';
 import indentString from 'indent-string';
 import stdin from 'get-stdin';
-import {parse} from 'css';
+import {parse} from '@adobe/css-tools';
 import escapeRegExp from 'lodash.escaperegexp';
 import defaults from 'lodash.defaults';
 import {inline as inlineCritical} from './index.js';
