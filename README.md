@@ -3,7 +3,7 @@
 Inline critical-path css and load the existing stylesheets asynchronously.
 Existing link tags will also be wrapped in `<noscript>` so the users with javascript disabled will see the site rendered normally.
 
-[![NPM version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Dependency Status][depstat-image]][depstat-url] [![Download][dlcounter-image]][dlcounter-url] [![Coverage Status][coveralls-image]][coveralls-url]
+[![npm version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Download][dlcounter-image]][dlcounter-url] [![Coverage Status][coveralls-image]][coveralls-url]
 
 ## Installation
 
@@ -94,12 +94,10 @@ _Adopted from [critters](https://github.com/GoogleChromeLabs/critters#preloadstr
 MIT
 
 [npm-url]: https://npmjs.org/package/inline-critical
-[npm-image]: https://img.shields.io/npm/v/inline-critical.svg
-[ci-url]: https://github.com/bezoerb/inline-critical/actions?workflow=Tests
-[ci-image]: https://github.com/bezoerb/inline-critical/workflows/Tests/badge.svg
-[depstat-url]: https://david-dm.org/bezoerb/inline-critical
-[depstat-image]: https://img.shields.io/david/bezoerb/inline-critical.svg
+[npm-image]: https://img.shields.io/npm/v/inline-critical
+[ci-url]: https://github.com/bezoerb/inline-critical/actions/workflows/test.yml?query=workflow%3ATests
+[ci-image]: https://img.shields.io/github/actions/workflow/status/bezoerb/inline-critical/test.yml?branch=main&label=Tests&logo=github
 [dlcounter-url]: https://www.npmjs.com/package/inline-critical
-[dlcounter-image]: https://img.shields.io/npm/dm/inline-critical.svg
+[dlcounter-image]: https://img.shields.io/npm/dm/inline-critical
 [coveralls-url]: https://coveralls.io/github/bezoerb/inline-critical?branch=main
-[coveralls-image]: https://img.shields.io/coveralls/github/bezoerb/inline-critical/main.svg
+[coveralls-image]: https://img.shields.io/coveralls/github/bezoerb/inline-critical/main
