@@ -44,7 +44,7 @@
     "fg-loadcss": "^2.1.0",
     "get-stdin": "^9.0.0",
     "indent-string": "^5.0.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^24.0.0",
     "lodash.defaults": "^4.2.0",
     "lodash.escaperegexp": "^4.1.2",
     "lodash.isregexp": "^4.0.1",
@@ -93,6 +93,6 @@
     "bracketSpacing": false
   },
   "engines": {
-    "node": ">=16.10"
+    "node": ">=18"
   }
 }
