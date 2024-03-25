@@ -4,7 +4,7 @@ import process from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {readPackageUp} from 'read-pkg-up';
 import {jest} from '@jest/globals';
-import {read, strip, run, pipe, getBin} from './helper/index.js';
+import {read, strip, run, pipe, getBinary} from './helper/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -15,13 +15,13 @@ jest.unstable_mockModule('../index.js', () => ({
   inline: jest.fn(),
 }));
 
-const getArgs = async (parameters = []) => {
-  const bin = await getBin();
+const getArguments = async (parameters = []) => {
+  const binary = await getBinary();
   const origArgv = process.argv;
   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
   const {inline} = await import('../index.js');
 
-  process.argv = ['node', bin, ...parameters];
+  process.argv = ['node', binary, ...parameters];
   await import('../cli.js');
   process.argv = origArgv;
 
@@ -30,8 +30,8 @@ const getArgs = async (parameters = []) => {
 
   expect(inline).toHaveBeenCalledTimes(1);
 
-  const [args] = inline.mock.calls;
-  const [html, styles, options] = args || ['', '', {}];
+  const [arguments_] = inline.mock.calls;
+  const [html, styles, options] = arguments_ || ['', '', {}];
 
   inline.mockRestore();
   mockExit.mockRestore();
@@ -112,7 +112,7 @@ describe('Mocked', () => {
   });
 
   test('Pass the correct opts when using short opts', async () => {
-    const [html, css, args] = await getArgs([
+    const [html, css, arguments_] = await getArguments([
       '-c',
       'test/fixtures/critical.css',
       '-h',
@@ -134,7 +134,7 @@ describe('Mocked', () => {
     const htmlExpected = await read('fixtures/index.html');
     expect(html).toBe(htmlExpected);
     expect(css).toBe(cssExpected);
-    expect(args).toMatchObject({
+    expect(arguments_).toMatchObject({
       selector: 'selector',
       ignore: ['ignore-me', /regexp/],
       minify: true,
@@ -144,7 +144,7 @@ describe('Mocked', () => {
   });
 
   test('should pass the correct opts when using long opts', async () => {
-    const [html, css, args] = await getArgs([
+    const [html, css, arguments_] = await getArguments([
       '--css',
       join(__dirname, 'fixtures/critical.css'),
       '--html',
@@ -171,7 +171,7 @@ describe('Mocked', () => {
     const htmlExpected = await read('fixtures/index.html');
     expect(html).toBe(htmlExpected);
     expect(css).toBe(cssExpected);
-    expect(args).toMatchObject({
+    expect(arguments_).toMatchObject({
       selector: 'selector',
       ignore: ['ignore-me', /regexp/],
       minify: true,

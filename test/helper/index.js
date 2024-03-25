@@ -29,7 +29,7 @@ export const checkAndDelete = (file) => {
 
 export const strip = (string) => nn(string.replaceAll(/[\r\n]+/gm, ' ').replaceAll(/\s+/gm, ''));
 
-export const getBin = async () => {
+export const getBinary = async () => {
   const {packageJson} = await readPackageUp();
   return join(__dirname, '../../', packageJson.bin['inline-critical']);
 };
@@ -37,18 +37,18 @@ export const getBin = async () => {
 const pExec = promisify(exec);
 const pExecFile = promisify(execFile);
 
-export const run = async (args = []) => {
-  const bin = await getBin();
+export const run = async (arguments_ = []) => {
+  const binary = await getBinary();
 
-  const {stderr, stdout} = await pExecFile('node', [bin, ...args]);
+  const {stderr, stdout} = await pExecFile('node', [binary, ...arguments_]);
   return {stderr, stdout: stdout?.trim(), code: 0};
 };
 
-export const pipe = async (file, args = []) => {
+export const pipe = async (file, arguments_ = []) => {
   const filename = isAbsolute(file) ? file : join(__dirname, '..', file);
-  const bin = await getBin();
+  const binary = await getBinary();
   const cat = process.platform === 'win32' ? 'type' : 'cat';
-  const cmd = `${cat} ${normalize(filename)} | node ${bin} ${args.join(' ')}`;
+  const cmd = `${cat} ${normalize(filename)} | node ${binary} ${arguments_.join(' ')}`;
 
   const {stderr, stdout} = await pExec(cmd, {shell: true});
   return {stderr, stdout: stdout?.trim(), code: 0};

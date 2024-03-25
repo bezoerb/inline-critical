@@ -60,14 +60,14 @@ const getPartials = (html = '', tag = 'svg') => {
  * @param {string} tag Tagname (svg or math)
  * @returns {array} SVG Strings found in HTML
  */
-const replacePartials = (source, dest, tag) => {
+const replacePartials = (source, destination, tag) => {
   if (!Array.isArray(tag)) {
     tag = [tag];
   }
 
   return tag.reduce((result, tag) => {
     // Only replace head so we don't mess with the orignal markup
-    const newTags = getPartials(dest, tag);
+    const newTags = getPartials(destination, tag);
     const oldTags = getPartials(result, tag);
 
     return oldTags.reduce((string, code, index) => string.replace(code, newTags[index] || code), result);

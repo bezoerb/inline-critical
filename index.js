@@ -97,7 +97,7 @@ export function inline(html, styles, options) {
 
   if (Array.isArray(o.replaceStylesheets) && links.length > 0) {
     // Detect links to be removed
-    const [ref] = links;
+    const [reference] = links;
     const removable = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"][as="style"]')].filter(
       (link) => {
         // Filter ignored links
@@ -112,7 +112,7 @@ export function inline(html, styles, options) {
 
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', href);
-      ref.before(link);
+      reference.before(link);
 
       if (noscriptFallback) {
         document.addNoscript(link);
