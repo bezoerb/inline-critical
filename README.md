@@ -10,7 +10,7 @@ Existing link tags will also be wrapped in `<noscript>` so the users with javasc
 This module is installed via npm:
 
 ```bash
-$ npm install inline-critical
+npm install inline-critical
 ```
 
 ## Example Usage
