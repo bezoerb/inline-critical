@@ -93,7 +93,7 @@ _Adopted from [critters](https://github.com/GoogleChromeLabs/critters#preloadstr
 
 MIT
 
-[npm-url]: https://npmjs.org/package/inline-critical
+[npm-url]: https://www.npmjs.com/package/inline-critical
 [npm-image]: https://img.shields.io/npm/v/inline-critical
 [ci-url]: https://github.com/bezoerb/inline-critical/actions/workflows/test.yml?query=workflow%3ATests
 [ci-image]: https://img.shields.io/github/actions/workflow/status/bezoerb/inline-critical/test.yml?branch=main&label=Tests&logo=github
