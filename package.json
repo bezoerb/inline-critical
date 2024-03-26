@@ -11,7 +11,9 @@
   "type": "module",
   "scripts": {
     "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --runInBand --detectOpenHandles",
-    "xo": "xo --fix",
+    "lint": "xo",
+    "xo": "xo",
+    "fix": "xo --fix",
     "test": "npm run xo && npm run jest"
   },
   "files": [
