@@ -1,14 +1,13 @@
-/* eslint-env jest */
 import {join} from 'node:path';
 import process from 'node:process';
 import {fileURLToPath} from 'node:url';
-import {readPackageUp} from 'read-pkg-up';
+import {readPackageUp} from 'read-package-up';
 import {jest} from '@jest/globals';
 import {read, strip, run, pipe, getBinary} from './helper/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-jest.setTimeout(10000);
+jest.setTimeout(10_000);
 
 jest.unstable_mockModule('../index.js', () => ({
   default: jest.fn(),
