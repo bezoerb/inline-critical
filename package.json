@@ -82,7 +82,6 @@
     "prettier": true,
     "rules": {
       "prefer-template": "error",
-      "unicorn/no-array-for-each": "off",
       "unicorn/no-array-reduce": "off"
     },
     "overrides": [

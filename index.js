@@ -107,7 +107,7 @@ export function inline(html, styles, options) {
     );
 
     // Add link tags before old links
-    o.replaceStylesheets.forEach((href) => {
+    for (const href of o.replaceStylesheets) {
       const link = document.createElement('link');
 
       link.setAttribute('rel', 'stylesheet');
@@ -139,26 +139,26 @@ export function inline(html, styles, options) {
           document.remove(link);
         }
       }
-    });
+    }
 
     // Remove old links
-    removable.forEach((link) => {
+    for (const link of removable) {
       if (link.parentElement.tagName === 'NOSCRIPT') {
         document.remove(link.parentElement);
       } else {
         document.remove(link);
       }
-    });
+    }
   } else {
     // Modify links and add clones to noscript block
-    links.forEach((link) => {
+    for (const link of links) {
       const href = link.getAttribute('href');
       const media = link.getAttribute('media');
       const type = link.getAttribute('type');
       const integrity = link.getAttribute('integrity');
 
       if (['print', 'speech'].includes(media)) {
-        return;
+        continue;
       }
 
       if (o.extract) {
@@ -218,7 +218,7 @@ export function inline(html, styles, options) {
           document.remove(link);
         }
       }
-    });
+    }
   }
 
   return Buffer.from(document.serialize());
