@@ -155,7 +155,7 @@ function run(data) {
     }
   }
 
-  (cli.input || []).forEach((file) => {
+  for (const file of cli.input || []) {
     const temporary = read(file);
     try {
       parse(temporary);
@@ -163,7 +163,7 @@ function run(data) {
     } catch {
       options_.html = temporary;
     }
-  });
+  }
 
   if (!options_.html || !options_.css) {
     cli.showHelp();

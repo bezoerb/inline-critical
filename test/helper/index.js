@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import {isAbsolute, join, normalize} from 'node:path';
 import {exec, execFile} from 'node:child_process';
 import process from 'node:process';
@@ -7,7 +6,7 @@ import {promisify} from 'node:util';
 import {existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import fsExtra from 'fs-extra';
-import {readPackageUp} from 'read-pkg-up';
+import {readPackageUp} from 'read-package-up';
 import nn from 'normalize-newline';
 
 const {removeSync} = fsExtra;

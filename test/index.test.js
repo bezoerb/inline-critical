@@ -1,15 +1,14 @@
-/* eslint-env jest */
 import {basename} from 'node:path';
 import {Buffer} from 'node:buffer';
 import reaver from 'reaver';
 import {jest} from '@jest/globals';
 import {removeDuplicateStyles} from '../src/css.js';
-import inline from '..';
+import inline from '../index.js';
 import {read, checkAndDelete, strip} from './helper/index.js';
 
 const {rev} = reaver;
 
-jest.setTimeout(20000);
+jest.setTimeout(20_000);
 
 test('Inline css', async () => {
   const html = await read('fixtures/index.html');

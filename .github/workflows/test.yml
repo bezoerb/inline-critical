@@ -1,61 +1,49 @@
 name: Tests
-on: [push, pull_request]
+
+on:
+  push:
+    branches:
+      - main
+      - "!dependabot/**"
+  pull_request:
+  workflow_dispatch:
+
 env:
-  CI: true
+  FORCE_COLOR: 2
+  NODE_COV: 20 # The Node.js version to run coveralls on
 
 jobs:
-  run:
+  test:
     name: Node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        node: [18,20]
+        node: [18, 20]
         os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-
-      - run: node --version
-      - run: npm --version
-
-      - name: Set up npm cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-v${{ matrix.node }}-${{ hashFiles('package.json') }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-v${{ matrix.node }}-${{ hashFiles('package.json') }}-${{ hashFiles('package-lock.json') }}
-            ${{ runner.OS }}-node-v${{ matrix.node }}-
+          architecture: ${{ matrix.architecture }}
+          cache: npm
 
       - name: Install npm dependencies
         run: npm ci
 
       - name: Run tests
-        run: npm test
+        run: npm run jest
 
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@master
-        env:
-          NODE_COVERALLS_DEBUG: 1
+      - name: Run Coveralls
+        uses: coverallsapp/github-action@v2
+        if: startsWith(matrix.os, 'ubuntu') && matrix.node == env.NODE_COV
         with:
-          github-token: ${{ secrets.github_token }}
-          flag-name: run-${{ matrix.os }}-${{ matrix.node }}
-          parallel: true
-
-  finish:
-    needs: run
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
-        parallel-finished: true
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
