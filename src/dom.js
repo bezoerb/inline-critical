@@ -94,6 +94,7 @@ class Dom {
 
     this.indent = detectIndent(html);
     this.headIndent = detectIndent(this.document.querySelector('head').innerHTML);
+    this.bodyIndent = detectIndent(this.document.querySelector('body').innerHTML);
   }
 
   serialize() {
@@ -115,11 +116,18 @@ class Dom {
         : [...this.bodyElements];
 
     if (head.length > 0) {
-      result = result.replaceAll(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${head.join('\n$1$1')}\n$1$2`);
+      const [, match] = /^([^\S\r\n]*)<\/\s*head>/gim.exec(html) || ['', null];
+      const indent = match === null ? '' : `\n${match}`;
+      const headContent = `${indent}${this.headIndent.indent}${head.join(`${indent}${this.headIndent.indent}`)}`;
+
+      result = result.replaceAll(`${indent}</head>`, `${headContent}${indent}</head>`);
     }
 
     if (body.length > 0) {
-      result = result.replaceAll(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${body.join('\n$1$1')}\n$1$2`);
+      const [, match] = /^([^\S\r\n]*)<\/\s*body>/gim.exec(html) || ['', null];
+      const indent = match === null ? '' : `\n${match}`;
+      const bodyContent = `${indent}${this.bodyIndent.indent}${body.join(`${indent}${this.bodyIndent.indent}`)}`;
+      result = result.replaceAll(`${indent}</body>`, `${bodyContent}${indent}</body>`);
     }
 
     return result;
