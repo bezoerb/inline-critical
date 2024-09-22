@@ -91,8 +91,6 @@ class Dom {
     this.bodyElements = [];
 
     this.indent = detectIndent(html);
-    this.headIndent = detectIndent(this.document.querySelector('head').innerHTML);
-    this.bodyIndent = detectIndent(this.document.querySelector('body').innerHTML);
   }
 
   serialize() {
@@ -190,8 +188,8 @@ class Dom {
   appendStyles(css, referenceNode) {
     const styles = this.createStyleNode(css);
     referenceNode.append(styles);
-    styles.before(this.document.createTextNode(this.headIndent.indent));
-    styles.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    styles.before(this.document.createTextNode(this.indent.indent));
+    styles.after(this.document.createTextNode(`\n${this.indent.indent}`));
   }
 
   addNoscript(link) {
