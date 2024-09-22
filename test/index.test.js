@@ -721,16 +721,6 @@ test('Keep existing integrity attribute on style tags with media=print', async (
   expect(out.toString()).toBe(expected);
 });
 
-test('Keep existing integrity attribute on style tags with media=print', async () => {
-  const html = await read('fixtures/index-integrity.html');
-  const css = await read('fixtures/critical.css');
-
-  const expected = await read('expected/index-inlined-async-integrity-print-default.html');
-  const out = inline(html, css);
-
-  expect(out.toString()).toBe(expected);
-});
-
 test('Replace stylesheets (default)', async () => {
   const html = await read('fixtures/replace-stylesheets.html');
   const css = await read('fixtures/css/simple.css');
@@ -806,6 +796,59 @@ test('Replace stylesheets (swap)', async () => {
   });
 
   expect(out.toString()).toBe(expected);
+});
+
+test('Replace stylesheets (minified, polyfill)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-polyfill.html');
+  const out = inline(strip(html, true), css, {
+    strategy: 'polyfill',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Replace stylesheets (minified, body)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-body.html');
+  const out = inline(strip(html, true), css, {
+    strategy: 'body',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Replace stylesheets (minified, media)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-media.html');
+  const out = inline(strip(html, true), css, {
+    strategy: 'media',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  console.log('DEBUG:', strip(html, true));
+  expect(strip(out.toString())).toBe(strip(expected));
+});
+
+test('Replace stylesheets (minified, swap)', async () => {
+  const html = await read('fixtures/replace-stylesheets.html');
+  const css = await read('fixtures/css/simple.css');
+
+  const expected = await read('expected/replace-stylesheets-swap.html');
+  const out = inline(strip(html, true), css, {
+    strategy: 'swap',
+    replaceStylesheets: ['/css/replaced.css'],
+  });
+
+  expect(strip(out.toString())).toBe(strip(expected));
 });
 
 test('Issue 300', async () => {

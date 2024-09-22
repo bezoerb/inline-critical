@@ -76,12 +76,10 @@ const replacePartials = (source, destination, tag) => {
 
 class Dom {
   constructor(html, {minify = true, noscript = 'body'} = {}) {
-    const jsdom = new JSDOM(html);
-
+    const jsdom = new JSDOM(html.trim());
     const {window} = jsdom;
     const {document} = window;
     document.$jsdom = jsdom;
-
     this.noscriptPosition = noscript;
     this.minify = minify;
     this.html = html;
@@ -116,18 +114,19 @@ class Dom {
         : [...this.bodyElements];
 
     if (head.length > 0) {
-      const [, match] = /^([^\S\r\n]*)<\/\s*head>/gim.exec(html) || ['', null];
-      const indent = match === null ? '' : `\n${match}`;
-      const headContent = `${indent}${this.headIndent.indent}${head.join(`${indent}${this.headIndent.indent}`)}`;
+      const [, match] = /^([^\S\r\n]*)<\/\s*head>/gim.exec(result) || ['', null];
+      const nl = match === null ? '' : `\n`;
+      const headContent = `${this.indent.indent}${this.indent.indent}${head.join(`${nl}${this.indent.indent}${this.indent.indent}`)}`;
 
-      result = result.replaceAll(`${indent}</head>`, `${headContent}${indent}</head>`);
+      result = result.replaceAll(`${match || ''}</head>`, `${headContent}${nl}${this.indent.indent}</head>`);
     }
 
     if (body.length > 0) {
-      const [, match] = /^([^\S\r\n]*)<\/\s*body>/gim.exec(html) || ['', null];
-      const indent = match === null ? '' : `\n${match}`;
-      const bodyContent = `${indent}${this.bodyIndent.indent}${body.join(`${indent}${this.bodyIndent.indent}`)}`;
-      result = result.replaceAll(`${indent}</body>`, `${bodyContent}${indent}</body>`);
+      const [, match] = /^([^\S\r\n]*)<\/\s*body>/gim.exec(result) || ['', null];
+      const nl = match === null ? '' : `\n`;
+      const bodyContent = `${this.indent.indent}${this.indent.indent}${body.join(`${nl}${this.indent.indent}${this.indent.indent}`)}`;
+
+      result = result.replaceAll(`${match || ''}</body>`, `${bodyContent}${nl}${this.indent.indent}</body>`);
     }
 
     return result;
