@@ -834,7 +834,6 @@ test('Replace stylesheets (minified, media)', async () => {
     replaceStylesheets: ['/css/replaced.css'],
   });
 
-  console.log('DEBUG:', strip(html, true));
   expect(strip(out.toString())).toBe(strip(expected));
 });
 
