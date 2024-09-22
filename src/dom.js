@@ -76,12 +76,10 @@ const replacePartials = (source, destination, tag) => {
 
 class Dom {
   constructor(html, {minify = true, noscript = 'body'} = {}) {
-    const jsdom = new JSDOM(html);
-
+    const jsdom = new JSDOM(html.trim());
     const {window} = jsdom;
     const {document} = window;
     document.$jsdom = jsdom;
-
     this.noscriptPosition = noscript;
     this.minify = minify;
     this.html = html;
@@ -93,7 +91,6 @@ class Dom {
     this.bodyElements = [];
 
     this.indent = detectIndent(html);
-    this.headIndent = detectIndent(this.document.querySelector('head').innerHTML);
   }
 
   serialize() {
@@ -115,11 +112,19 @@ class Dom {
         : [...this.bodyElements];
 
     if (head.length > 0) {
-      result = result.replaceAll(/^([\s\t]*)(<\/\s*head>)/gim, `$1$1${head.join('\n$1$1')}\n$1$2`);
+      const [, match] = /^([^\S\r\n]*)<\/\s*head>/gim.exec(result) || ['', null];
+      const nl = match === null ? '' : `\n`;
+      const headContent = `${this.indent.indent}${this.indent.indent}${head.join(`${nl}${this.indent.indent}${this.indent.indent}`)}`;
+
+      result = result.replaceAll(`${match || ''}</head>`, `${headContent}${nl}${this.indent.indent}</head>`);
     }
 
     if (body.length > 0) {
-      result = result.replaceAll(/^([\s\t]*)(<\/\s*body>)/gim, `$1$1${body.join('\n$1$1')}\n$1$2`);
+      const [, match] = /^([^\S\r\n]*)<\/\s*body>/gim.exec(result) || ['', null];
+      const nl = match === null ? '' : `\n`;
+      const bodyContent = `${this.indent.indent}${this.indent.indent}${body.join(`${nl}${this.indent.indent}${this.indent.indent}`)}`;
+
+      result = result.replaceAll(`${match || ''}</body>`, `${bodyContent}${nl}${this.indent.indent}</body>`);
     }
 
     return result;
@@ -183,8 +188,8 @@ class Dom {
   appendStyles(css, referenceNode) {
     const styles = this.createStyleNode(css);
     referenceNode.append(styles);
-    styles.before(this.document.createTextNode(this.headIndent.indent));
-    styles.after(this.document.createTextNode(`\n${this.headIndent.indent}`));
+    styles.before(this.document.createTextNode(this.indent.indent));
+    styles.after(this.document.createTextNode(`\n${this.indent.indent}`));
   }
 
   addNoscript(link) {
