@@ -26,7 +26,8 @@ export const checkAndDelete = (file) => {
   }
 };
 
-export const strip = (string, safe) => nn(string.replaceAll(/[\r\n]+/gm, ' ').replaceAll(/\s+/gm, safe ? ' ' : ''));
+export const strip = (string, safe) =>
+  nn(string.replaceAll(/[\r\n]+/gm, ' ').replaceAll(/\s+/gm, safe ? ' ' : '')).replaceAll(/>\s+</gm, '><');
 
 export const getBinary = async () => {
   const {packageJson} = await readPackageUp();
